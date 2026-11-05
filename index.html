@@ -490,6 +490,9 @@ header.top.att, header.top.att:not([style]) { width: auto; max-width: none; marg
 .legend .lg { display: inline-flex; align-items: center; gap: 5px; }
 
 /* step 1 */
+#s1 .folder-pickers { display:grid; grid-template-columns: repeat(auto-fit, minmax(185px,1fr)); gap: 10px; }
+#s1 .folder-pickers .drop { padding: 10px; gap: 8px; }
+#s1 .folder-pickers .drop .ficon { width: 38px; height: 38px; flex:none; object-fit:contain; }
 .startbtn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px 18px; font-size: 15.5px; }
 .log { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 13.5px; }
 .log:empty { display: none; }
@@ -870,6 +873,31 @@ td.nowrap { white-space: nowrap; color: var(--muted); }
 /* the card's 확인 · 다음: white, the same size as the email button beside it */
 .rcfoot .nextbtn { display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; font-size: 15px; font-weight: 600; min-height: 46px; background: var(--sheet); color: var(--ink); border: 1px solid var(--rule); }
 .rcfoot .nextbtn:hover { border-color: var(--accent); }
+.rc.completed .sides, .rc.completed .places, .rc.completed .entries { opacity: .55; filter: grayscale(1); }
+.rc.completed .side input, .rc.completed .places input { background: #f3f3f3; color: #555; }
+.rc.completed .issues { opacity: .65; }
+.rc .card-id { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.rcfoot { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; }
+.rcfoot > .mailbtns { justify-items: start; }
+.rcfoot .nextbtn { margin-left: auto; }
+#badgeFolderBtn.loaded { border-style:solid; border-color:color-mix(in srgb,var(--ok) 45%,var(--rule)); background:var(--ok-soft); }
+.pchips { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+.pchips .chip { padding:4px 10px; font-size:13px; background:#fff; }
+.pchips .chip:hover { background:var(--accent-soft); }
+.prow { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+.prow .pother { flex:1 1 130px; min-width:100px; }
+.contactsheet { overflow:auto; border:1px solid #dadada; border-radius:7px; max-height:400px; background:white; }
+.contactsheet table { border-collapse:separate; border-spacing:0; width:max-content; min-width:100%; font:13px/1.4 var(--sans); }
+.contactsheet th { position:sticky; top:0; background:#f3f3f3; color:#6b6b6b; font-weight:500; text-align:center; z-index:1; }
+.contactsheet td,.contactsheet th { border-right:1px solid #dedede; border-bottom:1px solid #dedede; padding:0; height:29px; }
+.contactsheet tbody th { left:0; z-index:2; min-width:36px; }
+.contactsheet thead th:first-child { left:0; z-index:3; }
+.contactsheet td input { width:100%; min-width:125px; border:0; border-radius:0; padding:5px 9px; font:inherit; background:#fff; box-shadow:none; outline:none; }
+.contactsheet td input:focus { outline:2px solid #217346; outline-offset:-2px; background:#f4faf6; }
+.contactsheet td.name input { min-width:100px; }
+.contactsheet td.email input { min-width:240px; }
+.contactsheet tbody tr:first-child td { background:#f3f7f4; font-weight:600; color:#345; padding:4px 9px; }
+.contactsheet input:invalid { outline:1px solid #b42318; }
 .rcfoot .nextbtn kbd { background: var(--well); color: var(--muted); border: 1px solid var(--rule); }
 /* header: the logo with the black 데이터 button under it, the button's bottom level with the buttons row on the left */
 header.top.att { align-items: stretch; }
@@ -888,10 +916,12 @@ header.top.att { align-items: stretch; }
       <h1 data-en="Attendance Cleanup">근태 정리</h1>
       <p class="tagline" data-en="Fills the gaps in the badge export from the leave and 외근 calendars. You only look at what's unclear, one person at a time.">출입 기록의 빈칸을 휴가·외근 캘린더로 채웁니다. 애매한 칸만 한 사람씩 확인하면 됩니다.</p>
       <div class="examples">
+        <!-- English translation and language selector retained but disabled.
         <div class="seg langseg" role="group" aria-label="언어 / Language">
           <button type="button" id="langKo" aria-pressed="true" lang="ko" aria-label="한국어" title="한국어"><svg class="flag" viewBox="-36 -24 72 48" aria-hidden="true"><rect x="-36" y="-24" width="72" height="48" fill="#fff"/><g transform="rotate(-56.31)"><g id="fk-b2"><path id="fk-b" d="M-6-25H6M-6-22H6M-6-19H6" stroke="#000" stroke-width="2"/><use href="#fk-b" y="44"/></g><path stroke="#fff" d="M0,17v10"/><circle fill="#cd2e3a" r="12"/><path fill="#0047a0" d="M0-12A6,6 0 0 0 0,0A6,6 0 0 1 0,12A12,12 0 0,1 0-12Z"/></g><g transform="rotate(-123.69)"><use href="#fk-b2"/><path stroke="#fff" d="M0-23.5v3M0,17v3.5M0,23.5v3"/></g></svg></button>
         <button type="button" id="langEn" aria-pressed="false" lang="en" aria-label="English" title="English"><svg class="flag" viewBox="0 0 7410 3900" preserveAspectRatio="xMinYMid slice" aria-hidden="true"><rect width="7410" height="3900" fill="#b22234"/><path d="M0,450H7410m0,600H0m0,600H7410m0,600H0m0,600H7410m0,600H0" stroke="#fff" stroke-width="300"/><rect width="2964" height="2100" fill="#3c3b6e"/><g fill="#fff"><g id="us-s18"><g id="us-s9"><g id="us-s5"><g id="us-s4"><path id="us-s" d="M247,90 317.534230,307.082039 132.873218,172.917961H361.126782L176.465770,307.082039z"/><use href="#us-s" y="420"/><use href="#us-s" y="840"/><use href="#us-s" y="1260"/></g><use href="#us-s" y="1680"/></g><use href="#us-s4" x="247" y="210"/></g><use href="#us-s9" x="494"/></g><use href="#us-s18" x="988"/><use href="#us-s9" x="1976"/><use href="#us-s5" x="2470"/></g></svg></button>
         </div>
+        -->
         <button type="button" class="helpbtn" id="helpBtn"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M3 4.5C5.5 3.6 7.7 3.8 10 5.2c2.3-1.4 4.5-1.6 7-.7v11c-2.5-.9-4.7-.7-7 .7-2.3-1.4-4.5-1.6-7-.7z M10 5.2v11" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg> <span data-en="Manual">설명서</span></button>
         <button type="button" class="helpbtn" id="secBtn"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><rect x="2.5" y="7" width="11" height="8" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg> <span data-en="Security">보안정보</span></button>
         <button type="button" class="helpbtn" id="setBtn"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M16.06 8.26 L18.25 8.40 L18.25 11.60 L16.06 11.74 L15.51 13.05 L16.96 14.70 L14.70 16.96 L13.05 15.51 L11.74 16.06 L11.60 18.25 L8.40 18.25 L8.26 16.06 L6.95 15.51 L5.30 16.96 L3.04 14.70 L4.49 13.05 L3.94 11.74 L1.75 11.60 L1.75 8.40 L3.94 8.26 L4.49 6.95 L3.04 5.30 L5.30 3.04 L6.95 4.49 L8.26 3.94 L8.40 1.75 L11.60 1.75 L11.74 3.94 L13.05 4.49 L14.70 3.04 L16.96 5.30 L15.51 6.95Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="10" cy="10" r="2.6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg> <span data-en="Settings">설정</span></button>
@@ -933,19 +963,23 @@ header.top.att { align-items: stretch; }
     <section class="step" id="s1" aria-labelledby="s1h">
       <div class="step-head"><span class="num">1</span><h2 id="s1h" data-en="Load">불러오기</h2></div>
       
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+      <div class="folder-pickers">
         <div class="drop" id="startBtn" tabindex="0" role="button">
-          <svg class="ficon" viewBox="0 0 48 48" style="width:40px;height:40px" aria-hidden="true"><path d="M5 13a4 4 0 0 1 4-4h10l5 5h15a4 4 0 0 1 4 4v18a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z" fill="#e8f0fe" stroke="#6b8fcf" stroke-width="2"/><path d="M5 19h38" stroke="#6b8fcf" stroke-width="2"/><path d="M24 24l2 3 4 .5-3 2.5.8 4-3.8-2-3.8 2 .8-4-3-2.5 4-.5z" fill="#4d78b8"/></svg>
+          <svg class="ficon" viewBox="0 0 48 48" style="width:40px;height:40px" aria-hidden="true"><path d="M5 13a4 4 0 0 1 4-4h10l5 5h15a4 4 0 0 1 4 4v18a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z" fill="#e8f0fe" stroke="#6b8fcf" stroke-width="2"/><path d="M5 19h38" stroke="#6b8fcf" stroke-width="2"/><path d="M20 26l3 3 7-7" fill="none" stroke="#3f6fbb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
           <span class="txt">
             <span class="file" id="configName" data-en="Required Files">필요한 파일</span>
             <span class="sub" id="configSub" data-en="Choose the folder containing the app files">앱에 필요한 파일이 있는 폴더 선택</span>
           </span>
         </div>
-        <div class="drop" id="drop" tabindex="0" role="button">
+        <div class="drop" id="badgeFolderBtn" tabindex="0" role="button" aria-label="출입 기록 엑셀 폴더 선택">
+          <img class="ficon" width="40" height="40" alt="ADT" src="data:image/png;base64,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">
+          <span class="txt"><span class="file" id="badgeFolderName">출입 기록 폴더</span><span class="sub" id="badgeFolderSub">원본 엑셀이 들어 있는 폴더 선택</span></span>
+        </div>
+        <div class="drop" id="drop" tabindex="0" role="button" aria-label="엑셀 파일 선택">
           <svg class="ficon" viewBox="0 0 44 52" aria-hidden="true"><path d="M10 3h18.5L39 13.5V45a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4z" fill="#fff" stroke="#c4c8ce" stroke-width="1.4" stroke-linejoin="round"/><path d="M28.5 3v7a3.5 3.5 0 0 0 3.5 3.5h7" fill="#eef0f2" stroke="#c4c8ce" stroke-width="1.4" stroke-linejoin="round"/><rect x="11.5" y="16.5" width="21" height="14" rx="1.5" fill="#eaf5ee" stroke="#5aa77a" stroke-width="1.2"/><path d="M11.5 21.2h21M11.5 25.8h21M18.5 16.5v14M25.5 16.5v14" stroke="#5aa77a" stroke-width="1.1"/><rect x="2" y="34" width="31" height="12.5" rx="3" fill="#1f7a47"/><text x="17.5" y="43.4" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif" font-size="8.2" font-weight="800" letter-spacing=".4" fill="#fff">XLS</text></svg>
           <span class="txt">
-            <span class="file" id="fileName" data-en="Original Attendance Records">원본 출입 기록</span>
-            <span class="sub" id="fileSub" data-en="Choose the folder containing the original Excel files">원본 엑셀 파일이 있는 폴더 선택</span>
+            <span class="file" id="fileName" data-en="Original Attendance Records">엑셀 파일</span>
+            <span class="sub" id="fileSub" data-en="Choose individual Excel files">개별 엑셀 파일 선택 또는 끌어놓기</span>
           </span>
         </div>
       </div>
@@ -1562,7 +1596,14 @@ const ATT = (() => {
     const exempt = new Set(S.exempt.map(squash)), at1800 = new Set(S.at1800.map(squash)), flex = new Set(S.flex.map(squash));
     const recs = B.recs.filter((r) => !exempt.has(r.key));
     const dates = [...new Set(B.recs.map((r) => r.date))].sort();
-    const exportDay = input.exportDay !== undefined ? input.exportDay : dates.at(-1);   // the export's own day is still in progress
+    const exportDay = input.exportDay !== undefined ? input.exportDay : dates.at(-1); // retained for the export summary
+    // A work date is still in progress only while NO employee has a recorded badge-out
+    // at or after the configured end of day. Check across the entire export, including exempt staff.
+    const endThreshold = minutes(S.endOfDay) ?? 1080;
+    const closedDates = new Set(B.recs.filter((r) => {
+      const m = minutes(r.outRaw); return m != null && m >= endThreshold;
+    }).map((r) => r.date));
+    const inProgressDates = new Set(dates.filter((date) => !closedDates.has(date)));
     const off = new Set([...(input.holidays || []), ...S.daysOff.map(parseDay).filter(Boolean)]);
     const isWork = (iso) => weekday(iso) !== 0 && weekday(iso) !== 6 && !off.has(iso);
     const roster = [...new Set(recs.map((r) => r.name))];
@@ -1639,7 +1680,7 @@ const ATT = (() => {
     const cells = [];
     for (const r of recs) {
       const n = notes.get(r.key + "|" + r.date) || { leave: [], work: [], misc: [], misc2: [], team: [] };
-      const inM = minutes(r.inRaw), outM = minutes(r.outRaw), isToday = r.date === exportDay;
+      const inM = minutes(r.inRaw), outM = minutes(r.outRaw), isToday = inProgressDates.has(r.date);
       const c = { ...r, in: r.inRaw, out: r.outRaw, inSrc: inM != null ? "badge" : r.inRaw ? "text" : "", outSrc: outM != null ? "badge" : r.outRaw ? "text" : "", late: false, review: [], auto: [], info: [], today: isToday, notes: n, sugg: { in: [], out: [] } };
       const suggest = (side, v) => { if (v && !c.sugg[side].includes(v)) c.sugg[side].push(v); };
       if (r.holiday || !isWork(r.date)) { c.skip = true; cells.push(c); continue; }
@@ -1732,20 +1773,20 @@ const ATT = (() => {
       // what is still empty
       if (!c.review.length) {
         if (c.inSrc === "" && c.outSrc === "" && !isToday) c.review.push("출근·퇴근 기록 없음 — 휴가·외근 일정도 없음");
-        else if (c.inSrc === "" && !isToday) c.review.push("출근 기록 없음");
+        else if (c.inSrc === "") c.review.push("출근 기록 없음");
         else if (c.outSrc === "" && !isToday) c.review.push("퇴근 기록 없음");
       } else {
-        if (c.inSrc === "" && !isToday && !c.review.some((x) => /출근/.test(x))) c.review.push("출근 기록 없음");
+        if (c.inSrc === "" && !c.review.some((x) => /출근/.test(x))) c.review.push("출근 기록 없음");
         if (c.outSrc === "" && !isToday && !c.review.some((x) => /퇴근/.test(x))) c.review.push("퇴근 기록 없음");
       }
-      if (isToday && c.inSrc === "") c.info.push("오늘 아직 출근 기록 없음");
+      if (isToday && c.outSrc === "") c.info.push("당일 퇴근 마감 전 — 퇴근 누락 판단 보류");
       if (W.some((w) => w.others)) c.info.push("일정에 ‘외/팀’이 있어 다른 사람도 함께였을 수 있음");
       cells.push(c);
     }
     // people mentioned in leave notes who aren't in the badge file (left the company, exempt, typo)
     const strangers = [...unknownPeople].map(([k, t]) => ({ who: k.split("|")[0], date: k.split("|")[1], title: t })).filter((x) => !exempt.has(squash(x.who)));
     for (const c of cells) if (!c.skip && dayNotes[c.date]) c.dayNotes = dayNotes[c.date];
-    return { B, dates, exportDay, cells, strangers, isWork, dayNotes };
+    return { B, dates, exportDay, inProgressDates, cells, strangers, isWork, dayNotes };
   }
 
   /** The [지각] entry for one day: title and the table rows (name, 출근, 퇴근). */
@@ -1834,10 +1875,89 @@ const SETTING_KEYS = ["exempt", "at1800", "teams", "mainPlaces", "places", "days
 /* ---------- remembered folder access (Chrome File System Access API) */
 const HANDLE_DB = "attendance-cleanup-browser-data", HANDLE_STORE = "handles";
 function handleDb() { return new Promise((resolve, reject) => { const q = indexedDB.open(HANDLE_DB, 1); q.onupgradeneeded = () => q.result.createObjectStore(HANDLE_STORE); q.onsuccess = () => resolve(q.result); q.onerror = () => reject(q.error); }); }
-async function saveFolderHandle(handle) { try { const db = await handleDb(); await new Promise((ok, no) => { const tx = db.transaction(HANDLE_STORE, "readwrite"); tx.objectStore(HANDLE_STORE).put(handle, "root"); tx.oncomplete = ok; tx.onerror = () => no(tx.error); }); db.close(); } catch {} }
-async function getFolderHandle() { try { const db = await handleDb(); const value = await new Promise((ok, no) => { const q = db.transaction(HANDLE_STORE).objectStore(HANDLE_STORE).get("root"); q.onsuccess = () => ok(q.result || null); q.onerror = () => no(q.error); }); db.close(); return value; } catch { return null; } }
+async function saveFolderHandle(handle, slot = "root") { try { const db = await handleDb(); await new Promise((ok, no) => { const tx = db.transaction(HANDLE_STORE, "readwrite"); tx.objectStore(HANDLE_STORE).put(handle, slot); tx.oncomplete = ok; tx.onerror = () => no(tx.error); }); db.close(); } catch {} }
+async function getFolderHandle(slot = "root") { try { const db = await handleDb(); const value = await new Promise((ok, no) => { const q = db.transaction(HANDLE_STORE).objectStore(HANDLE_STORE).get(slot); q.onsuccess = () => ok(q.result || null); q.onerror = () => no(q.error); }); db.close(); return value; } catch { return null; } }
+
+const FOLDER_COOKIE = "attendance_dependencies_folder";
+function rememberDependenciesFolder(name) {
+  // Browsers do not expose the Windows full path or allow reopening a folder using a cookie.
+  // The cookie is a display hint; the approved directory handle lives in IndexedDB above.
+  try { document.cookie = `${FOLDER_COOKIE}=${encodeURIComponent(name)}; Max-Age=2592000; SameSite=Lax; Path=/`; } catch {}
+}
+function dependenciesFolderHint() {
+  try { return decodeURIComponent((document.cookie.match(new RegExp(`(?:^|; )${FOLDER_COOKIE}=([^;]*)`)) || [])[1] || ""); } catch { return ""; }
+}
 /* ---------- state */
-const st = { files: [], fi: -1, date: null, rows: null, res: null, over: {}, sheetEdits: {}, events: [], holidays: new Set(), existing: {}, calIds: {}, token: null, scopes: new Set(), calLoaded: false, calRange: null, asked: {}, sent: {}, cur: null, dir: null, cfgDir: null, contactsHandle: null };
+const st = { files: [], fi: -1, date: null, rows: null, res: null, over: {}, sheetEdits: {}, events: [], holidays: new Set(), existing: {}, calIds: {}, token: null, scopes: new Set(), calLoaded: false, calRange: null, asked: {}, sent: {}, cur: null, dir: null, cfgDir: null, contactsHandle: null, badgeDir: null, drafts: {}, cardIds: {} };
+/* ---------- per-tab work session: drafts are NOT committed until Save. ----------
+   sessionStorage is tab scoped, survives reload, and is cleared by browsers on tab close.
+   A 12-hour expiry limits restored-tab/crash persistence. No cookies or settings.json contain HR drafts.
+   A random session nonce plus SHA-256 of the exact Excel contents and the person/date/row
+   are the real identity; the short six-character ID is only a human-friendly card label. */
+const CARD_STORE = "attendance_card_drafts_v13", CARD_MAX_AGE = 12 * 60 * 60 * 1000;
+function randomHex(size) { const a = new Uint8Array(size); crypto.getRandomValues(a); return [...a].map(x => x.toString(16).padStart(2, "0")).join(""); }
+function beginCardSession() {
+  try {
+    const data = JSON.parse(sessionStorage.getItem(CARD_STORE) || "null");
+    if (data?.nonce && data.created && Date.now() - data.created < CARD_MAX_AGE && data.cards && typeof data.cards === "object") return data;
+  } catch {}
+  try { sessionStorage.removeItem(CARD_STORE); } catch {}
+  return { nonce: randomHex(16), created: Date.now(), cards: {} };
+}
+const workSession = beginCardSession();
+function writeCardSession() {
+  try { sessionStorage.setItem(CARD_STORE, JSON.stringify(workSession)); } catch { /* tab memory remains available */ }
+}
+function newCardId() {
+  const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  const used = new Set(Object.values(workSession.cards).map((x) => x.id));
+  let candidate;
+  do {
+    const a = new Uint8Array(6); crypto.getRandomValues(a);
+    candidate = [...a].map((v) => chars[v % chars.length]).join("");
+  } while (used.has(candidate));
+  return candidate;
+}
+function cardStoreKey(c) {
+  const f = st.files[st.fi];
+  return JSON.stringify([workSession.nonce, f?.fingerprint || f?.key || "unknown", c.date, ATT.cellKey(c), c.r]);
+}
+function getCardStore(c) {
+  const key = cardStoreKey(c);
+  let saved = workSession.cards[key];
+  if (!saved) { saved = { id: newCardId(), draft: null, saved: null }; workSession.cards[key] = saved; writeCardSession(); }
+  return saved;
+}
+function setCardDraft(c, fields) {
+  const item = getCardStore(c);
+  item.draft = { in: fields.in.value, out: fields.out.value }; // may be blank on purpose
+  st.drafts[K(c)] = { ...item.draft };
+  writeCardSession();
+}
+function saveCardCommit(c, data) {
+  const item = getCardStore(c);
+  item.saved = { ...data };
+  item.draft = null;
+  delete st.drafts[K(c)];
+  writeCardSession();
+}
+async function fingerprintFile(file) {
+  try {
+    const data = await file.arrayBuffer();
+    const digest = await crypto.subtle.digest("SHA-256", data);
+    return [...new Uint8Array(digest)].map(x => x.toString(16).padStart(2, "0")).join("");
+  } catch { return fileKey(file); } // only for older browsers without subtle crypto
+}
+function restoreFileCards() {
+  st.over = {}; st.drafts = {};
+  if (!st.files[st.fi]?.rows) return;
+  const B = ATT.badgeRecords(st.rows);
+  for (const c of B?.recs || []) {
+    const item = workSession.cards[cardStoreKey(c)];
+    if (item?.saved) st.over[K(c)] = { ...item.saved };
+    if (item?.draft) st.drafts[K(c)] = { ...item.draft };
+  }
+}
 const K = (c) => ATT.cellKey(c);       // name + date, and the badge ID, so two people with one name never share a cell
 const val = (c, side) => { const o = st.over[K(c)]; return o && o[side] != null ? o[side] : c[side]; };
 const isOpen = (c) => c.review.length > 0 && !(st.over[K(c)]?.done);
@@ -1874,7 +1994,7 @@ function editSide(c, side, v) {
   const o = { ...st.over[K(c)], [side]: normTime(v) };
   const inV = o.in ?? val(c, "in"), outV = o.out ?? val(c, "out");
   o.done = !!String(inV || "").trim() && (c.today || !!String(outV || "").trim());
-  st.over[K(c)] = o; st.dirty = true;
+  st.over[K(c)] = o; st.dirty = true; saveCardCommit(c, o);
   return o[side];
 }
 
@@ -1933,7 +2053,12 @@ async function addFiles(list, { quiet, dropped } = {}) {
 }
 async function selectFile(i) {
   if (i < 0 || !st.files[i]) return;
+  const switched = i !== st.fi;
   st.fi = i; const F = st.files[i]; st.rows = F.rows;
+  st.res = null; // never show the previous Excel file's analysis against the new selection
+  if (switched) { st.sheetEdits = {}; st.sent = {}; st.asked = {}; st.order = {}; st.shownRows = {}; }
+  F.fingerprint ||= await fingerprintFile(F.file);
+  restoreFileCards();
   const exportDay = F.dates.at(-1);
   st.date = F.work.at(-1) || exportDay; // default to the latest date contained in this Excel file
   st.cur = null;
@@ -1950,12 +2075,15 @@ function drawFiles() {
   $("#fileName").textContent = F ? F.name : L("출입 기록 엑셀", "Badge export");
   $("#fileSub").textContent = F ? `${F.work.map((d) => dayLabel(d)).join(", ")} · ${L(`${new Set(ATT.badgeRecords(F.rows).recs.map((r) => r.key)).size}명`, `${new Set(ATT.badgeRecords(F.rows).recs.map((r) => r.key)).size} people`)}` : L("여기에 끌어다 놓거나 누르세요 (여러 개 가능)", "Drop one or more here, or click");
   $("#startBtn").classList.toggle("loaded", !!st.cfgDir);
+  $("#badgeFolderBtn").classList.toggle("loaded", !!st.badgeDir);
+  $("#badgeFolderName").textContent = st.badgeDir ? st.badgeDir.name : L("출입 기록 폴더", "Badge export folder");
+  $("#badgeFolderSub").textContent = st.badgeDir ? L("ADT 엑셀 폴더 연결됨", "ADT Excel folder connected") : L("원본 엑셀 폴더 선택", "Choose the folder with badge Excel exports");
   if (st.cfgDir) {
     $("#configName").textContent = st.cfgDir.name;
     $("#configSub").textContent = L("설정 폴더 연결됨", "Settings folder connected");
   } else {
-    $("#configName").textContent = L("필요한 파일", "Required Files");
-    $("#configSub").textContent = L("앱에 필요한 파일이 있는 폴더 선택", "Choose the folder containing the app files");
+    $("#configName").textContent = dependenciesFolderHint() || L("필요한 파일", "Required Files");
+    $("#configSub").textContent = dependenciesFolderHint() ? L("이전에 선택함 · 다시 연결하기", "Previously selected · reconnect") : L("앱에 필요한 파일이 있는 폴더 선택", "Choose the folder containing the app files");
   }
   const all = listed(), nClean = st.files.filter((x) => x.cleaned).length;
   box.hidden = all.length < 2 && !nClean;
@@ -1998,9 +2126,9 @@ function drawDates() {
   $("#dateField").hidden = !F;
   if (!F) return;
   box.replaceChildren(...F.work.map((d) => {
-    const open = st.res ? cellsOn(d).filter(isOpen).length : 0, today = d === F.dates.at(-1);
+    const open = st.res ? cellsOn(d).filter(isOpen).length : 0, today = st.res ? st.res.inProgressDates.has(d) : !(ATT.badgeRecords(F.rows)?.recs || []).some(r => r.date === d && ATT.minutes(r.outRaw) >= (ATT.minutes(S.endOfDay) ?? 1080));
     const b = el("button", { type: "button", className: "datebtn" }, el("b", { textContent: dayLabel(d) }),
-      today ? el("small", { textContent: L("파일이 나온 날 · 퇴근 전", "export day · in progress") }) : "",
+      today ? el("small", { textContent: L("퇴근 마감 전 (확인 보류)", "No end-of-day badge-out yet") }) : "",
       st.res ? el("span", { className: "tag " + (open ? "warn" : "ok"), textContent: open ? L(`확인 ${open}`, `${open} to check`) : L("끝", "done") }) : "");
     b.setAttribute("aria-pressed", d === st.date);
     b.addEventListener("click", () => { st.date = d; st.cur = null; drawDates(); drawAll(); });
@@ -2011,7 +2139,15 @@ function drawDates() {
 /* ---------- Google: sign-in (token in this window only), calendars read-only */
 const SC = { email: "https://www.googleapis.com/auth/userinfo.email", read: "https://www.googleapis.com/auth/calendar.readonly", write: "https://www.googleapis.com/auth/calendar.events", mail: "https://www.googleapis.com/auth/gmail.send", dir: "https://www.googleapis.com/auth/directory.readonly" };
 let gisLoading = null;
-function loadGis() { return (gisLoading ||= new Promise((ok, no) => { if (window.google?.accounts?.oauth2) return ok(); const s = el("script", { src: "https://accounts.google.com/gsi/client", async: true }); s.onload = () => ok(); s.onerror = () => no(new Error("gis")); document.head.append(s); })); }
+function loadGis() {
+  if (window.google?.accounts?.oauth2) return Promise.resolve();
+  return (gisLoading ||= new Promise((ok, no) => {
+    const s = el("script", { src: "https://accounts.google.com/gsi/client", async: true });
+    s.onload = () => (window.google?.accounts?.oauth2 ? ok() : no(new Error("Google SDK unavailable")));
+    s.onerror = () => no(new Error("Google sign-in library unavailable"));
+    document.head.append(s);
+  }).catch((e) => { gisLoading = null; throw e; })); // a failed network load can be retried
+}
 /* Two separate Google sign-ins, so neither replaces the other:
    "cal" reads the calendars and posts [지각]; "mail" sends the emails, and may be a different account
    (the one named in mail_access.json). Each knows which account it is, read from Google after signing in.
@@ -2031,6 +2167,7 @@ async function token(need, who = "cal", silent = false) {
   const scopes = new Set([...(t?.scopes || []), ...need, SC.email]);
   
   if (location.protocol === "file:") {
+    if (silent) throw new Error("silentUnavailable"); // file:// cannot return an OAuth redirect automatically
     const redirect = "http://localhost";
     const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${S.clientId}&redirect_uri=${encodeURIComponent(redirect)}&response_type=token&scope=${encodeURIComponent([...scopes].join(" "))}`;
     
@@ -2177,7 +2314,7 @@ async function loadCalendars() {
     st.holidays = new Set();
     if (found.holiday) for (const it of await listAll(found.holiday, from, to)) if (it.start?.date) st.holidays.add(it.start.date);
     st.existing = {};
-    if (found.out) for (const it of await listAll(found.out, all[0], ATT.addDays(all.at(-1), 1))) if (it.start?.date && /^\s*[\[［]\s*지각/.test(it.summary || "")) (st.existing[it.start.date] ||= []).push(it);
+    if (found.out && all.length) for (const it of await listAll(found.out, all[0], ATT.addDays(all.at(-1), 1))) if (it.start?.date && /^\s*[\[［]\s*지각/.test(it.summary || "")) (st.existing[it.start.date] ||= []).push(it);
     st.calLoaded = true; st.calAt = new Date(); st.calRange = [from, to];
     drawCalInfo(); run(); return true;
   } catch (e) {
@@ -2190,7 +2327,7 @@ async function loadCalendars() {
 const acctErr = { cal: "", mail: "" };
 function drawAccount(who) {
   const box = $(who === "cal" ? "#calAcct" : "#mailAcct"); if (!box) return;
-  const t = toks[who], label = who === "cal" ? L("캘린더 계정", "Calendar account") : L("메일 보내는 계정", "Sending account");
+  const t = toks[who], label = who === "cal" ? L("캘린더 계정", "Calendar account") : L("이메일 계정", "Email account");
   const go = async (fresh) => {
     if (fresh) toks[who] = null;
     btn.disabled = true; acctErr[who] = "";
@@ -2248,35 +2385,40 @@ function drawAll() { drawReview(); drawAuto(); drawSheetSum(); drawGo(); drawMai
 
 /* ---------- 3. the cards: one person-day at a time, for the chosen date */
 let EMPTY = null;
-const mainNames = () => (S.mainPlaces || []).map((x) => String(x).split("=")[0].trim()).filter(Boolean);
+const mainNames = () => (S.mainPlaces || []).map((x) => String(x).split("=")[0].trim()).filter(Boolean).map((n) => n === "TNS" ? "TNT" : n);
 function openCells() { return cellsOn(st.date).filter(isOpen); }
+function reviewCards() {
+  const all = cellsOn(st.date).filter((c) => c.review.length);
+  return [...all.filter(isOpen), ...all.filter((c) => !isOpen(c))];
+}
 function drawReview() {
   const box = $("#review"), has = !!st.res;
   $("#stageFoot").hidden = !has;
   $("#stageDate").textContent = has ? dayLabel(st.date) : "";
-  if (!has) { EMPTY.firstChild.textContent = L("근태 폴더를 열거나 출입 기록 엑셀을 넣고, 캘린더를 읽으세요.", "Open the 근태 folder or drop a badge export, then read the calendars."); box.replaceChildren(EMPTY); $("#tally").replaceChildren(); $("#wizPos").textContent = ""; $("#cardPrev").hidden = $("#cardNext").hidden = true; $("#wizBar").firstChild.style.width = "0"; return; }
-  const all = cellsOn(st.date), asked = all.filter((c) => c.review.length), open = all.filter(isOpen);
+  if (!has) { EMPTY.firstChild.textContent = L("근태 폴더를 열거나 출입 기록 엑셀을 넣고, 캘린더를 읽으세요.", "Open the dependencies folder or badge records, then read the calendars."); box.replaceChildren(EMPTY); $("#tally").replaceChildren(); $("#wizPos").textContent = ""; $("#cardPrev").hidden = $("#cardNext").hidden = true; $("#wizBar").firstChild.style.width = "0"; return; }
+  const all = cellsOn(st.date), asked = all.filter((c) => c.review.length), open = asked.filter(isOpen), shown = reviewCards();
   const autos = all.filter((c) => !c.review.length && (c.inSrc === "auto" || c.outSrc === "auto")), lates = ATT.daySummary(st.res, st.date, st.over).rows.filter((r) => r.late);
   $("#tally").replaceChildren(
     el("span", { className: "chip " + (open.length ? "warn" : "ok"), textContent: open.length ? L(`확인할 사람 ${open.length}`, `${open.length} to check`) : L("확인 끝", "All checked") }),
     el("span", { className: "chip", textContent: L(`자동 ${autos.length}`, `${autos.length} auto`) }),
     el("span", { className: "chip", textContent: L(`지각 ${lates.length}`, `${lates.length} late`), title: lates.map((r) => r.name).join(", ") }));
   $("#wizBar").firstChild.style.width = `${Math.round((100 * (asked.length - open.length)) / Math.max(1, asked.length))}%`;
-  if (!open.length) {
+  if (!shown.length) {
     st.cur = null; $("#wizPos").textContent = ""; $("#cardPrev").hidden = $("#cardNext").hidden = true;
-    box.replaceChildren(el("div", { className: "alldone" }, el("b", { textContent: L(`${dayLabel(st.date)} 확인 끝`, `${dayLabel(st.date)}: all checked`) }),
-      el("span", { textContent: L("4단계에서 정리된 엑셀을 열어 보고, 받거나 캘린더에 올리세요.", "Open the cleaned Excel in step 4, then download it or post it.") })));
+    box.replaceChildren(el("div", { className: "alldone" }, el("b", { textContent: L(`${dayLabel(st.date)} 확인할 항목 없음`, `${dayLabel(st.date)}: nothing to review`) }),
+      el("span", { textContent: L("4단계에서 정리된 엑셀을 확인하세요.", "Review the cleaned Excel in step 4.") })));
     return;
   }
-  let i = open.findIndex((c) => K(c) === st.cur); if (i < 0) i = 0; st.cur = K(open[i]);
-  $("#wizPos").textContent = `${i + 1} / ${open.length}`;
-  $("#cardPrev").hidden = $("#cardNext").hidden = open.length < 2;
-  box.replaceChildren(card(open[i], i));
+  let i = shown.findIndex((c) => K(c) === st.cur); if (i < 0) i = 0;
+  st.cur = K(shown[i]);
+  $("#wizPos").textContent = `${i + 1} / ${shown.length}`;
+  $("#cardPrev").hidden = $("#cardNext").hidden = shown.length < 2;
+  box.replaceChildren(card(shown[i], i));
 }
 function flip(d) {
-  const open = openCells(); if (open.length < 2) return;
-  const i = Math.max(0, open.findIndex((c) => K(c) === st.cur));
-  st.cur = K(open[(i + d + open.length) % open.length]); drawReview();
+  const shown = reviewCards(); if (shown.length < 2) return;
+  const i = Math.max(0, shown.findIndex((c) => K(c) === st.cur));
+  st.cur = K(shown[(i + d + shown.length) % shown.length]); drawReview();
 }
 /** How much of the working day (09:00–18:00) the badge times cover, to the quarter hour; the day to two decimals.
     → { hours, day, guess, side } — guess is the leave that would fill the gap (반반차 0.25, 반차 0.5), when it's close */
@@ -2323,9 +2465,14 @@ function placeSection(c, fields) {
   other.addEventListener("input", () => { cur = other.value.trim(); draw(); });
   for (const side of ["in", "out"]) kindRows[side] = el("div", { className: "quick kinds" });
   draw();
+  const chipsBox = el("div", { className: "pchips" }, ...mainNames().map((name) => {
+    const b = el("button", { type: "button", className: "chip", textContent: name });
+    b.addEventListener("click", () => { cur = name; other.value = name; draw(); });
+    return b;
+  }));
   return { node: el("section", { className: "places" },
     el("h3", { textContent: L("장소", "Place") }),
-    el("div", { className: "prow" }, other),
+    el("div", { className: "prow" }, chipsBox, other),
     el("small", { className: "fine", textContent: L("장소를 입력하거나 버튼의 (장소)를 직접 바꿔 주세요.", "Type a place, or replace (장소) in the filled entry.") })
   ), kindRows };
 }
@@ -2343,18 +2490,18 @@ function entryLines(c) {
   return out;
 }
 function card(c, idx) {
-  const o = st.over[K(c)] || {}, fields = {};
+  const o = st.over[K(c)] || {}, fields = {}, draft = st.drafts[K(c)] || null, cardId = getCardStore(c).id, done = !!o.done;
   const share = dayShare(c);
   const placeSlot = { in: el("div"), out: el("div") };
   const side = (s) => {
     const raw = c[s + "Raw"], src = c[s + "Src"];
     const sugg = [...new Set([...(src === "auto" ? [c[s]] : []), ...(c.sugg?.[s] || [])].filter(Boolean))];
     if (share?.guess && share.side === s) sugg.push(`${ATT.hhmm(ATT.minutes(s === "in" ? c.inRaw : c.outRaw))}(${share.guess})`);
-    const inp = el("input", { type: "text", value: o[s] ?? badgeVal(c, s), placeholder: L("예: 0855, 휴가", "e.g. 0855, 휴가"), autocomplete: "off" });
+    const inp = el("input", { type: "text", value: draft?.[s] ?? o[s] ?? badgeVal(c, s), placeholder: L("예: 0855, 휴가", "e.g. 0855, 휴가"), autocomplete: "off" });
     inp.setAttribute("aria-label", s === "in" ? L("출근", "In") : L("퇴근", "Out"));
     fields[s] = inp;
     const sg = sugg.length ? el("div", { className: "suggs" }, el("span", { className: "lab", textContent: L("제안", "Suggested") }),
-      ...sugg.map((v) => { const b = el("button", { type: "button", className: "sugg", innerHTML: svg("M4.5 10.5l3.5 3.5 7.5-8", 14) + `<span>${esc(v)}</span>` }); b.addEventListener("click", () => { inp.value = v; inp.focus(); }); return b; })) : el("div", { className: "suggs blank" });
+      ...sugg.map((v) => { const b = el("button", { type: "button", className: "sugg", innerHTML: svg("M4.5 10.5l3.5 3.5 7.5-8", 14) + `<span>${esc(v)}</span>` }); b.addEventListener("click", () => { inp.value = v; inp.dispatchEvent(new Event("input")); inp.focus(); }); return b; })) : el("div", { className: "suggs blank" });
     return el("div", { className: "side" },
       el("div", { className: "sidehead" }, el("b", { textContent: s === "in" ? L("출근", "In") : L("퇴근", "Out") }),
         el("span", { className: "bval" + (raw ? "" : " none"), textContent: raw ? L(`출입 기록 ${raw}`, `badge ${raw}`) : L("출입 기록 없음", "no badge time") })),
@@ -2363,15 +2510,27 @@ function card(c, idx) {
   const places = placeSection(c, fields);
   placeSlot.in = places.kindRows.in; placeSlot.out = places.kindRows.out;
   const lines = entryLines(c);
-  const save = el("button", { type: "button", className: "nextbtn", innerHTML: `<span>${esc(L("확인 · 다음", "Done · next"))}</span><kbd>Enter</kbd>` });
+  const save = el("button", { type: "button", className: "nextbtn", innerHTML: `<span>${esc(L("저장", "Save"))}</span><kbd>Enter</kbd>` });
+  save.hidden = done;
   save.addEventListener("click", () => {
-    st.over[K(c)] = { ...st.over[K(c)], in: normTime(fields.in.value), out: normTime(fields.out.value), done: true }; st.dirty = true; delete st.asked[K(c)];
-    const open = openCells(); st.cur = open.length ? K(open[Math.min(idx, open.length - 1)]) : null;
-    drawAll(); drawDates(); setTimeout(() => $("#review input")?.focus(), 0);
+    const data = { ...st.over[K(c)], in: normTime(fields.in.value), out: normTime(fields.out.value), done: true };
+    st.over[K(c)] = data; st.dirty = true; delete st.asked[K(c)];
+    saveCardCommit(c, data);
+    st.cur = K(c); // The completed card stays in place, grey and re-editable.
+    drawAll(); drawDates();
+  });
+  const edit = el("button", { type: "button", className: "nextbtn", textContent: L("수정", "Edit"), hidden: !done });
+  edit.addEventListener("click", () => {
+    const data = { ...st.over[K(c)], done: false };
+    st.over[K(c)] = data;
+    saveCardCommit(c, data);
+    st.cur = K(c); st.dirty = true;
+    drawAll(); drawDates();
+    $("#review input")?.focus();
   });
   const mailBox = el("div", { className: "mailslot" });
   const wrap = el("article", { className: "rc" },
-    el("header", { className: "rchead" }, el("b", { textContent: c.name }), el("span", { textContent: [orgOf(c)?.team || c.dept, dayLabel(c.date)].filter(Boolean).join(" · ") })),
+    el("header", { className: "rchead" }, el("b", { textContent: c.name }), el("span", { textContent: [orgOf(c)?.team || c.dept, dayLabel(c.date)].filter(Boolean).join(" · ") }), el("small", { className: "card-id", textContent: `#${cardId}` }), done ? el("span", { className: "chip ok", textContent: L("저장됨 · 수정 가능", "Saved · editable") }) : ""),
     el("ul", { className: "issues" }, ...[...new Set(c.review.map(shortWhy))].map((t) => el("li", { textContent: t }))),
     (() => { const box = el("div", { className: "sides" }, side("in"), side("out")); if (box.querySelectorAll(".suggs.blank").length === 2) box.querySelectorAll(".suggs.blank").forEach((x) => x.remove()); return box; })(),
     places.node,
@@ -2380,10 +2539,13 @@ function card(c, idx) {
       lines.length ? el("ul", {}, ...lines.map((x) => el("li", {}, el("span", { className: "etag " + x.cls, textContent: x.tag }),
         el("span", { className: "ebody" }, el("span", { className: "etext", textContent: x.text }), x.title && x.title !== x.text ? el("span", { className: "eraw", innerHTML: esc(x.title).split(esc(c.name)).join(`<b>${esc(c.name)}</b>`) }) : "")))) : el("p", { className: "fine", textContent: L("캘린더에 이날 일정이 없습니다.", "Nothing in the calendars for this day.") }),
       share ? el("p", { className: "worked" }, el("span", { textContent: L("근무", "Worked") }), el("b", { textContent: L(`${fmtH(share.hours)}시간 · ${share.day.toFixed(2)}일`, `${fmtH(share.hours)} h · ${share.day.toFixed(2)} day`) }), el("small", { textContent: L(` (${S.lateAfter || "09:00"}–${S.endOfDay || "18:00"} 중)`, ` (of ${S.lateAfter || "09:00"}–${S.endOfDay || "18:00"})`) })) : ""),
-    el("footer", { className: "rcfoot" }, save, mailButton(c, mailBox)), mailBox);
+    el("footer", { className: "rcfoot" }, mailButton(c, mailBox), save, edit), mailBox);
+  wrap.classList.toggle("completed", done);
+  if (done) for (const input of wrap.querySelectorAll(".sides input, .places input, .sides button, .places button")) input.disabled = true;
   for (const f of ["in", "out"]) {
-    fields[f].addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.isComposing) save.click(); });
-    fields[f].addEventListener("blur", () => (fields[f].value = normTime(fields[f].value)));
+    fields[f].addEventListener("input", () => setCardDraft(c, fields));
+    fields[f].addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.isComposing && !done) { e.preventDefault(); save.click(); } });
+    fields[f].addEventListener("blur", () => { if (!done) { fields[f].value = normTime(fields[f].value); setCardDraft(c, fields); } });
   }
   return wrap;
 }
@@ -2584,7 +2746,7 @@ async function downloadXlsx() {
 
 /* ---------- the two actions, for the chosen date */
 function drawGo() {
-  const ready = !!st.res, F = st.files[st.fi], today = ready && st.date === F?.dates.at(-1);
+  const ready = !!st.res, F = st.files[st.fi], today = ready && st.res.inProgressDates.has(st.date);
   $("#xlsxBtn").disabled = !ready; $("#pubBtn").disabled = !ready || today; $("#goBtn").disabled = !ready;
   // one button does both; on the export's own day there's nothing to post yet, so it only saves
   $("#goLabel").textContent = !ready ? L("엑셀 저장 · 캘린더 올리기", "Save the Excel and post") : today ? L(`엑셀 저장 · ${dayLabel(st.date)}`, `Save the Excel · ${dayLabel(st.date)}`) : L(`엑셀 저장 · 캘린더 올리기 · ${dayLabel(st.date)}`, `Save the Excel and post · ${dayLabel(st.date)}`);
@@ -2593,7 +2755,7 @@ function drawGo() {
   if (!ready) { $("#pubInfo").replaceChildren(); return; }
   const d = ATT.daySummary(st.res, st.date, st.over), ex = st.existing[st.date], open = openCells().length;
   const lines = [el("span", { className: "dt", textContent: d.title })];
-  if (today) lines.push(el("span", { className: "fine", textContent: L("이 파일이 나온 날이라 퇴근 기록이 아직 없습니다. 다음 날 파일에서 올리세요.", "This is the export's own day, so there are no badge-outs yet. Post it from the next day's file.") }));
+  if (today) lines.push(el("span", { className: "fine", textContent: L("18시 이후 퇴근 기록이 없어 퇴근 누락 판단을 보류합니다. 마감 이후 새 출입 기록으로 확인하세요.", "No badge-out has reached the end-of-day threshold. Check again with a later export.") }));
   else if (ex) lines.push(el("span", { className: "fine", textContent: (ex[0].summary || "").replace(/\s+/g, "") === d.title.replace(/\s+/g, "") ? L("이미 같은 내용으로 올라가 있습니다. 다시 올리면 그 일정을 고칩니다.", "Already posted with the same title. Posting again updates that entry.") : L(`캘린더에는 ${ex[0].summary}로 올라가 있습니다. 올리면 고칩니다.`, `The calendar has ${ex[0].summary}. Posting updates it.`) }));
   if (open && !today) lines.push(el("span", { className: "fine warnline", textContent: L(`아직 확인하지 않은 사람 ${open}명은 출입 기록 그대로 올라갑니다.`, `${open} people not yet checked go up with their badge times only.`) }));
   if (!st.pubMsg || st.pubMsg.date !== st.date) $("#pubInfo").replaceChildren(el("div", { className: "golines" }, ...lines));
@@ -2718,6 +2880,7 @@ async function postDay(date, onTry) {
 }
 async function publish({ excelSaved = false } = {}) {
   if (!st.res) return null;
+  if (st.res.inProgressDates.has(st.date)) { toast(L("퇴근 마감 전 기록이므로 캘린더에 올리지 않습니다.", "Not posted: the work date is still in progress.")); return {ok:false}; }
   const date = st.date, info = $("#pubInfo"), btns = [$("#pubBtn"), $("#goBtn")];
   st.pubMsg = { date };
   const show = (cls, title, ...lines) => info.replaceChildren(el("div", { className: "note " + cls }, el("b", { textContent: title }), ...lines.filter(Boolean)));
@@ -2760,8 +2923,7 @@ const fromText = (f) => ({ file: L("직원 메일 목록 파일", "the employee 
 const openItems = (c) => st.res.cells.filter((x) => x.key === c.key && (x.id || "") === (c.id || "") && isOpen(x)).sort((a, b) => (a.date < b.date ? -1 : 1));
 // the email itself is written in the company's language (the text in step 2), whichever language the page shows
 const itemText = (c) => { const [, m, d] = c.date.split("-").map(Number), w = DOW[new Date(c.date + "T12:00").getDay()]; return `• ${m}월 ${d}일(${w}) ${c.inSrc === "" && c.outSrc === "" ? "출근·퇴근" : c.inSrc === "" ? "출근" : c.outSrc === "" ? "퇴근" : "출근·퇴근 사유"} 기록 없음`; };
-const MAIL_FOOT = () => `\n\n──────────\n이 메일은 근태 정리 도구에서 자동으로 보낸 메일입니다. 회신은 확인되지 않으니, 답장 대신 ${S.calLeave || "휴가"}·${S.calWork || "외근"} 캘린더에 적어 주세요.`;
-const withFoot = (body) => (/자동으로 보낸 메일/.test(body) ? body.trimEnd() : body.trimEnd() + MAIL_FOOT());   // the notice can't be left out
+const withFoot = (body) => String(body ?? "").trimEnd(); // No forced email footer: HR controls the full message.
 /** The calendar names go into the text as words, so what HR sees in the editor is what people get. */
 const namesIn = (t) => String(t).replace(/\[\s*휴가 캘린더\s*\]/g, S.calLeave || "휴가").replace(/\[\s*외근 캘린더\s*\]/g, S.calWork || "외근");
 const fill = (t, name, items, title = "") => t.replace(/\[\s*이름\s*\]/g, name).replace(/\s*\[\s*직급\s*\]/g, title ? " " + title : "").replace(/\[\s*목록\s*\]/g, items.map(itemText).join("\n")).replace(/\[\s*휴가 캘린더\s*\]/g, S.calLeave || "휴가").replace(/\[\s*외근 캘린더\s*\]/g, S.calWork || "외근");
@@ -2785,8 +2947,8 @@ function mailButton(c, box) {
   const ready = a.email && mailReady() && (!doms.length || doms.includes(domainOf(a.email)));
   const wrapB = el("span", { className: "mailbtns" });
   const label = () => (!mailReady() ? L(`${c.name}님에게 메일 보내기 (2단계 문구 먼저)`, `Email ${c.name} (write the text in step 2 first)`) : !a.email ? L(`${c.name}님에게 메일 보내기 (주소 넣기)`, `Email ${c.name} (add the address)`) : sent.length ? L(`${c.name}님에게 메일 한 번 더 보내기`, `Email ${c.name} once more`) : L(`${c.name}님에게 메일 보내기`, `Email ${c.name}`));
-  const b = el("button", { type: "button", className: "bigbtn mailgo", title: a.email || "", innerHTML: svg("M3 5.5h14v9H3zM3.5 6l6.5 5 6.5-5", 15) + `<span>${esc(label())}</span>` });
-  if (ready) wrapB.append(el("small", { className: "mailto", textContent: "→ " + a.email }));
+  const b = el("button", { type: "button", className: "bigbtn mailgo", innerHTML: svg("M3 5.5h14v9H3zM3.5 6l6.5 5 6.5-5", 15) + `<span>${esc(L("이메일", "Email"))}</span>`, title: label() });
+  wrapB.append(el("small", { className: "mailto", textContent: a.email ? "→ " + a.email : label() }));
   const look = el("button", { type: "button", className: "linkbtn", textContent: L("보낼 내용", "Text") });
   look.addEventListener("click", () => mailPanel(c, box));
   const say = (t) => (b.lastChild.textContent = t);
@@ -2797,7 +2959,7 @@ function mailButton(c, box) {
     if (busy) return;
     if (!mailReady()) { $("#s2").open = true; $("#s2").scrollIntoView({ behavior: "smooth", block: "start" }); return; }
     if (!ready) { mailPanel(c, box); return; }
-    busy = true; b.disabled = true; say(L(`${c.name}님에게 보내는 중…`, `Sending to ${c.name}…`));
+    busy = true; b.disabled = true; say(L("보내는 중…", "Sending…"));
     const items = openItems(c), r = await sendMailTo(c, a.email, fill(S.mailSubject, c.name, items, a.contact?.title), fill(S.mailBody, c.name, items, a.contact?.title), items);
     busy = false;
     if (!r.ok) { b.disabled = false; say(L("보내지 못함 · 다시 보내기", "Not sent · send again")); box.replaceChildren(el("p", { className: "warnline", textContent: L("보내지 못했습니다: ", "Not sent: ") + r.error })); }
@@ -2878,8 +3040,6 @@ function drawMailSetup() {
   const draw = () => { S.mailSubject = subj.value; S.mailBody = body.value; pv.textContent = (subj.value.trim() || body.value.trim()) ? `${L("제목", "Subject")}: ${fill(subj.value, "홍길동", sample, "차장")}\n\n${withFoot(fill(body.value, "홍길동", sample, "차장"))}` : ""; $("#mailState").textContent = mailReady() ? L("준비됨", "ready") : L("문구 없음", "no text yet"); };
   for (const x of [subj, body]) { x.addEventListener("input", () => { draw(); autoSave(); }); x.addEventListener("focus", () => (last = x)); x.addEventListener("change", () => drawReview()); }
   const tok = (t, label) => { const b = el("button", { type: "button", className: "tokchip", textContent: `[${t}]`, title: label }); b.addEventListener("mousedown", (e) => e.preventDefault()); b.addEventListener("click", () => { const x = last, a = x.selectionStart ?? x.value.length, z = x.selectionEnd ?? a; x.value = x.value.slice(0, a) + `[${t}]` + x.value.slice(z); x.setSelectionRange(a + t.length + 2, a + t.length + 2); x.focus(); draw(); autoSave(); }); return b; };
-  const reset = el("button", { type: "button", className: "linkbtn", textContent: L("처음 문구로", "Back to the original text") });
-  reset.addEventListener("click", () => { subj.value = namesIn(DEFAULTS.mailSubject); body.value = namesIn(DEFAULTS.mailBody); draw(); autoSave(); });
   draw();
   host.replaceChildren(
     el("p", { className: "fine", id: "listInfo" }),
@@ -2887,9 +3047,9 @@ function drawMailSetup() {
     el("p", { className: "fine", id: "fromInfo" }),
     el("div", { className: "sfield" }, el("span", { className: "lab", textContent: L("제목", "Subject") }), subj),
     el("div", { className: "sfield" }, el("span", { className: "lab", textContent: L("내용", "Text") }),
-      el("div", { className: "row" }, el("span", { className: "fine", textContent: L("넣기:", "Insert:") }), tok("이름", L("받는 사람 이름", "the person's name")), tok("직급", L("직급 (메일 목록의 Job Title)", "job title (from the email list)")), tok("목록", L("비어 있는 날짜와 칸", "their empty dates and cells")),  reset), body),
+      el("div", { className: "row" }, el("span", { className: "fine", textContent: L("넣기:", "Insert:") }), tok("이름", L("받는 사람 이름", "the person's name")), tok("직급", L("직급 (메일 목록의 Job Title)", "job title (from the email list)")), tok("목록", L("비어 있는 날짜와 칸", "their empty dates and cells"))), body),
     el("div", { className: "sfield" }, el("span", { className: "lab", textContent: L("미리보기 (예: 홍길동 차장)", "Preview (e.g. 홍길동 차장)") }), pv,
-      el("small", { textContent: L("‘자동으로 보낸 메일’ 안내를 지워도, 보낼 때 맨 끝에 다시 붙습니다.", "If the ‘sent automatically’ note is deleted, it's put back at the end when sending.") })),
+      ),
     el("p", { className: "savestate" }));
   drawMailLog(); drawSaveState();
 }
@@ -2899,7 +3059,7 @@ function drawMailLog() {
   const from = $("#fromInfo");
   if (from) {
     const now = toks.mail?.email, named = S.mailAccount, cal = toks.cal?.email;
-    from.textContent = L("보내는 계정: ", "Sending account: ") + (now ? now + L(" (로그인됨)", " (signed in)") : named ? named + L(" · 첫 메일을 보낼 때 이 계정으로 로그인합니다", " · you sign in as this account at the first email") : L("첫 메일을 보낼 때 고릅니다 · mail_access.json에 account를 적으면 그 계정만 씁니다", "chosen at the first email · put an account in mail_access.json to allow only that one"))
+    from.textContent = L("이메일 계정: ", "Email account: ") + (now ? now + L(" (로그인됨)", " (signed in)") : named ? named + L(" · 첫 메일을 보낼 때 이 계정으로 로그인합니다", " · you sign in as this account at the first email") : L("첫 메일을 보낼 때 고릅니다 · mail_access.json에 account를 적으면 그 계정만 씁니다", "chosen at the first email · put an account in mail_access.json to allow only that one"))
       + (cal && (now || named) ? (sameMail(now || named, cal) ? L(" · 캘린더와 같은 계정", " · same account as the calendar") : L(` · 캘린더(${cal})와 다른 계정`, ` · a different account from the calendar (${cal})`)) : "");
   }
   const na = (S.noAddr || []).length;
@@ -2938,9 +3098,75 @@ async function loadContacts(file) {
 
 /* ---------- editable employee contact list (CSV) */
 const csvCell = (v) => { const x = String(v ?? ""); return /[",\r\n]/.test(x) ? '"' + x.replace(/"/g, '""') + '"' : x; };
-function contactsCsv() { return [["Name", "Job Title", "Email", "Employee ID", "Department"], ...(S.contacts || []).filter(x => x.name || x.email).map(x => [x.name, x.title || "", x.email || "", x.id || "", x.dept || ""])].map(r => r.map(csvCell).join(",")).join("\r\n") + "\r\n"; }
+function contactsCsv() { return [["Name", "Job Title", "Email", "Employee ID", "Department"], ...(S.contacts || []).filter(x => x.from === "file" && (x.name || x.email)).map(x => [x.name, x.title || "", x.email || "", x.id || "", x.dept || ""])].map(r => r.map(csvCell).join(",")).join("\r\n") + "\r\n"; }
 function parseContactsCsv(text) { const rows=[]; let row=[], cell="", quoted=false; for(let i=0;i<text.length;i++){const c=text[i]; if(quoted){if(c==='"'&&text[i+1]==='"'){cell+='"';i++;}else if(c==='"')quoted=false;else cell+=c;}else if(c==='"')quoted=true;else if(c===','){row.push(cell);cell="";}else if(c==='\n'){row.push(cell.replace(/\r$/,""));rows.push(row);row=[];cell="";}else cell+=c;} if(cell||row.length){row.push(cell);rows.push(row);} if(!rows.length)return []; const h=rows[0].map(x=>x.trim().toLowerCase()); const ix=(re, fallback)=>{const i=h.findIndex(x=>re.test(x));return i<0?fallback:i;}; const ni=ix(/^(name|이름|성명)$/,0), ti=ix(/job|직급|직책|position/,1), ei=ix(/email|메일/,2), ii=ix(/employee|사번|직원번호/,3), di=ix(/department|dept|부서|팀/,4); return rows.slice(1).filter(r=>r.some(x=>x.trim())).map(r=>({name:(r[ni]||"").trim().replace(/\s+/g,""),title:(r[ti]||"").trim(),email:(r[ei]||"").trim(),id:(r[ii]||"").trim(),dept:(r[di]||"").trim(),from:"file"})).filter(x=>x.name); }
-async function saveContactsCsv() { try { if(!st.cfgDir) throw new Error("folder"); if(!st.contactsHandle) st.contactsHandle=await st.cfgDir.getFileHandle("employee_contacts.csv",{create:true}); if((await st.cfgDir.queryPermission({mode:"readwrite"}))!=="granted" && (await st.cfgDir.requestPermission({mode:"readwrite"}))!=="granted") throw new Error("permission"); const w=await st.contactsHandle.createWritable(); await w.write(contactsCsv()); await w.close(); drawSaveState("ok"); } catch { drawSaveState("fail"); } }
+let contactSaveTimer = null;
+async function saveContactsCsv() {
+  const status = $("#contactSaveStatus");
+  try {
+    if (!st.cfgDir) throw new Error("folder");
+    if ((await st.cfgDir.queryPermission({mode:"readwrite"})) !== "granted" &&
+        (await st.cfgDir.requestPermission({mode:"readwrite"})) !== "granted") throw new Error("permission");
+    if (!st.contactsHandle) st.contactsHandle = await st.cfgDir.getFileHandle("employee_contacts.csv", {create:true});
+    const w = await st.contactsHandle.createWritable();
+    await w.write(contactsCsv()); await w.close();
+    if (status) status.textContent = L("직원 연락처 CSV를 폴더에 저장했습니다.", "Saved employee contacts to the folder.");
+    return true;
+  } catch {
+    if (status) status.textContent = L("자동 저장 실패 — 폴더 연결 후 '연락처 저장'을 누르세요.", "Not saved — reconnect the folder, then click Save contacts.");
+    return false;
+  }
+}
+function contactEditor() {
+  const headers = ["이름", "직급", "이메일", "사번", "부서"], keys = ["name", "title", "email", "id", "dept"];
+  const people = (S.contacts || []).filter((x) => x.from === "file");
+  const data = people.map((c) => keys.map((k) => c[k] || ""));
+  while (data.length < Math.max(12, people.length + 3)) data.push(["", "", "", "", ""]);
+  const grid = el("div", { className: "contactsheet", role: "region", "aria-label": "직원 연락처 시트" });
+  const status = el("small", { id: "contactSaveStatus", className: "fine", textContent: L("셀을 고친 뒤 연락처 저장을 누를 수 있습니다.", "Edit cells and save contacts to the folder.") });
+  const table = el("table");
+  const tbody = el("tbody");
+  const update = () => {
+    const fromSheet = data.map((r) => ({ name: r[0].trim().replace(/\s+/g,""), title: r[1].trim(), email: r[2].trim(), id: r[3].trim(), dept: r[4].trim(), from: "file" })).filter((x) => x.name);
+    S.contacts = [...(S.contacts || []).filter((x) => x.from !== "file"), ...fromSheet];
+    S.noAddr = fromSheet.filter((x) => !x.email).map((x) => x.name);
+    status.textContent = L("변경됨 — 폴더에 저장 중…", "Changes pending…");
+    delete $("#mailSetup").dataset.built; drawMailSetup();
+    clearTimeout(contactSaveTimer);
+    contactSaveTimer = setTimeout(() => saveContactsCsv(), 700);
+  };
+  const makeRow = (i) => {
+    const tr = el("tr", {}, el("th", { textContent: i + 2 }));
+    keys.forEach((k, j) => {
+      const inp = el("input", { type: "text", value: data[i][j], autocomplete:"off", spellcheck:false, "aria-label": `${i+2}행 ${headers[j]}` });
+      inp.dataset.row = String(i); inp.dataset.col = String(j);
+      inp.addEventListener("input", () => { data[i][j] = inp.value; update(); });
+      inp.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); tbody.rows[i+2]?.cells[j+1]?.querySelector("input")?.focus(); } });
+      inp.addEventListener("paste", (e) => {
+        const t = e.clipboardData?.getData("text/plain") || "";
+        if (!/[\t\n]/.test(t)) return;
+        e.preventDefault();
+        const pasted = t.replace(/\r\n/g,"\n").replace(/\r/g,"\n").replace(/\n$/,"").split("\n").map((line) => line.split("\t"));
+        while (data.length < i + pasted.length) { data.push(["", "", "", "", ""]); tbody.append(makeRow(data.length-1)); }
+        pasted.forEach((cells, ri) => cells.forEach((val, ci) => { if (j+ci >= keys.length) return; data[i+ri][j+ci] = val; const box=tbody.rows[i+ri+1]?.cells[j+ci+1]?.querySelector("input"); if (box) box.value = val; }));
+        update();
+      });
+      tr.append(el("td", { className: k }, inp));
+    });
+    return tr;
+  };
+  // First spreadsheet row is a fixed header; numbered data cells support tab, enter and TSV paste.
+  tbody.append(el("tr", {}, el("th", { textContent: 1 }), ...headers.map((h) => el("td", { textContent: h }))));
+  for (let i=0;i<data.length;i++) tbody.append(makeRow(i));
+  table.append(el("thead", {}, el("tr", {}, el("th", { textContent: "" }), ...["A","B","C","D","E"].map((a) => el("th", { textContent: a })))), tbody);
+  grid.append(table);
+  const add = el("button", { type: "button", className: "bigbtn", textContent: L("행 추가", "Add row") });
+  add.addEventListener("click", () => { const i=data.length; data.push(["","","","",""]); tbody.append(makeRow(i)); tbody.lastChild.querySelector("input")?.focus(); });
+  const save = el("button", { type: "button", className: "bigbtn", textContent: L("연락처 저장", "Save contacts") });
+  save.addEventListener("click", async () => { clearTimeout(contactSaveTimer); save.disabled = true; try { await saveContactsCsv(); } finally { save.disabled = false; } });
+  return el("div", { className:"sfield" }, grid, el("div", { className:"row" }, add, save), status,
+    el("small", { className:"fine", textContent: L("Excel에서 여러 셀을 복사한 뒤 붙여넣거나, Tab/Enter로 셀을 이동할 수 있습니다. 이 목록은 employee_contacts.csv에 저장됩니다.", "Paste multiple Excel cells, or move through cells with Tab/Enter. Stored in employee_contacts.csv.") }));
+}
 /* ---------- the settings file (settings.json) in the 근태 folder: read on opening, written back on saving */
 function settingsJson() { return JSON.stringify(Object.fromEntries(SETTING_KEYS.map((k) => [k, S[k]])), null, 2); }
 /* Settings save themselves: every change is written to settings.json in the 근태 folder a moment later.
@@ -2953,7 +3179,7 @@ async function saveSettingsFile() {
   if (!st.cfgDir) { drawSaveState("nofolder"); return; }
   try {
     if ((await st.cfgDir.queryPermission({ mode: "readwrite" })) !== "granted" && (await st.cfgDir.requestPermission({ mode: "readwrite" })) !== "granted") throw new Error("denied");
-    const h = await st.cfgDir.getFileHandle("settings.json", { create: true }), w = await h.createWritable(); await w.write(settingsJson()); await w.close();
+    const h = await st.cfgDir.getFileHandle("settings.json"), w = await h.createWritable(); await w.write(settingsJson()); await w.close();
     st.setDirty = false; st.savedAt = new Date(); drawSaveState("ok");
   } catch { drawSaveState("fail"); }
 }
@@ -2962,20 +3188,14 @@ function downloadTextFile(name, value, type) {
   const a = el("a", { href: url, download: name }); document.body.append(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1500);
 }
-function downloadSettings() {
-  downloadTextFile("settings.json", settingsJson(), "application/json");
-  st.setDirty = false; st.savedAt = new Date(); drawSaveState("downloaded");
-}
 /** "Saved 18:14" — or why it couldn't be, with a way out. Shown in Settings and in step 2. */
 function drawSaveState(k = st.saveKind) {
   st.saveKind = k;
   const t = { wait: L("저장하는 중…", "Saving…"), ok: st.savedAt ? L(`근태 폴더에 자동 저장됨 ${st.savedAt.toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })}`, `Saved to the 근태 folder at ${st.savedAt.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}`) : L("자동 저장", "Saves automatically"),
     preview: L("미리보기: 바꾼 내용은 이 창에만 적용되고 파일에는 쓰지 않습니다", "Preview: changes apply in this window only, no file is written"),
-    downloaded: L("설정 파일을 다운로드했습니다. 근태 폴더의 settings.json을 교체해 주세요.", "Settings file downloaded. Replace settings.json in your 근태 folder."),
     nofolder: L("자동 저장 실패: '폴더 열기' 버튼을 먼저 눌러주세요 (끌어다놓기나 Safari/Firefox는 지원 안됨)", "Auto-save is waiting for the folder to be selected again."), fail: L("설정 파일에 쓰지 못했습니다 (폴더 쓰기 권한)", "Couldn't write the settings file (folder write permission)") }[k] || L("바꾸면 근태 폴더에 자동 저장됩니다", "Changes save to the 근태 folder automatically");
   for (const n of document.querySelectorAll(".savestate")) {
-    const dl = (k === "nofolder" || k === "fail") ? (() => { const b = el("button", { type: "button", className: "linkbtn", textContent: L("설정 파일 받기", "Download the settings file") }); b.addEventListener("click", downloadSettings); return b; })() : "";
-    n.className = "savestate " + (k || ""); n.replaceChildren(el("span", { textContent: t }), dl);
+    n.className = "savestate " + (k || ""); n.replaceChildren(el("span", { textContent: t }));
   }
 }
 function applySettings(j) {
@@ -3007,8 +3227,8 @@ function openSettings() {
   const text = (k, label, hint) => { F[k] = el("input", { type: "text", value: S[k] || "" }); F[k].addEventListener("input", take); return field(label, F[k], hint); };
   $("#setBody").replaceChildren(
     el("div", { className: "settings-save-top" },
-      el("p", { className: "fine", textContent: L("폴더에 바로 저장하는 기능은 Chrome과 Edge에서 가장 잘 작동합니다. 다른 브라우저에서는 아래 버튼으로 설정 파일을 직접 저장한 뒤 근태 폴더의 기존 파일과 바꿔 주세요.", "Direct folder saving works best in Chrome and Edge. In other browsers, use the button below to download the settings file, then replace the existing file in your 근태 folder.") }),
-      (() => { const b = el("button", { type: "button", className: "bigbtn", textContent: L("설정 파일 직접 저장", "Save settings file manually") }); b.addEventListener("click", () => downloadSettings()); return b; })()),
+      el("p", { className: "fine", textContent: L("설정 저장은 Chrome/Edge에서 선택한 필요한 파일 폴더에 직접 덮어씁니다. 다른 브라우저에서는 폴더 쓰기 기능이 제한될 수 있습니다. 다운로드로 저장 성공을 가장하지 않습니다.", "Saves directly to the chosen dependencies folder on Chrome/Edge; other browsers may restrict write access.") }),
+      (() => { const b = el("button", { type: "button", className: "bigbtn", textContent: L("settings.json 덮어쓰기 저장", "Save settings.json to folder") }); b.addEventListener("click", async () => { b.disabled = true; try { await saveSettingsFile(); if (st.saveKind === "ok") toast(L("settings.json을 저장했습니다.", "Saved settings.json.")); else toast(L("폴더를 다시 연결하고 쓰기 권한을 확인해 주세요.", "Reconnect the folder and check write permission.")); } finally { b.disabled = false; } }); return b; })()),
     el("section", { className: "sgroup" }, el("h3", { textContent: L("사람", "People") }),
       chips("exempt", L("근태 관리에서 빼는 사람 (임원)", "Left out of attendance (executives)"), L("카드, 엑셀, 캘린더 어디에도 나오지 않습니다.", "They don't appear in the cards, the Excel or the calendar.")),
       chips("at1800", L(`퇴근을 안 찍으면 정규 퇴근시각(${S.endOfDay || '18:00'})으로 보는 사람`, `Counted as leaving at regular end time (${S.endOfDay || '18:00'}) when no badge out`), L(`묻지 않고 정규 퇴근시각을 넣습니다. 저녁 외근이 있으면 그 일정을 씁니다.`, `Regular end time goes in without asking; an evening 외근 entry wins.`)),
@@ -3016,19 +3236,17 @@ function openSettings() {
     el("section", { className: "sgroup" }, el("h3", { textContent: L("시간과 장소", "Times and places") }),
       el("div", { className: "two" }, text("lateAfter", L("이 시각이 지나면 지각", "Late after")), text("endOfDay", L("퇴근 시각", "End of the day"))),
       el("small", { className: "fine", textContent: L("예: 09:00이면 09:01부터 지각", "e.g. 09:00 means late from 09:01") }),
-      chips("mainPlaces", L("주요 장소", "Main places"), L("‘=’ 뒤에 다르게 쓰는 이름을 적으면 그것도 알아봅니다. 카드에 버튼으로 나오고, 확인 없이 씁니다.", "After ‘=’, list other ways people write it. They get buttons on the cards and are used without asking."), L("예: TNS = 티에네스, TNT", "e.g. TNS = 티에네스, TNT")),
+      chips("mainPlaces", L("주요 장소", "Main places"), L("‘=’ 뒤에 다르게 쓰는 이름을 적으면 그것도 알아봅니다. 카드에 버튼으로 나오고, 확인 없이 씁니다.", "After ‘=’, list other ways people write it. They get buttons on the cards and are used without asking."), L("예: TNT = TNS, 티에네스, 티에너스", "e.g. TNT = TNS, 티에네스, 티에너스")),
       chips("places", L("그 밖의 장소", "Other places"), L("일정 제목에서 장소를 찾을 때 씁니다. 이 장소가 들어가면 카드에서 확인합니다.", "Used to find the place in an entry's title. A cell with one of these is shown to you to confirm."), L("장소를 적고 Enter", "Type a place, press Enter")),
       chips("daysOff", L("회사 휴무일 (공휴일 말고)", "Company days off (besides public holidays)"), L("근무일이 아닌 날입니다. 출입 기록이 없어도 묻지 않고, ‘3일, 1/14~1/16’처럼 기간으로 적은 휴가를 하루씩 나눌 때도 빼고 셉니다.", "Not a working day: nobody is asked about it, and it's skipped when a leave range (‘3일, 1/14~1/16’) is split into days."), "2026-12-31")),
-    el("section", { className: "sgroup" }, el("h3", { textContent: L("폴더", "Folder") }),
-      text("badgeFolder", L("출입 기록 엑셀이 있는 폴더", "Folder with the badge exports"), L("예: Downloads 또는 Downloads/출입기록. 브라우저는 경로를 스스로 열 수 없어서, ‘근태 폴더 열기’에서 이 경로가 들어 있는 폴더(보통 다운로드)를 한 번 고르면 그 안의 출입 기록 엑셀을 최신 순으로 모두 보여 줍니다.", "e.g. Downloads or Downloads/출입기록. A browser can't open a path by itself: pick the folder that holds it (usually Downloads) under ‘Open the 근태 folder’ and every badge export in it is listed, newest first."))),
     el("section", { className: "sgroup" }, el("h3", { textContent: L("직원 연락처", "Employee contacts") }),
-      el("p", { className: "fine", textContent: L("직원 이름, 직급, 이메일, 사번, 부서를 CSV 형식으로 수정할 수 있습니다. 자동 저장이 되지 않으면 아래 버튼으로 파일을 받아 근태 폴더의 employee_contacts.csv를 바꿔 주세요.", "Edit employee name, job title, email, employee ID and department as CSV. If automatic saving is unavailable, download the file below and replace employee_contacts.csv in your 근태 folder.") }),
-      (() => { const csv = el("textarea", { rows: 9, value: contactsCsv(), spellcheck: false }); csv.style.fontFamily = "ui-monospace,monospace"; csv.style.fontSize = "12px"; csv.addEventListener("change", () => { const parsed=parseContactsCsv(csv.value); S.contacts=parsed; S.noAddr=parsed.filter(x=>!x.email).map(x=>x.name); saveContactsCsv(); delete $("#mailSetup").dataset.built; drawMailSetup(); }); const b = el("button", { type: "button", className: "bigbtn", textContent: L("직원 연락처 CSV 직접 저장", "Download employee contacts CSV") }); b.addEventListener("click", () => downloadTextFile("employee_contacts.csv", csv.value, "text/csv;charset=utf-8")); return el("div", { className: "sfield" }, field(L("연락처 CSV", "Contact list (CSV)"), csv, L("첫 줄의 열 이름은 그대로 두고 행을 추가하거나 수정하세요.", "Keep the header row and add or edit the rows below.")), b); })()),
+      el("p", { className: "fine", textContent: L("엑셀처럼 셀을 직접 수정합니다. 개별 셀, 행 추가, Excel 붙여넣기를 지원하며 근태 폴더의 employee_contacts.csv에 저장합니다.", "Edit as a spreadsheet with add-row and Excel paste; saves to employee_contacts.csv in the dependencies folder.") }),
+      contactEditor()),
     el("section", { className: "sgroup" }, el("h3", { textContent: "Google" }),
       el("div", { className: "two" }, text("calLeave", L("휴가 캘린더", "Leave calendar")), text("calWork", L("외근·직근·출장 캘린더", "외근 / 직근 / 출장 calendar"))),
       el("div", { className: "two" }, text("calOut", L("결과를 올릴 캘린더", "Calendar to post to"), L("처음에는 연습용 캘린더로 시험해 볼 수 있습니다.", "You can try it with a practice calendar first.")), text("calHoliday", L("공휴일 캘린더", "Public holiday calendar"))),
       chips("mailDomains", L("회사 메일 도메인", "Company email domains"), L("이 도메인이 아닌 주소로 보낼 때는 한 번 더 확인합니다.", "Sending to any other domain needs an extra confirmation."), "example.co.kr"),
-      text("mailAccount", L("보내는 계정 이메일", "Sender account email"), L("mail_access.json에 주소가 있으면 그 주소가 우선 사용됩니다.", "An address in mail_access.json takes priority when that file is present."))));
+      text("mailAccount", L("이메일 계정", "Email account"), L("mail_access.json에 주소가 있으면 그 주소가 우선 사용됩니다.", "An address in mail_access.json takes priority when that file is present."))));
   const done = el("button", { type: "button", className: "primary", textContent: L("닫기", "Close") });
   $("#setFoot").replaceChildren(el("p", { className: "savestate" }), done);
   done.addEventListener("click", closeSettings);
@@ -3102,22 +3320,22 @@ function securityHtml() {
   <rect x="40" y="44" width="246" height="262" rx="10" fill="#fff" stroke="#d9dce0"/>
   <path d="M40 54a10 10 0 0 1 10-10h226a10 10 0 0 1 10 10v20H40z" fill="#eef0f2"/>
   <path d="M54 54h9l2 2.5h9v9H54z" fill="#e8b04a"/>
-  <text x="82" y="64" font-size="12.5" font-weight="700" fill="#1f1f1f">${t("다운로드 / 근태 폴더", "Downloads / 근태 folder")}</text>
+  <text x="82" y="64" font-size="12.5" font-weight="700" fill="#1f1f1f">${t("설정·필요한 파일 폴더", "Dependencies folder")}</text>
   <g clip-path="url(#folderClip)">${file(56, 90, t("settings.json", "settings.json"))}
   ${file(56, 118, t("client_secret…json (캘린더 API)", "client_secret…json (calendar API)"))}
   ${file(56, 146, t("mail_access.json", "mail_access.json"))}
   ${file(56, 174, t("직원 메일 목록", "employee email list"))}
-  ${file(56, 210, t("출입 기록 엑셀", "badge exports"), "#1f7a47")}
-  ${file(56, 238, t("YYYYMMDD_Attendance.xlsx (받을 때)", "YYYYMMDD_Attendance.xlsx (on download)"), "#1f7a47")}</g>
-  <text x="56" y="292" font-size="11" fill="#1d7a4b">${t("회사 정보는 이 폴더에만 있습니다", "Company data lives only here")}</text>
+  ${file(56, 210, t("별도로 선택한 ADT 엑셀 폴더", "Separate ADT Excel folder"), "#1f7a47")}
+  ${file(56, 238, t("결과 엑셀 (저장할 때)", "Cleaned Excel (when saved)"), "#1f7a47")}</g>
+  <text x="56" y="292" font-size="11" fill="#1d7a4b">${t("원본 파일과 설정은 로컬에 저장", "Source data stays local")}</text>
   <rect x="330" y="44" width="212" height="262" rx="10" fill="#fff" stroke="#3b3b3b" stroke-width="1.4"/>
   <path d="M330 54a10 10 0 0 1 10-10h192a10 10 0 0 1 10 10v20H330z" fill="#3b3b3b"/>
   <circle cx="344" cy="59" r="3" fill="#ff6159"/><circle cx="354" cy="59" r="3" fill="#ffbd2e"/><circle cx="364" cy="59" r="3" fill="#28c941"/>
   <text x="376" y="63.5" font-size="12" font-weight="700" fill="#fff">${t("근태 정리 (브라우저)", "근태 정리 (browser)")}</text>
-  ${tick(346, rows[0] - 8, t("서버 없음", "No server"))}
-  ${tick(346, rows[1] - 8, t("쿠키·저장소 안 씀", "No cookies or storage"))}
-  ${tick(346, rows[2] - 8, t("창을 닫으면 모두 사라짐", "Gone when the window closes"))}
-  ${tick(346, rows[3] - 8, t("로그인은 이 창에만", "Sign-in: this window only"))}
+  ${tick(346, rows[0] - 8, t("회사 파일 업로드 서버 없음", "No company-file upload server"))}
+  ${tick(346, rows[1] - 8, t("폴더 권한·카드 임시저장", "Folder access + draft cache"))}
+  ${tick(346, rows[2] - 8, t("초안은 탭에만 임시 보관", "Drafts scoped to tab"))}
+  ${tick(346, rows[3] - 8, t("Google 토큰은 메모리에만", "Google tokens in memory"))}
   <path d="M290 150h28" stroke="#6b6b6b" stroke-width="1.8" marker-end="url(#ar-6b6b6b)"/><text x="308" y="142" font-size="10.5" fill="#6b6b6b" text-anchor="middle">${t("읽기", "read")}</text>
   <path d="M318 246h-28" stroke="#6b6b6b" stroke-width="1.8" marker-end="url(#ar-6b6b6b)"/><text x="308" y="238" font-size="10.5" fill="#6b6b6b" text-anchor="middle">${t("받기", "save")}</text>
   <rect x="664" y="44" width="188" height="262" rx="14" fill="#fff" stroke="#d9dce0" stroke-width="1.4"/>
@@ -3133,48 +3351,48 @@ function securityHtml() {
 </svg></div>`;
   return pic + L(`<h3>어디에 무엇이 있나</h3>
 <ul>
-<li><b>회사 파일</b>(설정, API 파일, 메일 접근, 메일 목록, 출입 기록)은 다운로드 폴더에만 있습니다. 페이지에는 회사 정보가 들어 있지 않아 어디에 두어도 됩니다.</li>
-<li><b>브라우저에 남기지 않습니다.</b> 쿠키, localStorage, IndexedDB를 쓰지 않고, 고른 폴더도 기억하지 않습니다. 그래서 매번 ‘근태 폴더 열기’를 한 번 누릅니다.</li>
-<li><b>캘린더 내용과 고친 값</b>은 이 창의 메모리에만 있습니다. 창을 닫으면 사라집니다(올리지 않은 수정이 있으면 닫기 전에 묻습니다).</li>
-<li><b>정리된 엑셀</b>은 ‘받기’를 누를 때만, 출입 기록 파일이 있던 폴더에 ‘20261030_Attendance.xlsx’처럼 저장됩니다(같은 날짜는 덮어씀). 끌어다 놓은 파일은 폴더를 알 수 없어 다운로드 폴더에 받습니다.</li>
+<li><b>회사 파일</b>: 설정·Google 연결 파일·메일 계정·직원 연락처는 ‘필요한 파일’ 폴더에서 읽습니다. 출입 기록 원본은 별도로 고른 ADT 엑셀 폴더 또는 개별 파일에서 읽습니다.</li>
+<li><b>폴더 기억하기</b>: 선택한 폴더의 이름만 쿠키에 표시 힌트로 저장합니다. 폴더를 다시 여는 권한은 브라우저의 IndexedDB에 저장된 폴더 핸들로 관리합니다. Windows 전체 경로는 페이지나 쿠키에서 읽을 수 없습니다.</li>
+<li><b>임시 카드 초안</b>: 카드의 미저장 입력과 저장 상태는 해당 탭의 sessionStorage에 임시로 남습니다. 파일 내용 지문과 세션 ID로 구분하며 12시간이 지나면 만료됩니다. 일부 브라우저는 종료한 탭을 복원할 수 있으므로 종료 즉시 지워진다고 보장할 수는 없습니다.</li>
+<li><b>정리된 엑셀</b>: 선택한 폴더 쓰기 권한이 있으면 ‘받기’ 때 원본 폴더에 저장합니다. 개별 파일만 선택했거나 브라우저가 폴더 쓰기를 지원하지 않으면 다운로드합니다. 설정은 ‘설정’ 화면에서 기존 settings.json에 직접 저장합니다.</li>
 </ul>
 <h3>Google</h3>
 <ul>
 <li>로그인은 Google 창에서 직접 합니다. 이 페이지는 비밀번호를 보지 않습니다. client_secret…json에서는 클라이언트 ID만 읽고, secret은 쓰지 않습니다.</li>
 <li>권한은 필요할 때 하나씩 묻습니다: 캘린더 읽기 → (올릴 때) 캘린더 쓰기 → (메일 보낼 때) 메일 보내기 → (주소록에서 찾을 때) 주소록 읽기.</li>
-<li>로그인 정보(토큰)는 저장하지 않습니다. 한 시간이 지나거나 창을 닫으면 끝납니다.</li>
+<li>임시 Google 액세스 토큰은 메모리에만 둡니다. 계정 이메일 힌트는 브라우저에 저장해 다음 실행의 자동 로그인을 시도하며, Google이 허용하지 않으면 수동 로그인을 사용합니다.</li>
 <li>캘린더 계정과 메일 계정은 따로 로그인합니다. mail_access.json에 account를 적으면 메일은 그 계정에서만 보내고, 다른 계정으로 로그인하면 보내지 않습니다.</li>
 <li>연결하는 곳은 Google(accounts.google.com, googleapis.com)뿐입니다. 분석·광고 도구는 없습니다.</li>
 </ul>
 <h3>메일</h3>
 <ul>
-<li>카드의 버튼으로 한 번에 한 사람에게만 보냅니다. 버튼에 받는 주소가 적혀 있고, 누른 뒤 5초 안에 다시 누르면 취소됩니다.</li>
+<li>카드에서 사람별로 수신 주소와 제목·본문을 확인한 뒤 ‘보내기’를 눌러 발송합니다. 발송이 시작된 후에는 취소를 보장할 수 없습니다.</li>
 <li>주소는 사번이나, 겹치지 않는 이름이 정확히 맞을 때만 씁니다. 같은 이름이 둘이거나 주소가 둘이면 보내지 않습니다. 회사 도메인이 아닌 주소는 한 번 더 확인합니다.</li>
 </ul>`, `<h3>What is where</h3>
 <ul>
-<li><b>The company files</b> (settings, API file, email access, email list, badge exports) live only in the Downloads folder. The page carries no company data, so it can be hosted anywhere.</li>
-<li><b>Nothing is kept by the browser.</b> No cookies, localStorage or IndexedDB, and the chosen folder isn't remembered — so you press ‘Open the 근태 folder’ once each time.</li>
-<li><b>Calendar contents and your edits</b> are in this window's memory only and are gone when it closes (you're asked first if there are unposted edits).</li>
-<li><b>The cleaned Excel</b> is saved only when you press ‘Download’, into the folder the badge export came from, as e.g. ‘20261030_Attendance.xlsx’ (the same date is overwritten). A dropped file has no known folder, so it goes to Downloads.</li>
+<li><b>Company files</b>: settings, Google sign-in configuration, email access and contacts come from the dependencies folder. Badge exports come from the separately chosen ADT Excel folder or an individual file.</li>
+<li><b>Remembered folder</b>: a cookie holds only the folder-name hint, while browser IndexedDB holds an approved directory handle. Browsers do not expose the full Windows filesystem path to a page or cookie.</li>
+<li><b>Card drafts</b> and saved edits are cached in tab-scoped sessionStorage, isolated by a session nonce and Excel-file fingerprint; they expire after 12 hours. Some browsers can restore tabs, so immediate erasure on close is not guaranteed.</li>
+<li><b>Cleaned Excel</b> writes to the selected source folder when supported; otherwise it downloads. Settings are directly saved back to the existing settings.json from Settings.</li>
 </ul>
 <h3>Google</h3>
 <ul>
 <li>You sign in in Google's own window; this page never sees the password. Only the client ID is read from client_secret…json; the secret is never used.</li>
 <li>Permissions are asked one at a time, when needed: read calendars → (posting) write calendar events → (emailing) send mail → (directory lookup) read the directory.</li>
-<li>The sign-in (token) isn't stored; it ends after an hour or when the window closes.</li>
+<li>Access tokens stay in memory only. A remembered email hint can be used to attempt silent sign-in next time; Google may require manual sign-in.</li>
 <li>The calendar account and the email account sign in separately. With an account in mail_access.json, email is sent only from it; signing in as anyone else sends nothing.</li>
 <li>The only places it connects to are Google's (accounts.google.com, googleapis.com). No analytics or ads.</li>
 </ul>
 <h3>Email</h3>
 <ul>
-<li>One person per click, from the card. The button shows the address; a second click within 5 seconds cancels.</li>
+<li>For each person, review the recipient, subject and body and press Send. Sending cannot reliably be canceled after it starts.</li>
 <li>An address is used only on an employee-number match or an exact, unique name match; two people with one name, or two addresses for one person, block sending. An address outside the company domains needs an extra confirmation.</li>
 </ul>`);
 }
 const HELP = () => L(`<ol>
-<li><b>불러오기</b>: ‘근태 폴더 열기’로 다운로드 폴더(또는 근태 폴더)를 고르면 설정, Google API 파일, 메일 접근, 직원 메일 목록을 읽고, 출입 기록 엑셀을 최신 순으로 보여 줍니다. 엑셀은 끌어다 놓아도 됩니다. 파일과 날짜를 고르세요 — 한 번에 한 날짜만 봅니다.</li>
+<li><b>불러오기</b>: ‘필요한 파일’ 버튼으로 설정·Google 연결·메일·직원 연락처가 있는 폴더를 선택합니다. ‘ADT 엑셀 폴더’ 또는 ‘엑셀 파일’ 버튼으로 출입 기록을 불러옵니다. 파일과 날짜를 선택하세요.</li>
 <li><b>메일 (선택)</b>: 비어 있는 칸을 직원에게 물어볼 메일 문구를 정합니다. [이름]과 [목록]이 사람마다 바뀝니다.</li>
-<li><b>확인하기</b>: 애매한 사람만 한 명씩 카드로 나옵니다. 입력 칸에는 출입 기록에 있던 값만 들어 있고, 캘린더로 짐작한 값은 ‘제안’ 버튼으로 나옵니다. ← → 키로 넘기고, Enter로 확인합니다. 1400처럼 치면 14:00이 됩니다.</li>
+<li><b>확인하기</b>: 확인할 사람을 한 명씩 카드로 봅니다. 임시 입력은 탭 안에 보관되므로 다른 카드나 날짜로 이동해도 돌아올 수 있습니다. ‘저장’(Enter) 뒤에는 카드가 회색으로 남고 ‘수정’을 눌러 다시 편집할 수 있습니다. 1400은 14:00으로 바뀝니다.</li>
 <li><b>엑셀 확인</b>: 고른 날짜의 정리된 엑셀을 크게 열어 고칠 수 있습니다. 초록은 자동, 파랑은 직접 고친 칸, 노랑은 아직 확인할 칸입니다. 지각은 체크 칸으로 켜고 끕니다. 이름·날짜는 고칠 수 없습니다.</li>
 <li><b>받기·올리기</b>: 그 날짜의 엑셀을 출입 기록 파일이 있던 폴더에 ‘YYYYMMDD_Attendance.xlsx’로 저장하거나 [지각] 캘린더에 올립니다. 정리된 엑셀은 파일 목록에 나오지 않고, ‘정리된 엑셀도 보기’를 누를 때만 보입니다. 이미 올린 날짜는 새로 만들지 않고 고칩니다.</li>
 </ol>
@@ -3187,9 +3405,9 @@ const HELP = () => L(`<ol>
 <li>반차와 외근이 같이 있는 등 서로 맞지 않으면 아무것도 채우지 않고 두 가지를 제안합니다.</li>
 <li>지각: 09:01부터. 오전 반차·반반차, 오전 외근·직출은 빼고 셉니다.</li>
 </ul>`, `<ol>
-<li><b>Load</b>: ‘Open the 근태 folder’ — pick Downloads (or the 근태 folder). The settings, Google API file, email access and email list are read, and the badge exports are listed newest first. You can also drop exports in. Choose a file and a date — one date at a time.</li>
+<li><b>Load</b>: select the dependencies folder for settings, Google connection and contacts; choose the separate ADT Excel folder or an individual badge Excel file. Then select a file and date.</li>
 <li><b>Email (optional)</b>: the text for asking people about their empty cells. [이름] and [목록] change per person.</li>
-<li><b>Check</b>: only the unclear people, one card each. The boxes hold only what the badge file had; anything read from the calendars is offered as a ‘Suggested’ button. ← → to move, Enter to confirm. Typing 1400 gives 14:00.</li>
+<li><b>Check</b>: work through one person at a time. Drafts survive navigating cards or dates in the same tab. Save (Enter) keeps a completed card greyed out with an Edit button. Typing 1400 gives 14:00.</li>
 <li><b>Look over the Excel</b>: open the cleaned sheet for the date, full size, and edit it. Green = automatic, blue = changed by you, yellow = still to check. 지각 is a tick box. Names and dates can't be changed.</li>
 <li><b>Download / post</b>: that date's Excel, saved as ‘YYYYMMDD_Attendance.xlsx’ next to the badge export, or the [지각] calendar entry. Cleaned Excels stay out of the file list unless you press ‘Show cleaned Excels too’. A date already posted is updated, not duplicated.</li>
 </ol>
@@ -3203,6 +3421,50 @@ const HELP = () => L(`<ol>
 <li>Late: from 09:01. Morning 반차/반반차 and morning 외근/직출 aren't counted.</li>
 </ul>`);
 
+
+/* ---------- separate ADT Excel folder (independent of the settings/dependencies folder) */
+async function chooseBadgeFolder(existing = null, automatic = false) {
+  if (chooseBadgeFolder.busy) return;
+  chooseBadgeFolder.busy = true;
+  try {
+    let dir = existing, files = [];
+    if (!dir && window.showDirectoryPicker) {
+      try { dir = await window.showDirectoryPicker({ id: "adt-excel", startIn: "downloads", mode: "readwrite" }); }
+      catch (e) { if (e.name !== "AbortError") toast(L("엑셀 폴더를 열지 못했습니다.", "Cannot open the Excel folder.")); return; }
+    } else if (!dir) {
+      files = await new Promise((ok) => {
+        const input = el("input", { type: "file", webkitdirectory: true, multiple: true });
+        input.addEventListener("change", () => ok([...input.files]));
+        input.addEventListener("cancel", () => ok([])); input.click();
+      });
+      if (!files.length) return;
+    }
+    if (dir) {
+      const perm = await dir.queryPermission({ mode: "read" });
+      if (perm !== "granted" && (automatic || await dir.requestPermission({mode:"read"}) !== "granted")) return;
+      const walk = async (d, depth=0) => {
+        for (const [name, handle] of await entriesOf(d)) {
+          if (handle.kind === "file" && /\.(xls|xlsx|csv)$/i.test(name) && !/employee[ _-]?contacts|연락처|메일\s*목록|email[ _-]?list/i.test(name)) {
+            const file = await handle.getFile(); file.__dir = d; files.push(file);
+          } else if (handle.kind === "directory" && depth < 2 && !/^(근태|Attendance)$/i.test(name)) {
+            await walk(await d.getDirectoryHandle(name), depth+1);
+          }
+        }
+      };
+      await walk(dir);
+      await saveFolderHandle(dir, "badges");
+    }
+    // A different Excel folder begins a new loaded dataset; old draft IDs remain safely
+    // namespaced in this tab's session and will be restored only if that exact file returns.
+    st.badgeDir = dir;
+    Object.assign(st, { files: [], fi: -1, rows: null, res: null, date: null, over: {}, drafts: {}, sheetEdits: {}, sent: {}, asked: {}, cur: null });
+    drawFiles();
+    if (files.length) await addFiles(files, { quiet: true });
+    else toast(L("폴더 안에서 원본 엑셀 파일을 찾지 못했습니다.", "No badge Excel exports in that folder."));
+    drawFiles(); drawAll();
+  } catch (e) { if (!automatic) toast(L("엑셀 폴더를 읽지 못했습니다: ", "Could not read the Excel folder: ") + (e.message || e)); }
+  finally { chooseBadgeFolder.busy = false; }
+}
 /* ---------- opening the folder: settings, API file, email access, email list, badge exports (newest first) */
 const logStep = (text, cls = "") => { const li = el("li", { className: cls }); li.innerHTML = text; $("#startLog").append(li); };
 async function entriesOf(dir) { const out = []; for await (const [name, e] of dir.entries()) out.push([name, e]); return out; }
@@ -3227,14 +3489,8 @@ async function start(existingRoot = null, automaticResume = false) {
   try {
     let root = existingRoot, files = [];
     if (!root && window.showDirectoryPicker) {
-      try {
-        if (!existingRoot) {
-            const h = await getFolderHandle();
-            if (h && (await h.queryPermission({mode:"readwrite"})) === "granted") root = h;
-            else if (h && (await h.requestPermission({mode:"readwrite"})) === "granted") root = h;
-        }
-        if (!root) root = await window.showDirectoryPicker({ id: "geuntae", startIn: "downloads", mode: "readwrite" });
-      } catch (e) { if (e.name !== "AbortError") toast(L("폴더를 열지 못했습니다.", "The folder couldn't be opened.")); return; }
+      try { root = await window.showDirectoryPicker({ id: "geuntae", startIn: "downloads", mode: "readwrite" }); }
+      catch (e) { if (e.name !== "AbortError") toast(L("폴더를 열지 못했습니다.", "The folder couldn't be opened.")); return; }
     } else if (!root) {
       files = await new Promise((ok) => { const f = el("input", { type: "file", webkitdirectory: true, multiple: true }); f.addEventListener("change", () => ok([...f.files])); f.addEventListener("cancel", () => ok([])); f.click(); });
       if (!files.length) return;
@@ -3246,9 +3502,10 @@ async function start(existingRoot = null, automaticResume = false) {
         if (!automaticResume && (await root.requestPermission({ mode: "readwrite" })) !== "granted") throw new Error("folderPermission");
         if (automaticResume) { start.busy = false; return; }
       }
-      await saveFolderHandle(root);
+      await saveFolderHandle(root, "root");
+      rememberDependenciesFolder(root.name);
       const top = await entriesOf(root), sub = top.find(([n, e]) => e.kind === "directory" && /^(근태|Attendance)$/i.test(n));
-      st.cfgDir = sub ? await root.getDirectoryHandle(sub[0]) : root; st.dir = root;
+      st.cfgDir = sub ? await root.getDirectoryHandle(sub[0]) : root; st.dir = root; st.contactsHandle = null;
       $("#configName").textContent = L("필요한 파일", "App setup files");
       $("#configSub").textContent = L("선택한 폴더에서 파일을 확인하는 중…", "Checking the selected folder…");
       const get = async (dir) => { const out = []; for (const [, e] of await entriesOf(dir)) if (e.kind === "file") { try { const f = await e.getFile(); f.__dir = dir; out.push(f); } catch {} } return out; };
@@ -3256,9 +3513,7 @@ async function start(existingRoot = null, automaticResume = false) {
       // the settings first: they say where the badge exports are
       const sf = cfgFiles.filter((f) => KINDS[0][1](f.name)).sort((a, b) => b.lastModified - a.lastModified)[0];
       if (sf) { try { applySettings(JSON.parse(await sf.text())); } catch { toast(L("설정 파일을 읽지 못했습니다.", "The settings file couldn't be read.")); } }
-      // Load original attendance spreadsheets automatically from the selected folder (excluding the app's own Attendance folder).
-      const scan = async (dir, depth = 0) => { for (const [n, e] of await entriesOf(dir)) { if (e.kind === "file" && /\.(xls|xlsx|csv)$/i.test(n) && !/employee[ _-]?contacts|연락처|메일\s*목록|email[ _-]?list/i.test(n)) { try { const f = await e.getFile(); f.__dir = dir; badgeFiles.push(f); } catch {} } else if (e.kind === "directory" && depth < 2 && !/^(근태|Attendance)$/i.test(n)) { try { await scan(await dir.getDirectoryHandle(n), depth + 1); } catch {} } } };
-      await scan((await subdir(root, S.badgeFolder)) || root);
+      // Badge exports are chosen separately using the ADT Excel-folder button.
       } else {
       // no folder access in this browser: the files of the chosen folder (top level and 근태/)
       cfgFiles = files.filter((f) => f.webkitRelativePath.split("/").length <= 3); badgeFiles = [];
@@ -3273,12 +3528,12 @@ async function start(existingRoot = null, automaticResume = false) {
     $("#configSub").textContent = L("필요한 파일을 확인했습니다", "Setup files found");
     delete $("#mailSetup").dataset.built; drawMailSetup();
     st.tried = true;
-    if (badgeFiles.length) await addFiles(badgeFiles, { quiet: true });
+    if (badgeFiles.length) await addFiles(badgeFiles, { quiet: true }); // legacy fallback only
     if (!S.clientId) { drawNeeds(); return; }
     // Returning employees get a quiet, no-consent-prompt token attempt as soon as
     // configuration is loaded. If Google/browser cannot do this silently, the
     // normal manual Google button remains available.
-    if (location.protocol !== "file:" && (rememberedEmail("cal") || S.mailAccount)) {
+    if (location.protocol !== "file:" && rememberedEmail("cal")) {
       try { await token([SC.read], "cal", true); }
       catch { toks.cal = null; acctErr.cal = ""; drawAccount("cal"); }
     }
@@ -3300,7 +3555,9 @@ async function loadPreview() {
 }
 function clearAll() {
   toks.cal = toks.mail = null;
-  Object.assign(st, { fileMore: false, fileQ: "", files: [], fi: -1, date: null, rows: null, res: null, over: {}, sheetEdits: {}, events: [], existing: {}, calLoaded: false, calRange: null, sent: {}, asked: {}, cur: null, tried: false, dirty: false, pubMsg: null });
+  workSession.nonce = randomHex(16); workSession.created = Date.now(); workSession.cards = {};
+  writeCardSession(); // a deliberate reset starts a fresh session and invalidates ALL previous card IDs
+  Object.assign(st, { fileMore: false, fileQ: "", files: [], fi: -1, date: null, rows: null, res: null, over: {}, drafts: {}, sheetEdits: {}, events: [], existing: {}, calLoaded: false, calRange: null, sent: {}, asked: {}, cur: null, tried: false, dirty: false, pubMsg: null });
   S = structuredClone(DEFAULTS); $("#startLog").replaceChildren(); $("#needs").replaceChildren(); $("#calInfo").replaceChildren(); $("#pubInfo").replaceChildren();
   delete $("#mailSetup").dataset.built; drawFiles(); drawDates(); drawCalInfo(); drawAll();
 }
@@ -3310,7 +3567,7 @@ function applyLang(lang, first) {
   LANG = lang;
   document.documentElement.lang = lang;
   document.title = L("근태 정리", "Attendance cleanup") + (PREVIEW ? L(" (관리자 미리보기)", " (admin preview)") : "");
-  $("#langKo").setAttribute("aria-pressed", lang === "ko"); $("#langEn").setAttribute("aria-pressed", lang === "en");
+  $("#langKo")?.setAttribute("aria-pressed", lang === "ko"); $("#langEn")?.setAttribute("aria-pressed", lang === "en");
   for (const n of document.querySelectorAll("[data-en]")) { if (!("ko" in n.dataset)) n.dataset.ko = n.textContent; n.textContent = lang === "en" ? n.dataset.en : n.dataset.ko; }
   for (const [attr, key] of [["aria-label", "enAria"], ["title", "enTitle"], ["placeholder", "enPh"]])
     for (const n of document.querySelectorAll(`[data-${key.replace(/[A-Z]/g, (c) => "-" + c.toLowerCase())}]`)) { const k = "ko" + key.slice(2); if (!(k in n.dataset)) n.dataset[k] = n.getAttribute(attr) || ""; n.setAttribute(attr, lang === "en" ? n.dataset[key] : n.dataset[k]); }
@@ -3354,46 +3611,39 @@ const showPreviewCalendar = showCalendarData;
 document.addEventListener("DOMContentLoaded", () => {
   EMPTY = $("#resultEmpty");
   applyLang(LANG, true);
-  $("#langKo").addEventListener("click", () => applyLang("ko"));
+  // Korean-only UI; English strings and the selector remain in source comments.
   $("#calData").addEventListener("click", showCalendarData);
-  $("#langEn").addEventListener("click", () => applyLang("en"));
+
   const drop = $("#drop");
   drop.addEventListener("dragover", (e) => { e.preventDefault(); drop.classList.add("over"); });
   drop.addEventListener("dragleave", () => drop.classList.remove("over"));
   drop.addEventListener("drop", (e) => { e.preventDefault(); drop.classList.remove("over"); if (e.dataTransfer.files.length) addFiles([...e.dataTransfer.files], { dropped: true }); });
-  drop.addEventListener("click", async (e) => {
-    if (window.showDirectoryPicker) {
-      e.preventDefault();
-      try {
-        const root = await window.showDirectoryPicker({ id: "exceldata", mode: "read" });
-        const files = [];
-        async function getFiles(dir) {
-          for await (const [n, f] of dir.entries()) {
-            if (f.kind === "file" && /\.(xls|xlsx|csv)$/i.test(n)) { files.push(await f.getFile()); }
-            else if (f.kind === "directory") { await getFiles(f); }
-          }
-        }
-        await getFiles(root);
-        if (files.length) addFiles(files);
-      } catch(err) {}
-    } else {
-      const f = document.createElement("input");
-      f.type = "file";
-      f.multiple = true;
-      f.accept = ".xls,.xlsx,.csv";
-      f.addEventListener("change", () => { if (f.files.length) addFiles([...f.files], { dropped: true }); });
-      f.click();
-    }
+  drop.addEventListener("click", () => {
+    const f = document.createElement("input");
+    f.type = "file"; f.multiple = true; f.accept = ".xls,.xlsx,.csv";
+    f.addEventListener("change", () => { if (f.files.length) addFiles([...f.files], { dropped: true }); });
+    f.click();
   });
+  drop.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); drop.click(); } });
+  $("#badgeFolderBtn").addEventListener("click", () => chooseBadgeFolder());
+  $("#badgeFolderBtn").addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); chooseBadgeFolder(); } });
+  $("#startBtn").addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); start(); } });
   $("#gIn").addEventListener("click", loadCalendars);
   $("#startBtn").addEventListener("click", () => start());
   // Resume the previously selected folder automatically when Chrome still grants access.
-  (async () => { const h = await getFolderHandle(); if (!h || !window.showDirectoryPicker) return; try { if ((await h.queryPermission({mode:"readwrite"})) === "granted") await start(h, true); } catch {} })();
-  window.addEventListener("beforeunload", (e) => { if (st.dirty || st.setDirty) { e.preventDefault(); e.returnValue = ""; } });
+  (async () => {
+    if (!window.showDirectoryPicker) return;
+    const h = await getFolderHandle("root");
+    if (h) try { if ((await h.queryPermission({mode:"readwrite"})) === "granted") await start(h, true); } catch {}
+    const badges = await getFolderHandle("badges");
+    if (badges) try { if ((await badges.queryPermission({mode:"read"})) === "granted") await chooseBadgeFolder(badges, true); } catch {}
+  })();
+  window.addEventListener("pagehide", () => writeCardSession());
+  window.addEventListener("beforeunload", (e) => { writeCardSession(); if (st.dirty || st.setDirty) { e.preventDefault(); e.returnValue = ""; } });
   $("#xlsxBtn").addEventListener("click", downloadXlsx);
   $("#goBtn").addEventListener("click", async () => {
     const b = $("#goBtn"); b.disabled = true;
-    try { const saved = await downloadXlsx(); const F = st.files[st.fi]; if (st.date !== F?.dates.at(-1)) await publish({ excelSaved: saved !== false }); } finally { drawGo(); }
+    try { const saved = await downloadXlsx(); const F = st.files[st.fi]; if (!st.res?.inProgressDates.has(st.date)) await publish({ excelSaved: saved !== false }); } finally { drawGo(); }
   });
   $("#pubBtn").addEventListener("click", () => publish());
   $("#sheetBtn").addEventListener("click", openSheet);
