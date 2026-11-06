@@ -452,7 +452,7 @@ ul.issues li { margin: 2px 0; }
 .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* ---- 근태 정리 */
-/* 근태 정리 — on top of the shared look of the form filler and the email sender (their CSS comes first). */
+/* 근태 정리 — preserves the original layout; messaging is Google Chat, not Gmail. */
 :root { color-scheme: light; --auto: #dff2e5; --auto-ink: #1d6b3f; --auto-line: #9fd3b0; --mine: #d9e6ff; --mine-ink: #1f4fa3; --mine-line: #9bb8ee; --open: #fff1c2; --open-line: #e9cf7a; }
 [hidden] { display: none !important; }
 
@@ -490,7 +490,16 @@ header.top.att, header.top.att:not([style]) { width: auto; max-width: none; marg
 .legend .lg { display: inline-flex; align-items: center; gap: 5px; }
 
 /* step 1 */
-#s1 .folder-pickers { display:grid; grid-template-columns: repeat(auto-fit, minmax(185px,1fr)); gap: 10px; }
+#s1 .folder-pickers { display:grid; grid-template-columns: minmax(0,1fr); gap: 10px; }
+/* Step 1: one Excel source at a time. The indicator slides between folder and file. */
+.badge-mode-switch { position:relative; isolation:isolate; justify-self:start; width:180px; max-width:100%; display:grid; grid-template-columns:1fr 1fr; padding:2px; gap:0; border:1px solid var(--rule); border-radius:8px; background:var(--well); margin-top:-4px; }
+.badge-mode-switch::before { content:""; position:absolute; z-index:-1; top:2px; bottom:2px; left:2px; width:calc((100% - 4px)/2); border-radius:6px; background:var(--accent); transition:transform .17s ease; }
+.badge-mode-switch[data-mode="file"]::before { transform:translateX(100%); }
+.badge-mode-switch button { background:transparent; border:0; border-radius:6px; padding:4px 5px; min-height:26px; line-height:1.2; font-size:12px; font-weight:600; color:var(--muted); }
+.badge-mode-switch button[aria-pressed="true"] { color:#fff; }
+.badge-mode-switch button:hover { border:0; }
+.badge-mode-switch button:focus-visible { outline:2px solid var(--ink); outline-offset:1px; }
+
 #s1 .folder-pickers .drop { padding: 10px; gap: 8px; }
 #s1 .folder-pickers .drop .ficon { width: 38px; height: 38px; flex:none; object-fit:contain; }
 .startbtn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px 18px; font-size: 15.5px; }
@@ -526,20 +535,20 @@ header.top.att, header.top.att:not([style]) { width: auto; max-width: none; marg
 .gstate::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #c4c8ce; flex: none; }
 .gstate.on { color: var(--ink); } .gstate.on::before { background: var(--ok); }
 
-/* step 2: email */
+/* step 2: Google Chat message template */
 details.step.optional > summary { list-style: none; cursor: pointer; }
 details.step.optional > summary::-webkit-details-marker { display: none; }
 details.step.optional > summary h2::after { content: "  ▸"; color: var(--muted); font-weight: 400; }
 details.step.optional[open] > summary h2::after { content: "  ▾"; }
 .headnote { margin-left: auto; font-size: 12.5px; color: var(--muted); }
-#mailSetup { display: grid; gap: 12px; }
+#chatSetup { display: grid; gap: 12px; }
 .sfield { display: grid; gap: 5px; }
 .sfield > .lab { font-weight: 600; font-size: 13.5px; }
 .sfield > small { color: var(--muted); font-size: 12.5px; line-height: 1.45; }
-.sfield input[type=text], .sfield textarea, .mailbox input[type=email] { font: inherit; font-size: 14px; padding: 8px 10px; border: 1px solid var(--rule); border-radius: 7px; background: var(--sheet); color: var(--ink); width: 100%; }
+.sfield input[type=text], .sfield textarea, .chatbox input[type=email] { font: inherit; font-size: 14px; padding: 8px 10px; border: 1px solid var(--rule); border-radius: 7px; background: var(--sheet); color: var(--ink); width: 100%; }
 .sfield textarea { min-height: 74px; resize: vertical; }
 .tokchip { padding: 2px 9px; font: 600 12.5px/1.4 var(--mono); border-radius: 6px; background: var(--accent-soft); }
-.mailpv { white-space: pre-wrap; background: var(--well); border: 1px solid var(--rule); border-radius: 7px; padding: 10px; margin: 0; font: 13px/1.6 var(--sans); max-height: 240px; overflow: auto; }
+.chatpv { white-space: pre-wrap; background: var(--well); border: 1px solid var(--rule); border-radius: 7px; padding: 10px; margin: 0; font: 13px/1.6 var(--sans); max-height: 240px; overflow: auto; }
 table.res { border-collapse: collapse; width: 100%; font-size: 13px; }
 table.res th, table.res td { border-bottom: 1px solid var(--rule); padding: 5px 8px; text-align: left; vertical-align: top; }
 table.res th { color: var(--muted); font-weight: 600; font-size: 12px; }
@@ -621,14 +630,14 @@ body.stagefull { overflow: hidden; }
 .rcfoot { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .rcfoot .primary { display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; font-size: 15px; }
 .rcfoot kbd { font: 600 11px/1 var(--mono); padding: 3px 5px; border-radius: 4px; background: rgba(255, 255, 255, .18); }
-.mailbtns { margin-left: auto; display: inline-flex; gap: 6px; align-items: center; flex-wrap: wrap; min-width: 0; }
-.mailgo { max-width: 100%; overflow: hidden; }
-.mailgo span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.mailgo.counting { background: var(--warn-soft); border-color: var(--warn); color: var(--warn); }
-.mailslot:empty { display: none; }
-.mailbox { border: 1px solid var(--rule); border-radius: 9px; padding: 12px 14px; display: grid; gap: 9px; background: var(--well); }
-.mailto { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 0; font-size: 13.5px; }
-.mailto dt { color: var(--muted); } .mailto dd { margin: 0; overflow-wrap: anywhere; }
+.chatbtns { margin-left: auto; display: inline-flex; gap: 6px; align-items: center; flex-wrap: wrap; min-width: 0; }
+.chatgo { max-width: 100%; overflow: hidden; }
+.chatgo span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chatgo.counting { background: var(--warn-soft); border-color: var(--warn); color: var(--warn); }
+.chatslot:empty { display: none; }
+.chatbox { border: 1px solid var(--rule); border-radius: 9px; padding: 12px 14px; display: grid; gap: 9px; background: var(--well); }
+.chatrecipient { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 0; font-size: 13.5px; }
+.chatrecipient dt { color: var(--muted); } .chatrecipient dd { margin: 0; overflow-wrap: anywhere; }
 .askbox { display: flex; gap: 8px; align-items: flex-start; font-size: 13.5px; cursor: pointer; }
 details.more > summary { cursor: pointer; color: var(--muted); font-size: 13.5px; }
 details.more[open] > summary { margin-bottom: 6px; }
@@ -696,7 +705,7 @@ table.autolog td.why2 { color: var(--muted); max-width: 320px; overflow: hidden;
 .savestate::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #c4c8ce; flex: none; }
 .savestate.ok::before { background: var(--ok); } .savestate.wait::before { background: #e0a800; }
 .savestate.nofolder, .savestate.fail { color: var(--err); } .savestate.nofolder::before, .savestate.fail::before { background: var(--err); }
-#mailSetup .savestate { margin: 0; }
+#chatSetup .savestate { margin: 0; }
 /* step 4: the form filler's data preview, with the colours */
 #s4 .tablebar { margin-top: 0; }
 #s4 .tablebox { max-height: 360px; }
@@ -774,7 +783,7 @@ td.nowrap { white-space: nowrap; color: var(--muted); }
 .ebody .etext { white-space: normal; }
 .eraw { font-size: 12.5px; line-height: 1.45; color: var(--muted); overflow-wrap: anywhere; }
 .eraw b { color: var(--ink); font-weight: 700; }
-/* two columns: loading and email small on the left; checking, the Excel and the finish big on the right */
+/* two columns: setup and Google Chat on left; attendance review and Excel on right */
 .wrap.att { max-width: 1480px; }
 .layout.att, .layout.att:not([style]) { grid-template-columns: minmax(0, 380px) minmax(0, 1fr); grid-template-rows: none; gap: 16px 24px; align-items: start; }
 .layout.att > .col-left, .layout.att > .col-right { grid-column: auto !important; grid-row: auto !important; display: grid; gap: 16px; min-width: 0; align-content: start; }
@@ -857,7 +866,7 @@ td.nowrap { white-space: nowrap; color: var(--muted); }
 .gcalpv .gtable { justify-self: start; }
 .gcalpv .gtable td { padding: 1px 0; } .gcalpv .gtable { border-collapse: separate; border-spacing: 2px 0; }
 .gcalpv .gtable td.gnote { color: #5f6368; }
-.mailbtns .mailto { color: var(--muted); font-size: 12.5px; }
+.chatbtns .chatrecipient { color: var(--muted); font-size: 12.5px; }
 /* step 4: the Excel preview and, beside it, the calendar entry (narrow enough to sit on the right) */
 .s4grid { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: start; }
 .s4sheet { display: grid; gap: 12px; min-width: 0; }
@@ -865,12 +874,12 @@ td.nowrap { white-space: nowrap; color: var(--muted); }
 .s4grid > #calPv .tablebar { flex-wrap: wrap; margin-top: 0; }
 @media (max-width: 1250px) { .s4grid { grid-template-columns: minmax(0, 1fr); } .s4grid > #calPv { width: auto; } }
 
-/* the card's two buttons: the same size, on one line, "보낼 내용" under the email button */
+/* Card 3 controls: Google Chat composer alongside Save */
 .rcfoot { align-items: flex-start; }
-.rcfoot .mailbtns { display: grid; justify-items: end; gap: 4px; }
-.rcfoot .mailgo { display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; font-size: 15px; font-weight: 600; min-height: 46px; }
+.rcfoot .chatbtns { display: grid; justify-items: end; gap: 4px; }
+.rcfoot .chatgo { display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; font-size: 15px; font-weight: 600; min-height: 46px; }
 .rcfoot .primary { min-height: 46px; }
-/* the card's 확인 · 다음: white, the same size as the email button beside it */
+/* Card 3 Save: same size as Google Chat button */
 .rcfoot .nextbtn { display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; font-size: 15px; font-weight: 600; min-height: 46px; background: var(--sheet); color: var(--ink); border: 1px solid var(--rule); }
 .rcfoot .nextbtn:hover { border-color: var(--accent); }
 .rc.completed .sides, .rc.completed .places, .rc.completed .entries { opacity: .55; filter: grayscale(1); }
@@ -878,7 +887,7 @@ td.nowrap { white-space: nowrap; color: var(--muted); }
 .rc.completed .issues { opacity: .65; }
 .rc .card-id { font-family: var(--mono); font-size: 11px; color: var(--muted); }
 .rcfoot { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; }
-.rcfoot > .mailbtns { justify-items: start; }
+.rcfoot > .chatbtns { justify-items: start; }
 .rcfoot .nextbtn { margin-left: auto; }
 #badgeFolderBtn.loaded { border-style:solid; border-color:color-mix(in srgb,var(--ok) 45%,var(--rule)); background:var(--ok-soft); }
 .pchips { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
@@ -886,18 +895,7 @@ td.nowrap { white-space: nowrap; color: var(--muted); }
 .pchips .chip:hover { background:var(--accent-soft); }
 .prow { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
 .prow .pother { flex:1 1 130px; min-width:100px; }
-.contactsheet { overflow:auto; border:1px solid #dadada; border-radius:7px; max-height:400px; background:white; }
-.contactsheet table { border-collapse:separate; border-spacing:0; width:max-content; min-width:100%; font:13px/1.4 var(--sans); }
-.contactsheet th { position:sticky; top:0; background:#f3f3f3; color:#6b6b6b; font-weight:500; text-align:center; z-index:1; }
-.contactsheet td,.contactsheet th { border-right:1px solid #dedede; border-bottom:1px solid #dedede; padding:0; height:29px; }
-.contactsheet tbody th { left:0; z-index:2; min-width:36px; }
-.contactsheet thead th:first-child { left:0; z-index:3; }
-.contactsheet td input { width:100%; min-width:125px; border:0; border-radius:0; padding:5px 9px; font:inherit; background:#fff; box-shadow:none; outline:none; }
-.contactsheet td input:focus { outline:2px solid #217346; outline-offset:-2px; background:#f4faf6; }
-.contactsheet td.name input { min-width:100px; }
-.contactsheet td.email input { min-width:240px; }
-.contactsheet tbody tr:first-child td { background:#f3f7f4; font-weight:600; color:#345; padding:4px 9px; }
-.contactsheet input:invalid { outline:1px solid #b42318; }
+.contact-editor-actions { display:flex; flex-wrap:wrap; gap:8px; }
 .rcfoot .nextbtn kbd { background: var(--well); color: var(--muted); border: 1px solid var(--rule); }
 /* header: the logo with the black 데이터 button under it, the button's bottom level with the buttons row on the left */
 header.top.att { align-items: stretch; }
@@ -907,7 +905,208 @@ header.top.att { align-items: stretch; }
 .top-side #calData:disabled { opacity: .35; }
 @media (max-width: 520px) { .top-side { flex-direction: row; align-items: center; } .top-side #calData { width: auto; } }
 
+/* V17: scoped polish, retaining the established visual design. */
+.boxhead .x { display:grid; place-items:center; padding:0; font-size:24px; line-height:1; }
+#xeDone { display:grid; place-items:center; width:36px; height:34px; padding:0; font:400 26px/1 var(--sans); background:transparent; color:var(--muted); border:0; border-radius:6px; }
+#xeDone:hover:not(:disabled) { background:#e4e4e4; color:var(--ink); }
+.chatpv { min-height:185px; }
+#s4 #sheetSum:has(> p.fine:not(.sheetline)) { min-height:185px; display:grid; place-items:center; border:1px solid var(--rule); background:var(--well); border-radius:7px; padding:20px; text-align:center; }
+#s4 .sheet-preview-footer { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 8px 8px 12px; border-top:1px solid var(--rule); }
+#s4 .sheet-preview-footer .plainnote { margin:0; flex:1; min-width:0; }
+#s4 .sheet-preview-footer .tablebig { flex:none; margin:0; align-self:flex-end; }
+.rcfoot .chatbtns { justify-items:start; text-align:left; margin-left:0; margin-right:auto; align-self:start; }
+.rcfoot .chatgo { justify-content:flex-start; }
+.rcfoot .nextbtn.savebtn { background:#1f1f1f; color:#fff; border-color:#1f1f1f; }
+.rcfoot .nextbtn.savebtn:hover:not(:disabled) { background:#363636; border-color:#363636; }
+.rcfoot .nextbtn.savebtn kbd { background:#444; color:#fff; border-color:#666; }
+.rchead { min-height:43px; align-content:center; }
+.rchead .chip.ok { font-size:12px; }
+/* Attendance cell colours should never recolour the cell text. */
+#sheetBox td.x-auto, #sheetBox td.x-mine, #sheetBox td.x-open,
+#xeGrid td.x-auto, #xeGrid td.x-mine, #xeGrid td.x-open { color:var(--ink) !important; }
+/* The two Google calendar name fields must share the same vertical baseline. */
+#setBody .sgroup .two > .sfield { align-content:start; }
+#setBody .sgroup .two > .sfield > .lab { min-height:22px; display:flex; align-items:center; }
+#setBody .sgroup .two > .sfield > input[type=text] { min-height:37px; }
+.gsq { background:#616161; }
+
+
+/* V18: precise UI adjustments only (attendance calculations and stored data unchanged). */
+.settings-save-top { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; column-gap:14px; row-gap:10px; }
+.settings-save-top > .fine { flex:1 1 250px; min-width:0; margin:0; text-align:left; }
+.settings-save-top > button { flex:none; margin-left:auto; white-space:normal; }
+/* Calendar output is display-only; all editing remains in the cards and Excel editor. */
+.gcalpv .gtable td { cursor:default; }
+.gcalpv .gsq { background:#a7acb3; margin-top:9px; }
+/* Keep the freeform place field from expanding across the whole card. */
+.prow .pother { flex:0 1 160px; width:160px; max-width:100%; min-width:110px; }
+/* Visually center an icon instead of relying on the font glyph's optical baseline. */
+.boxhead .x, #xeDone { display:grid; place-items:center; font-size:0; line-height:0; padding:0; }
+.boxhead .x::before, #xeDone::before { content:""; width:18px; height:18px; flex:none; display:block; background:linear-gradient(45deg,transparent calc(50% - 1px),currentColor calc(50% - 1px),currentColor calc(50% + 1px),transparent calc(50% + 1px)),linear-gradient(-45deg,transparent calc(50% - 1px),currentColor calc(50% - 1px),currentColor calc(50% + 1px),transparent calc(50% + 1px)); }
+#s1 .folder-pickers #badgeFolderBtn .ficon { width:30px; height:30px; }
+
+
+/* V21: Card 3 side zones remain fully clickable. Only the chevron color changes on hover/focus; no shading. */
+.stage .stage-body > .flip {
+  position: absolute;
+  top: 0; bottom: 0; height: auto; min-height: 100%;
+  transform: none;
+  width: max(64px, calc((100% - 820px) / 2));
+  padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  border: 0; border-radius: 0; background: transparent; box-shadow: none;
+  color: #707780;
+  transition: color .18s ease;
+}
+.stage .stage-body > .flip.prev { left: 0; }
+.stage .stage-body > .flip.next { right: 0; }
+.stage .stage-body > .flip:hover:not(:disabled),
+.stage .stage-body > .flip:focus-visible { color: #20252b; background: transparent; box-shadow: none; }
+/* Plain, larger, more open/obtuse chevrons: no circles, outlines, or shadows. */
+.stage .stage-body > .flip svg {
+  box-sizing: border-box; flex: none;
+  width: 66px; height: 84px; padding: 0;
+  border: 0; border-radius: 0; background: none; box-shadow: none;
+  stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round;
+  transition: none;
+}
+.stage .stage-body > .flip:hover:not(:disabled) svg,
+.stage .stage-body > .flip:focus-visible svg { background: none; box-shadow: none; }
+.stage.full .stage-body > .flip {
+  top: 0; bottom: 0; width: max(64px, calc((100% - 980px) / 2)); height: auto;
+}
+.stage.full .stage-body > .flip svg { width: 72px; height: 96px; padding: 0; }
+@media (max-width: 600px) {
+  .stage .stage-body > .flip, .stage.full .stage-body > .flip { width: 40px; }
+  .stage .stage-body > .flip svg, .stage.full .stage-body > .flip svg { width: 38px; height: 62px; padding: 0; }
+}
+@media (max-width: 360px) {
+  /* Narrow cards sometimes need more space than their parent: keep inputs clickable. */
+  .stage .stage-body > .flip, .stage.full .stage-body > .flip { width: 24px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stage .stage-body > .flip { transition: none; }
+}
+/* Raise the Step 4 Calendar preview beside Excel to the top of the panel. */
+@media (min-width: 1251px) { .s4grid > #calPv { margin-top: -32px; align-self: start; } }
+@media (max-width: 1250px) { .s4grid > #calPv { margin-top: 0; } }
+
+
+/* V22: Card 3 stays the same height when warnings or 비고/calendar notes vary.
+   Only its middle card content scrolls; navigation zones and header stay in place. */
+#s3.stage:not(.full) { height: min(800px, calc(100dvh - 24px)); min-height: 0; }
+#s3.stage.full { height: 100dvh; min-height: 0; overflow: hidden; }
+#s3 .stage-body { min-height: 0; grid-template-rows: minmax(0, 1fr); overflow: hidden; }
+#s3 .cardslot {
+  min-height: 0; height: 100%; overflow-y: auto; overflow-x: hidden;
+  scrollbar-gutter: stable; scrollbar-width: thin; overscroll-behavior: contain;
+}
+
+/* V23: the card header and both action buttons are stationary.  Long notes, Google Chat
+   previews and suggestions scroll in the middle, without moving the controls. */
+#s3 .cardslot { overflow: hidden; scrollbar-gutter: auto; }
+#s3 .cardslot > .rc {
+  height: 100%; min-height: 0; display: flex; flex-direction: column;
+  gap: 14px; overflow: hidden;
+}
+#s3 .rc > .rchead { flex: 0 0 auto; }
+#s3 .rc-content {
+  flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden;
+  scrollbar-width: thin; overscroll-behavior: auto;
+  display: grid; align-content: start; gap: 16px;
+  padding: 0 4px 6px 0;
+}
+#s3 .rcfoot {
+  flex: 0 0 108px; min-height: 108px; display: grid;
+  grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: 1fr;
+  gap: 10px; align-items: start; flex-wrap: nowrap;
+  background: var(--sheet);
+}
+#s3 .rcfoot > .chatbtns { grid-column: 1; grid-row: 1; min-width: 0; max-width: 100%; margin: 0; }
+#s3 .rcfoot > .nextbtn { grid-column: 2; grid-row: 1; margin: 0; }
+#s3 .rcfoot .chatbtns > small.chatrecipient {
+  display: block; min-width: 0; max-width: 100%; overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap;
+}
+/* The six-character draft identifier remains internal and is never rendered. */
+#s3 .card-id { display: none !important; }
+/* Move Calendar Data into step 1 immediately below the read/reread control. */
+#s1 #calData {
+  justify-self: start; width: auto; background: var(--sheet);
+  color: var(--ink); border: 1px solid var(--rule);
+  padding: 8px 14px; font-size: 14px; border-radius: 7px;
+}
+#s1 #calData:hover:not(:disabled) { background: var(--well); border-color: var(--accent); }
+#s1 #calData:disabled { opacity: .45; }
+/* The three Calendar Data tabs share the whole row, including the third tab. */
+.calendar-data-tabs {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: 100%; overflow: hidden;
+}
+.calendar-data-tabs > button {
+  min-width: 0; max-width: 100%; white-space: normal; overflow-wrap: anywhere;
+  line-height: 1.4; text-align: center; padding: 9px 8px;
+  background: #fff; color: var(--ink);
+}
+.calendar-data-tabs > button[aria-pressed="true"] {
+  background: #f1f2f3; color: var(--ink); font-weight: 700;
+  box-shadow: inset 0 -2px 0 #777;
+}
+@media (max-width: 520px) {
+  #s3 .rcfoot { flex-basis: 120px; min-height: 120px; gap: 6px; }
+  #s3 .rcfoot .chatgo { padding: 9px 11px; font-size: 13px; }
+  #s3 .rcfoot .nextbtn { padding: 9px 11px; font-size: 13px; }
+  .calendar-data-tabs > button { font-size: 12px; padding: 8px 4px; }
+}
+
+/* V25: Card 3 warnings are a single non-scrolling message. Center icon on its text,
+   and reserve scrollbar space on the scrollable card body, not inside the warning. */
+#s3 .rc-content { scrollbar-gutter: stable; }
+#s3 .rc-content > ul.issues { max-height: none; overflow: visible; }
+#s3 .rc-content > ul.issues li { align-items: center; }
+#s3 .rc-content > ul.issues li::before {
+  display: inline-flex; align-items: center; justify-content: center;
+  line-height: 1; font-weight: 800; transform: none;
+}
+/* The Google Calendar preview starts at the top of its Step 4 column, with no
+   extra heading, artificial negative offset, or external gap. */
+#s4 .s4grid > #calPv { margin: 0; padding: 0; gap: 0; align-self: start; }
+#s4 #calPv > .gcalpv { margin: 0; }
+/* Desktop: place the preview level with the Step 4 heading (the panel ceiling),
+   without overlapping the Excel column. Stacked mobile keeps a normal flow. */
+@media (min-width: 1251px) {
+  #s4 .s4grid > #calPv { margin-top: -38px; }
+}
+
+/* V24: unobtrusive enlarge controls; keep their click targets and keyboard focus. */
+#stageBig, #sheetBtn, #stageBig:hover:not(:disabled), #sheetBtn:hover:not(:disabled) {
+  border: 0; box-shadow: none;
+}
+
+/* V26: Card 3 has no nested scrollbars, including its messages and review notes.
+   The page itself scrolls if unusual content exceeds the standard card height. */
+#s3.stage:not(.full) { height: auto; min-height: min(800px, calc(100dvh - 24px)); }
+#s3.stage.full { height: auto; min-height: 100dvh; overflow: visible; }
+#s3 .stage-body, #s3 .cardslot, #s3 .cardslot > .rc { height: auto; min-height: 0; overflow: visible; }
+#s3 .cardslot > .rc { min-height: 660px; }
+#s3 .rc-content { flex: 1 1 auto; overflow: visible; scrollbar-gutter: auto; min-height: 0; }
+#s3 .chat-history { max-height: none; overflow: visible; }
+#s3 .rcfoot { margin-top: auto; }
+
+/* Small, unobtrusive history controls for Card 3 and Card 4 preview. */
+.card-hist { display:inline-flex; gap:3px; align-items:center; margin-left:auto; }
+.card-hist button, #sheetBig .hist-action { padding:4px 9px; font-size:20px; line-height:1.25; border:0; box-shadow:none; background:transparent; color:#595959; }
+.card-hist button:hover:not(:disabled), #sheetBig .hist-action:hover:not(:disabled) { color:#121212; background:#f2f2f2; }
+.card-hist button:disabled, #sheetBig .hist-action:disabled { opacity:.25; }
+
 /* ---- the shared Excel-style editor */
+/* Google Chat messenger composer; reuses original Card 3 container and sizing. */
+.chat-history { display:grid; gap:8px; max-height:164px; min-height:44px; overflow-y:auto; padding:8px; border:1px solid var(--rule); border-radius:9px; background:var(--well); align-content:start; }
+.chat-bubble { justify-self:end; max-width:92%; padding:7px 11px; background:#e9edf2; border-radius:12px 12px 3px 12px; font-size:13px; overflow-wrap:anywhere; white-space:pre-wrap; }
+.chat-bubble small { display:block; text-align:right; color:var(--muted); font-size:11px; margin-top:3px; }
+.chat-conversation { display:grid; gap:8px; min-width:0; }
+.chat-conversation .chat-compose { width:100%; min-height:82px; box-sizing:border-box; }
+.chat-status { min-height:18px; margin:0; }
 </style></head>
 <body>
 <div class="wrap att">
@@ -953,7 +1152,7 @@ header.top.att { align-items: stretch; }
         </g>
       </svg>
     </div>
-      <button type="button" class="primary" id="calData" disabled data-en="Data" title="읽은 캘린더 일정 보기" data-en-title="See the calendar entries that were read">데이터</button>
+
     </div>
   </header>
 
@@ -965,7 +1164,7 @@ header.top.att { align-items: stretch; }
       
       <div class="folder-pickers">
         <div class="drop" id="startBtn" tabindex="0" role="button">
-          <svg class="ficon" viewBox="0 0 48 48" style="width:40px;height:40px" aria-hidden="true"><path d="M5 13a4 4 0 0 1 4-4h10l5 5h15a4 4 0 0 1 4 4v18a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z" fill="#e8f0fe" stroke="#6b8fcf" stroke-width="2"/><path d="M5 19h38" stroke="#6b8fcf" stroke-width="2"/><path d="M20 26l3 3 7-7" fill="none" stroke="#3f6fbb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg class="ficon" viewBox="0 0 48 48" style="width:40px;height:40px" aria-hidden="true"><path d="M5 13a4 4 0 0 1 4-4h10l5 5h15a4 4 0 0 1 4 4v18a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z" fill="#e8f0fe" stroke="#6b8fcf" stroke-width="2"/><path d="M5 19h38" stroke="#6b8fcf" stroke-width="2"/><path d="M20 30l3 3 7-7" fill="none" stroke="#3f6fbb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
           <span class="txt">
             <span class="file" id="configName" data-en="Required Files">필요한 파일</span>
             <span class="sub" id="configSub" data-en="Choose the folder containing the app files">앱에 필요한 파일이 있는 폴더 선택</span>
@@ -976,11 +1175,15 @@ header.top.att { align-items: stretch; }
           <span class="txt"><span class="file" id="badgeFolderName">출입 기록 폴더</span><span class="sub" id="badgeFolderSub">원본 엑셀이 들어 있는 폴더 선택</span></span>
         </div>
         <div class="drop" id="drop" tabindex="0" role="button" aria-label="엑셀 파일 선택">
-          <svg class="ficon" viewBox="0 0 44 52" aria-hidden="true"><path d="M10 3h18.5L39 13.5V45a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4z" fill="#fff" stroke="#c4c8ce" stroke-width="1.4" stroke-linejoin="round"/><path d="M28.5 3v7a3.5 3.5 0 0 0 3.5 3.5h7" fill="#eef0f2" stroke="#c4c8ce" stroke-width="1.4" stroke-linejoin="round"/><rect x="11.5" y="16.5" width="21" height="14" rx="1.5" fill="#eaf5ee" stroke="#5aa77a" stroke-width="1.2"/><path d="M11.5 21.2h21M11.5 25.8h21M18.5 16.5v14M25.5 16.5v14" stroke="#5aa77a" stroke-width="1.1"/><rect x="2" y="34" width="31" height="12.5" rx="3" fill="#1f7a47"/><text x="17.5" y="43.4" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif" font-size="8.2" font-weight="800" letter-spacing=".4" fill="#fff">XLS</text></svg>
+          <svg class="ficon" viewBox="0 0 44 52" aria-hidden="true"><path d="M10 3h18.5L39 13.5V45a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4z" fill="#fff" stroke="#c4c8ce" stroke-width="1.4" stroke-linejoin="round"/><path d="M28.5 3v7a3.5 3.5 0 0 0 3.5 3.5h7" fill="#eef0f2" stroke="#c4c8ce" stroke-width="1.4" stroke-linejoin="round"/><rect x="11.5" y="16.5" width="21" height="14" rx="1.5" fill="#eaf5ee" stroke="#5aa77a" stroke-width="1.2"/><path d="M11.5 21.2h21M11.5 25.8h21M18.5 16.5v14M25.5 16.5v14" stroke="#5aa77a" stroke-width="1.1"/><rect x="2" y="34" width="31" height="12.5" rx="3" fill="#1f7a47"/><text x="17.5" y="43.4" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif" font-size="7.2" font-weight="800" letter-spacing=".1" fill="#fff">XLSX</text></svg>
           <span class="txt">
             <span class="file" id="fileName" data-en="Original Attendance Records">엑셀 파일</span>
             <span class="sub" id="fileSub" data-en="Choose individual Excel files">개별 엑셀 파일 선택 또는 끌어놓기</span>
           </span>
+        </div>
+        <div class="badge-mode-switch" id="badgeMode" role="group" aria-label="출입 기록 불러오기 방식" data-mode="folder">
+          <button type="button" id="badgeModeFolder" aria-pressed="true">엑셀 폴더</button>
+          <button type="button" id="badgeModeFile" aria-pressed="false">엑셀 파일</button>
         </div>
       </div>
       <ul class="log" id="startLog"></ul>
@@ -994,16 +1197,17 @@ header.top.att { align-items: stretch; }
         <span class="gstate" id="gState" data-en="Google calendars: not read yet">Google 캘린더: 아직 안 읽음</span>
         <button type="button" class="bigbtn" id="gIn" data-en="Read the calendars">캘린더 읽기</button>
       </div>
+      <button type="button" class="bigbtn" id="calData" disabled data-en="Calendar Data" title="읽은 캘린더 일정 보기" data-en-title="See the calendar entries that were read"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" style="vertical-align:-3px;margin-right:5px"><path d="M2 12s3.7-6 10-6 10 6 10 6-3.7 6-10 6-10-6-10-6Z" stroke="currentColor" stroke-width="1.6" fill="none"/><circle cx="12" cy="12" r="2.6" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>캘린더 데이터 보기</button>
       <div id="needs"></div>
       <div id="calInfo"></div>
     </section>
 
-    <!-- 2: email (optional) -->
+    <!-- 2: Google Chat direct messages (optional). Separate OAuth from Calendar; never Gmail. -->
     <details class="step optional" id="s2">
-      <summary class="step-head"><span class="num">2</span><h2 data-en="Email (optional)">메일 (선택)</h2><span class="headnote" id="mailState"></span></summary>
-      <p class="fine" data-en="Write the email once here. Each card in step 3 then has its own button that sends this email to that one person.">메일 문구를 여기서 한 번 정해 두면, 3단계의 카드마다 그 한 사람에게만 보내는 버튼이 생깁니다.</p>
-      <div id="mailSetup"></div>
-      <div id="mailLog"></div>
+      <summary class="step-head"><span class="num">2</span><h2 data-en="Google Chat (optional)">Google Chat (선택)</h2><span class="headnote" id="chatState"></span></summary>
+      <p class="fine" data-en="Write a Google Chat message template here. Card 3 opens a private chat with one employee at a time.">Google Chat 메시지 문구를 정하세요. 3단계에서 직원별로 메시지를 여러 번 보낼 수 있습니다.</p>
+      <div id="chatSetup"></div>
+      <div id="chatLog"></div>
     </details>
 
     </div>
@@ -1022,11 +1226,11 @@ header.top.att { align-items: stretch; }
       </div>
       <div class="wizbar" id="wizBar"><i></i></div>
       <div class="stage-body">
-        <button type="button" class="flip prev" id="cardPrev" aria-label="이전 사람" data-en-aria="Previous person" title="이전 (←)" data-en-title="Previous (←)" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <button type="button" class="flip prev" id="cardPrev" aria-label="이전 사람" data-en-aria="Previous person" title="이전 (←)" data-en-title="Previous (←)" hidden><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M31 5 L22 24 L31 43"/></svg></button>
         <div class="cardslot" id="review">
           <div class="panel-empty" id="resultEmpty"><p data-en="Open the 근태 folder or drop a badge export, then read the calendars.">근태 폴더를 열거나 출입 기록 엑셀을 넣고, 캘린더를 읽으세요.</p></div>
         </div>
-        <button type="button" class="flip next" id="cardNext" aria-label="다음 사람" data-en-aria="Next person" title="다음 (→)" data-en-title="Next (→)" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+        <button type="button" class="flip next" id="cardNext" aria-label="다음 사람" data-en-aria="Next person" title="다음 (→)" data-en-title="Next (→)" hidden><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M17 5 L26 24 L17 43"/></svg></button>
       </div>
       <div class="stage-foot" id="stageFoot" hidden>
         <details id="autoBox" class="more"><summary id="autoSum" data-en="Filled in automatically">자동으로 채운 칸</summary><div id="autoList"></div></details>
@@ -1036,12 +1240,14 @@ header.top.att { align-items: stretch; }
 
     <!-- 4: the cleaned Excel, then the two actions -->
     <section class="step" id="s4" aria-labelledby="s4h">
-      <div class="step-head"><span class="num">4</span><h2 id="s4h" data-en="Look over the Excel">엑셀 확인</h2></div>
+      <div class="step-head"><span class="num">4</span><h2 id="s4h" data-en="Check Excel and Calendar">엑셀·캘린더 확인</h2></div>
       <div class="s4grid"><div class="s4sheet">
       <div id="sheetSum"><p class="fine" data-en="The cleaned sheet for the chosen date appears here once the data is in.">데이터를 넣으면 고른 날짜의 정리된 표가 여기에 나옵니다.</p></div>
       <div class="tablebar" id="sheetBar" hidden><span class="tablebar-label" id="sheetLabel"></span><span class="legend" id="sheetLegend"></span></div>
       <div class="tablebox" id="sheetBox" hidden></div>
       <div class="tablebig" id="sheetBig" hidden>
+        <button type="button" class="hist-action" id="sheetUndo" disabled title="엑셀 미리보기 실행 취소" aria-label="엑셀 미리보기 실행 취소">↶</button>
+        <button type="button" class="hist-action" id="sheetRedo" disabled title="엑셀 미리보기 다시 실행" aria-label="엑셀 미리보기 다시 실행">↷</button>
         <button type="button" class="bigbtn icononly" id="sheetBtn" aria-label="크게 보고 고치기" data-en-aria="Open full size to edit" title="크게 보고 고치기" data-en-title="Open full size to edit">
           <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M3 8V3h5M17 8V3h-5M3 12v5h5M17 12v5h-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
@@ -1096,7 +1302,7 @@ header.top.att { align-items: stretch; }
         <button type="button" class="we-ic" id="xeRedo" disabled aria-label="다시 실행" data-en-aria="Redo" title="다시 실행 (Ctrl+Y)" data-en-title="Redo (Ctrl+Y)"><svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M12.5 5 16 8.5 12.5 12M15.5 8.5H8a4 4 0 0 0 0 8h3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       </div>
       <span class="we-file" id="xeTitle"></span>
-      <div class="we-titleact"><button type="button" class="primary we-done" id="xeDone" data-en="Done">완료</button></div>
+      <div class="we-titleact"><button type="button" class="we-sm" id="xeAddRows" hidden>+ 20행</button><button type="button" class="primary we-done" id="xeDone" data-en="Close and save" aria-label="저장하고 닫기" title="저장하고 닫기">×</button></div>
     </div>
     <div class="xe-fbar">
       <span class="xe-ref" id="xeRef">A1</span>
@@ -1109,48 +1315,19 @@ header.top.att { align-items: stretch; }
 </div>
 
 
-<script>function b64(bytes) {
-  let s = "";
-  for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
-  return btoa(s);
-}
-const utf8 = (t) => new TextEncoder().encode(t);
-const wrap76 = (s) => s.replace(/.{76}/g, "$&\r\n");
-/** A header value that may hold Korean: encoded in pieces short enough for every mail program. */
-function encWord(t) {
-  if (/^[\x20-\x7e]*$/.test(t)) return t;
-  const parts = []; let cur = "";
-  for (const ch of t) { if (utf8(cur + ch).length > 42) { parts.push(cur); cur = ""; } cur += ch; }
-  if (cur) parts.push(cur);
-  return parts.map((p) => `=?UTF-8?B?${b64(utf8(p))}?=`).join("\r\n ");
-}
-class SendError extends Error { constructor(msg, code, status) { super(msg); this.code = code; this.status = status; } }
-/** What went wrong, sorted into: the sign-in ran out, a sending limit, the account blocked from sending
-    (often because the mail service suspects spam), or a problem with this one email. */
-async function apiError(r) {
-  let j = null; try { j = await r.json(); } catch {}
-  const msg = j?.error?.message || j?.error_description || `HTTP ${r.status}`;
-  const why = [msg, j?.error?.code, j?.error?.status, ...(j?.error?.errors || []).map((e) => e.reason)].filter(Boolean).join(" ");
-  const code = r.status === 401 ? "expired"
-    : /suspend|spam|abuse|block|disabled|restricted|SendAsDenied|SubmissionBlocked|AccountSuspend|5\.7\.\d+/i.test(why) ? "blocked"
-    : r.status === 429 || /rate|quota|limit|ExceededMessageLimit/i.test(why) ? "limit" : null;
-  // For troubleshooting: what it means in plain words, then the mail service's own words and code.
-  const raw = [msg, j?.error?.status, ...(j?.error?.errors || []).map((e) => e.reason), j?.error?.code && typeof j.error.code === "string" ? j.error.code : ""].filter((x, k, a) => x && a.indexOf(x) === k).join(" · ");
-  return new SendError(`${sendHint(r.status, code, why)} — ${raw} (HTTP ${r.status})`, code, r.status);
-}
-/** Only the mail service's own words of an error (the plain-words part is already in the message around it). */
-const rawErr = (e) => String(e).split(" — ").slice(1).join(" — ") || String(e);
-/** A send error in plain words, with what to check. */
-function sendHint(status, code, why) {
-  if (code === "expired") return L("로그인이 만료됨: 다시 로그인하세요", "Sign-in expired: sign in again").toString();
-  if (code === "blocked") return L("메일 서비스가 이 계정의 보내기를 막음(스팸 의심 등): 메일함의 안내를 확인하세요", "The mail service blocked sending from this account (e.g. suspected spam): check your mailbox for a notice").toString();
-  if (code === "limit") return L("보내기 한도에 걸림: 잠시(보통 하루) 뒤 남은 메일만 다시 보내세요", "Sending limit reached: send the rest later (usually a day)").toString();
-  if (status === 400) return /recipient|address|invalid to|mailbox/i.test(why) ? L("받는 주소를 메일 서비스가 받아 주지 않음: 주소를 확인하세요", "The mail service refused an address: check it").toString() : L("메일 서비스가 이 메일을 받아 주지 않음(주소·첨부·형식)", "The mail service refused this email (address, attachment or format)").toString();
-  if (status === 403) return /scope|insufficient|permission|accessDenied|ErrorAccessDenied/i.test(why) ? L("권한이 없음: 로그인할 때 메일 보내기를 허용했는지, Gmail API가 켜져 있는지 확인하세요", "No permission: check that sending mail was allowed at sign-in and the Gmail API is turned on").toString() : L("거부됨(권한)", "Refused (permission)").toString();
-  if (status === 404) return L("찾을 수 없음: 계정 또는 메일함을 확인하세요", "Not found: check the account or mailbox").toString();
-  if (status === 413) return L("메일이 너무 큼: 첨부 파일을 줄이세요", "The email is too large: attach less").toString();
-  if (status >= 500) return L("메일 서비스 쪽 오류: 잠시 뒤 저절로 다시 시도합니다", "An error on the mail service's side: it is tried again by itself").toString();
-  return L("메일 서비스가 오류를 돌려줌", "The mail service returned an error").toString();
+<script>/* Google Chat errors: user-authenticated direct messages, NOT Gmail or email. */
+class ChatSendError extends Error { constructor(message, status, code) { super(message); this.status = status; this.code = code; } }
+async function chatResponseError(response) {
+  let error = {}; try { error = (await response.json()).error || {}; } catch {}
+  const reason = error.message || `HTTP ${response.status}`;
+  const hints = {
+    400: L("Google Chat 요청이 유효하지 않습니다. 대화 상대와 메시지를 확인하세요.", "Invalid Google Chat request; check the recipient and message."),
+    401: L("Google Chat 로그인이 만료되었습니다. 다시 로그인하세요.", "Google Chat sign-in expired. Sign in again."),
+    403: L("Google Chat 권한이 거부되었습니다. Chat API·OAuth 범위·조직 정책을 확인하세요.", "Google Chat denied permission. Check API setup, OAuth scopes and Workspace policy."),
+    404: L("Google Chat 대화를 찾을 수 없습니다.", "The Google Chat conversation was not found."),
+    429: L("Google Chat 요청 한도에 도달했습니다. 잠시 뒤 다시 시도하세요.", "Google Chat rate limit reached; retry later."),
+  };
+  return new ChatSendError(`${hints[response.status] || (response.status >= 500 ? L("Google Chat 서버 오류", "Google Chat server error") : L("Google Chat 오류", "Google Chat error"))} — ${reason} (HTTP ${response.status})`, response.status, error.status || "");
 }
 
 /* ============================================================ spreadsheet files, read and written with no library
@@ -1409,11 +1586,20 @@ const ATT = (() => {
   const weekday = (iso) => { const [y, m, d] = iso.split("-").map(Number); return new Date(y, m - 1, d).getDay(); };
   /** "08:34", "8:34:12", "오전 9:02" → minutes after midnight; null when it isn't a time. */
   function minutes(v) {
-    const s = fw(v).trim(), m = s.match(/^(오전|오후|AM|PM)?\s*(\d{1,2})\s*[:시]\s*(\d{2})(?:\s*[:분]\s*\d{2}초?)?\s*(AM|PM)?$/i);
+    const s = fw(v).trim();
+    // Preserve ordinary badge times; also recognize calendar notes like "오전9시", "13시", "9시30분".
+    let m = s.match(/^(오전|오후|AM|PM)?\s*(\d{1,2})\s*[:시]\s*(\d{2})(?:\s*[:분]\s*\d{2}초?)?\s*(AM|PM)?$/i);
+    if (!m) {
+      const hour = s.match(/^(오전|오후|AM|PM)?\s*(\d{1,2})\s*시\s*(AM|PM)?$/i);
+      const korean = !hour && s.match(/^(오전|오후|AM|PM)?\s*(\d{1,2})\s*시\s*(\d{1,2})\s*분?\s*(AM|PM)?$/i);
+      m = hour ? [s, hour[1], hour[2], "0", hour[3]] : korean;
+    }
     if (!m) return null;
-    let h = +m[2]; const pm = /오후|pm/i.test(m[1] || m[4] || ""), am = /오전|am/i.test(m[1] || m[4] || "");
+    let h = +m[2], minute = +m[3];
+    const pm = /오후|pm/i.test(m[1] || m[4] || ""), am = /오전|am/i.test(m[1] || m[4] || "");
+    if (minute > 59 || h > 23 || (pm || am) && (h < 1 || h > 12)) return null;
     if (pm && h < 12) h += 12; if (am && h === 12) h = 0;
-    return h * 60 + +m[3];
+    return h * 60 + minute; // Invalid or ambiguous input must remain null, never 00:00.
   }
   const hhmm = (min) => `${pad(Math.floor(min / 60))}:${pad(min % 60)}`;
 
@@ -1808,7 +1994,12 @@ const ATT = (() => {
 
   /** main: ["본사 = 본사사무실, HQ", "연구소 = 랩"] (a name, then the other ways it is written); extra: other known places */
   const setPlaces = (main, extra) => {
-    mainPlaces = (main || []).map((x) => { const [n, al = ""] = String(x).split("="); return { name: n.trim(), aliases: al.split(/[,/]/).map((a) => a.trim()).filter(Boolean) }; }).filter((m) => m.name);
+    mainPlaces = (main || []).map((x) => { const [n, al = ""] = String(x).split("=");
+      const original = n.trim(), name = original === "TNS" ? "TNT" : original;
+      const aliases = al.split(/[,/]/).map((a) => a.trim()).filter(Boolean);
+      if (original !== name && !aliases.includes(original)) aliases.push(original);
+      return { name, aliases };
+    }).filter((m) => m.name);
     extraPlaces = (extra || []).map((x) => String(x).trim()).filter(Boolean);
   };
   return { analyze, daySummary, cellKey, setPlaces, placeOf, badgeRecords, parseLeave, parseWork, nameFinder, minutes, hhmm, clean, squash, parseDay, addDays, weekday };
@@ -1817,7 +2008,7 @@ if (typeof module !== "undefined") module.exports = ATT;
 
 /* ============================================================ 근태 정리: the page
    Google access tokens stay in memory. The chosen folder handle and account hint are remembered locally in this browser when supported. Settings, the Google API file,
-   the email access file and the email list are read from the 근태 folder; badge exports are loaded from the chosen records folder
+   the legacy mail_access policy and employee contacts live in the dependencies folder; badge exports are loaded separately
    or listed from the folder. Everything lives in this window and is gone when it closes.
    One date at a time: the cards, the Excel, the download and the calendar post all follow the chosen date.
    Korean or English: L(ko, en) is read each time something is drawn. Cell values (휴가, 직출(TNS)…) are data
@@ -1835,6 +2026,30 @@ const L = (ko, en) => (LANG === "en" ? en : ko);
 const DOW = ["일", "월", "화", "수", "목", "금", "토"], DOW_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], MON_EN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const dayLabel = (iso) => { const [y, m, d] = iso.split("-").map(Number), w = new Date(y, m - 1, d).getDay(); return L(`${m}월 ${d}일(${DOW[w]})`, `${MON_EN[m - 1]} ${d} (${DOW_EN[w]})`); };
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+/** Calendar descriptions may contain formatted tables, but are external Google data.
+    Keep only inert formatting; never insert their markup, attributes or event handlers as-is. */
+function safeCalendarDescription(html) {
+  const t = document.createElement("template");
+  t.innerHTML = String(html ?? ""); // Inert: nothing in <template> executes.
+  const allowed = new Set(["TABLE", "THEAD", "TBODY", "TFOOT", "TR", "TD", "TH", "B", "STRONG", "I", "EM", "BR", "P", "DIV", "SPAN", "UL", "OL", "LI"]);
+  const dangerous = new Set(["SCRIPT", "STYLE", "IFRAME", "OBJECT", "EMBED", "SVG", "MATH", "FORM", "INPUT", "IMG", "LINK", "META", "BASE", "VIDEO", "AUDIO", "TEMPLATE"]);
+  const clean = (node) => {
+    if (node.nodeType === 3) return document.createTextNode(node.textContent);
+    if (node.nodeType !== 1 || dangerous.has(node.tagName)) return document.createDocumentFragment();
+    const target = allowed.has(node.tagName) ? document.createElement(node.tagName.toLowerCase()) : document.createDocumentFragment();
+    if (node.tagName === "TD" || node.tagName === "TH") {
+      const width = node.getAttribute("width"), span = node.getAttribute("colspan");
+      if (/^\d{1,4}$/.test(width || "")) target.setAttribute("width", width);
+      if (/^[1-9]\d?$/.test(span || "")) target.setAttribute("colspan", span);
+    }
+    for (const child of node.childNodes) target.append(clean(child));
+    return target;
+  };
+  const frag = document.createDocumentFragment();
+  for (const child of t.content.childNodes) frag.append(clean(child));
+  return frag;
+}
+
 function toast(t) { const n = $("#toast"); n.textContent = t; n.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => (n.hidden = true), 3600); }
 const svg = (d, w = 16) => `<svg viewBox="0 0 20 20" width="${w}" height="${w}" aria-hidden="true"><path d="${d}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 /** The engine explains itself in Korean; in English the explanations are translated, the quoted calendar titles are not. */
@@ -1861,9 +2076,11 @@ const tr = (s) => { if (LANG !== "en") return s; for (const [re, en] of TR) if (
 const shortWhy = (r) => tr(r).replace(/:\s*[\[(（［].*$/, "");
 
 /* ---------- settings: from the settings file in the 근태 folder, kept in this window only */
-const PREVIEW = window.__PREVIEW || null;     // only in the admin preview build: real data inside, Google simulated
+const PREVIEW = window.__PREVIEW || null; // ADMIN DEMO ONLY: synthetic attendance, Google Calendar and Google Chat are simulated
+/* Legacy mailBody/mailAccount/mailDomains/mailSubject JSON keys are kept for backward-compatible saved settings.
+   They now configure Google Chat only; the Gmail API is never called. */
 const DEFAULTS = {
-  clientId: "", exempt: [], at1800: [], teams: [], mainPlaces: [], places: [], daysOff: [], lateAfter: "09:00", endOfDay: "18:00",
+  clientId: "", chatClientId: "", exempt: [], at1800: [], teams: [], mainPlaces: [], places: [], daysOff: [], lateAfter: "09:00", endOfDay: "18:00",
   calLeave: "", calWork: "", calOut: "", calHoliday: "", badgeFolder: "",
   contacts: [], mailDomains: [], mailAccount: "",
   mailSubject: "",
@@ -1877,6 +2094,7 @@ const HANDLE_DB = "attendance-cleanup-browser-data", HANDLE_STORE = "handles";
 function handleDb() { return new Promise((resolve, reject) => { const q = indexedDB.open(HANDLE_DB, 1); q.onupgradeneeded = () => q.result.createObjectStore(HANDLE_STORE); q.onsuccess = () => resolve(q.result); q.onerror = () => reject(q.error); }); }
 async function saveFolderHandle(handle, slot = "root") { try { const db = await handleDb(); await new Promise((ok, no) => { const tx = db.transaction(HANDLE_STORE, "readwrite"); tx.objectStore(HANDLE_STORE).put(handle, slot); tx.oncomplete = ok; tx.onerror = () => no(tx.error); }); db.close(); } catch {} }
 async function getFolderHandle(slot = "root") { try { const db = await handleDb(); const value = await new Promise((ok, no) => { const q = db.transaction(HANDLE_STORE).objectStore(HANDLE_STORE).get(slot); q.onsuccess = () => ok(q.result || null); q.onerror = () => no(q.error); }); db.close(); return value; } catch { return null; } }
+async function forgetFolderHandle(slot) { try { const db = await handleDb(); await new Promise((ok, no) => { const tx = db.transaction(HANDLE_STORE, "readwrite"); tx.objectStore(HANDLE_STORE).delete(slot); tx.oncomplete = ok; tx.onerror = () => no(tx.error); }); db.close(); } catch {} }
 
 const FOLDER_COOKIE = "attendance_dependencies_folder";
 function rememberDependenciesFolder(name) {
@@ -1888,7 +2106,9 @@ function dependenciesFolderHint() {
   try { return decodeURIComponent((document.cookie.match(new RegExp(`(?:^|; )${FOLDER_COOKIE}=([^;]*)`)) || [])[1] || ""); } catch { return ""; }
 }
 /* ---------- state */
-const st = { files: [], fi: -1, date: null, rows: null, res: null, over: {}, sheetEdits: {}, events: [], holidays: new Set(), existing: {}, calIds: {}, token: null, scopes: new Set(), calLoaded: false, calRange: null, asked: {}, sent: {}, cur: null, dir: null, cfgDir: null, contactsHandle: null, badgeDir: null, drafts: {}, cardIds: {} };
+const EXCEL_MODE_KEY = "attendance_excel_source_v15";
+const rememberedExcelMode = () => { try { return localStorage.getItem(EXCEL_MODE_KEY) === "file" ? "file" : "folder"; } catch { return "folder"; } };
+const st = { files: [], fi: -1, date: null, rows: null, res: null, over: {}, sheetEdits: {}, sheetAuthority: {}, events: [], holidays: new Set(), existing: {}, calIds: {}, token: null, scopes: new Set(), calLoaded: false, calRange: null, asked: {}, sent: {}, cur: null, dir: null, cfgDir: null, contactsHandle: null, badgeDir: null, badgeFolderLoaded: false, badgeFolderDisplay: "", badgeMode: rememberedExcelMode(), badgeModeEpoch: 0, cfgFilesLoaded: false, drafts: {}, cardIds: {} };
 /* ---------- per-tab work session: drafts are NOT committed until Save. ----------
    sessionStorage is tab scoped, survives reload, and is cleared by browsers on tab close.
    A 12-hour expiry limits restored-tab/crash persistence. No cookies or settings.json contain HR drafts.
@@ -2033,6 +2253,7 @@ async function parseEntry(x) {
   return !x.bad;
 }
 async function addFiles(list, { quiet, dropped } = {}) {
+  const epoch = st.badgeModeEpoch;
   const added = [];
   for (const f of list) {
     if (st.files.some((x) => x.key === fileKey(f))) continue;
@@ -2042,22 +2263,25 @@ async function addFiles(list, { quiet, dropped } = {}) {
   let pick = null;
   if (dropped) {                                                            // a few dropped files: read them now, say which aren't exports
     const bad = [];
-    for (const x of added) if (!(await parseEntry(x))) bad.push(x.name);
+    for (const x of added) { if (!(await parseEntry(x))) bad.push(x.name); if (epoch !== st.badgeModeEpoch) return 0; }
     st.files = st.files.filter((x) => !(added.includes(x) && x.bad));
     if (bad.length && !quiet) toast(L(`출입 기록 파일이 아닙니다: ${bad.join(", ")}`, `Not a badge export: ${bad.join(", ")}`));
     pick = added.filter((x) => !x.bad).sort((a, b) => fileDateKey(b).localeCompare(fileDateKey(a)) || b.name.localeCompare(a.name))[0] || null;
-  } else for (const x of st.files) { if (!x.cleaned && (await parseEntry(x))) { pick = x; break; } }   // from the folder: the newest that really is an export
+  } else for (const x of st.files) { if (!x.cleaned && (await parseEntry(x))) { pick = x; break; } if (epoch !== st.badgeModeEpoch) return 0; }   // from the folder: the newest that really is an export
+  if (epoch !== st.badgeModeEpoch) return 0;
   if (pick && (dropped || st.fi < 0)) await selectFile(st.files.indexOf(pick));
   else drawFiles();
   return added.length;
 }
 async function selectFile(i) {
   if (i < 0 || !st.files[i]) return;
+  const epoch = st.badgeModeEpoch;
   const switched = i !== st.fi;
   st.fi = i; const F = st.files[i]; st.rows = F.rows;
   st.res = null; // never show the previous Excel file's analysis against the new selection
-  if (switched) { st.sheetEdits = {}; st.sent = {}; st.asked = {}; st.order = {}; st.shownRows = {}; }
+  if (switched) { st.sheetEdits = {}; st.sheetAuthority = {}; st.sent = {}; st.asked = {}; st.order = {}; st.shownRows = {}; }
   F.fingerprint ||= await fingerprintFile(F.file);
+  if (epoch !== st.badgeModeEpoch) return;
   restoreFileCards();
   const exportDay = F.dates.at(-1);
   st.date = F.work.at(-1) || exportDay; // default to the latest date contained in this Excel file
@@ -2068,22 +2292,50 @@ async function selectFile(i) {
   run();
 }
 // the same Excel file icon as the drop box
-const XL_ICON = '<svg viewBox="0 0 44 52" width="26" height="31" aria-hidden="true"><path d="M10 3h18.5L39 13.5V45a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4z" fill="#fff" stroke="#c4c8ce" stroke-width="1.4" stroke-linejoin="round"/><path d="M28.5 3v7a3.5 3.5 0 0 0 3.5 3.5h7" fill="#eef0f2" stroke="#c4c8ce" stroke-width="1.4" stroke-linejoin="round"/><rect x="11.5" y="16.5" width="21" height="14" rx="1.5" fill="#eaf5ee" stroke="#5aa77a" stroke-width="1.2"/><path d="M11.5 21.2h21M11.5 25.8h21M18.5 16.5v14M25.5 16.5v14" stroke="#5aa77a" stroke-width="1.1"/><rect x="2" y="34" width="31" height="12.5" rx="3" fill="#1f7a47"/><text x="17.5" y="43.4" text-anchor="middle" font-family="system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif" font-size="8.2" font-weight="800" letter-spacing=".4" fill="#fff">XLS</text></svg>';
+const XL_ICON = '<svg viewBox="0 0 44 52" width="26" height="31" aria-hidden="true"><path d="M10 3h18.5L39 13.5V45a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4z" fill="#fff" stroke="#c4c8ce" stroke-width="1.4" stroke-linejoin="round"/><path d="M28.5 3v7a3.5 3.5 0 0 0 3.5 3.5h7" fill="#eef0f2" stroke="#c4c8ce" stroke-width="1.4" stroke-linejoin="round"/><rect x="11.5" y="16.5" width="21" height="14" rx="1.5" fill="#eaf5ee" stroke="#5aa77a" stroke-width="1.2"/><path d="M11.5 21.2h21M11.5 25.8h21M18.5 16.5v14M25.5 16.5v14" stroke="#5aa77a" stroke-width="1.1"/><rect x="2" y="34" width="31" height="12.5" rx="3" fill="#1f7a47"/><text x="17.5" y="43.4" text-anchor="middle" font-family="system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif" font-size="7.2" font-weight="800" letter-spacing=".1" fill="#fff">XLSX</text></svg>';
+/** Excel folder and individual-file inputs are mutually exclusive. Keep Google and settings connected.
+ * Switching mode removes the old dataset and detaches any approved Excel folder handle.
+ * Card drafts stay namespaced to the original file inside this tab, never applied to another. */
+let badgeHandleReset = Promise.resolve();
+function setBadgeMode(mode, { reset = true, persist = true } = {}) {
+  if (mode !== "file" && mode !== "folder") return;
+  const changed = st.badgeMode !== mode;
+  st.badgeMode = mode;
+  const slider = $("#badgeMode");
+  if (slider) {
+    slider.dataset.mode = mode;
+    $("#badgeModeFolder").setAttribute("aria-pressed", String(mode === "folder"));
+    $("#badgeModeFile").setAttribute("aria-pressed", String(mode === "file"));
+    $("#badgeFolderBtn").hidden = mode !== "folder";
+    $("#drop").hidden = mode !== "file";
+  }
+  if (persist) { try { localStorage.setItem(EXCEL_MODE_KEY, mode); } catch {} }
+  if (!changed || !reset) return;
+  st.badgeModeEpoch++;
+  st.badgeDir = null; st.badgeFolderLoaded = false; st.badgeFolderDisplay = "";
+  Object.assign(st, { files: [], fi: -1, rows: null, res: null, date: null, over: {}, drafts: {}, sheetEdits: {}, sheetAuthority: {}, sent: {}, asked: {}, cur: null, order: {}, shownRows: {}, fileMore: false, fileQ: "" });
+  // In file mode, never restore yesterday's folder on a later page load.
+  if (mode === "file") badgeHandleReset = forgetFolderHandle("badges");
+  drawFiles(); drawDates(); drawAll();
+}
 function drawFiles() {
   const box = $("#fileList"), F = st.files[st.fi];
-  $("#drop").classList.toggle("loaded", !!F);
-  $("#fileName").textContent = F ? F.name : L("출입 기록 엑셀", "Badge export");
-  $("#fileSub").textContent = F ? `${F.work.map((d) => dayLabel(d)).join(", ")} · ${L(`${new Set(ATT.badgeRecords(F.rows).recs.map((r) => r.key)).size}명`, `${new Set(ATT.badgeRecords(F.rows).recs.map((r) => r.key)).size} people`)}` : L("여기에 끌어다 놓거나 누르세요 (여러 개 가능)", "Drop one or more here, or click");
-  $("#startBtn").classList.toggle("loaded", !!st.cfgDir);
-  $("#badgeFolderBtn").classList.toggle("loaded", !!st.badgeDir);
-  $("#badgeFolderName").textContent = st.badgeDir ? st.badgeDir.name : L("출입 기록 폴더", "Badge export folder");
-  $("#badgeFolderSub").textContent = st.badgeDir ? L("ADT 엑셀 폴더 연결됨", "ADT Excel folder connected") : L("원본 엑셀 폴더 선택", "Choose the folder with badge Excel exports");
+  // All three indicators are independent; one loaded input never paints another one green.
+  const hasFile = st.badgeMode === "file" && !!F;
+  const hasFolder = st.badgeMode === "folder" && (!!st.badgeDir || st.badgeFolderLoaded);
+  $("#drop").classList.toggle("loaded", hasFile);
+  $("#fileName").textContent = hasFile ? F.name : L("엑셀 파일 선택", "Select Excel files");
+  $("#fileSub").textContent = hasFile ? `${F.work.map((d) => dayLabel(d)).join(", ")} · ${L(`${new Set(ATT.badgeRecords(F.rows).recs.map((r) => r.key)).size}명`, `${new Set(ATT.badgeRecords(F.rows).recs.map((r) => r.key)).size} people`)} · 파일 불러옴` : L("여기에 끌어다 놓거나 누르세요 (여러 개 가능)", "Drop one or more here, or click");
+  $("#startBtn").classList.toggle("loaded", !!st.cfgDir || !!st.cfgFilesLoaded);
+  $("#badgeFolderBtn").classList.toggle("loaded", hasFolder);
+  $("#badgeFolderName").textContent = L("ADT 엑셀 폴더", "ADT Excel folder");
+  $("#badgeFolderSub").textContent = hasFolder ? (st.badgeDir ? L(`연결됨 · 선택한 폴더: ${st.badgeDir.name}`, `Connected · selected folder: ${st.badgeDir.name}`) : L(`읽기 전용 · ${st.badgeFolderDisplay || "선택한 폴더"} (다음에 다시 선택)`, `Read-only · ${st.badgeFolderDisplay || "selected folder"} (reselect next time)`)) : L("원본 엑셀 폴더 선택", "Choose the folder with badge Excel exports");
   if (st.cfgDir) {
-    $("#configName").textContent = st.cfgDir.name;
-    $("#configSub").textContent = L("설정 폴더 연결됨", "Settings folder connected");
+    $("#configName").textContent = L("설정 폴더", "Settings folder");
+    $("#configSub").textContent = L(`연결됨 · 선택한 폴더: ${st.cfgDir.name}`, `Connected · selected folder: ${st.cfgDir.name}`);
   } else {
-    $("#configName").textContent = dependenciesFolderHint() || L("필요한 파일", "Required Files");
-    $("#configSub").textContent = dependenciesFolderHint() ? L("이전에 선택함 · 다시 연결하기", "Previously selected · reconnect") : L("앱에 필요한 파일이 있는 폴더 선택", "Choose the folder containing the app files");
+    $("#configName").textContent = st.cfgFilesLoaded ? L("설정 파일 읽음", "Settings files loaded") : dependenciesFolderHint() || L("필요한 파일", "Required Files");
+    $("#configSub").textContent = st.cfgFilesLoaded ? L("읽기 전용 · 다시 열면 재선택 필요", "Read only · must reselect after reopening") : dependenciesFolderHint() ? L("이전에 선택함 · 다시 연결하기", "Previously selected · reconnect") : L("앱에 필요한 파일이 있는 폴더 선택", "Choose the folder containing the app files");
   }
   const all = listed(), nClean = st.files.filter((x) => x.cleaned).length;
   box.hidden = all.length < 2 && !nClean;
@@ -2137,7 +2389,7 @@ function drawDates() {
 }
 
 /* ---------- Google: sign-in (token in this window only), calendars read-only */
-const SC = { email: "https://www.googleapis.com/auth/userinfo.email", read: "https://www.googleapis.com/auth/calendar.readonly", write: "https://www.googleapis.com/auth/calendar.events", mail: "https://www.googleapis.com/auth/gmail.send", dir: "https://www.googleapis.com/auth/directory.readonly" };
+const SC = { email: "https://www.googleapis.com/auth/userinfo.email", read: "https://www.googleapis.com/auth/calendar.readonly", write: "https://www.googleapis.com/auth/calendar.events", chatSpace: "https://www.googleapis.com/auth/chat.spaces.create", chatSend: "https://www.googleapis.com/auth/chat.messages.create", dir: "https://www.googleapis.com/auth/directory.readonly" };
 let gisLoading = null;
 function loadGis() {
   if (window.google?.accounts?.oauth2) return Promise.resolve();
@@ -2148,20 +2400,28 @@ function loadGis() {
     document.head.append(s);
   }).catch((e) => { gisLoading = null; throw e; })); // a failed network load can be retried
 }
-/* Two separate Google sign-ins, so neither replaces the other:
-   "cal" reads the calendars and posts [지각]; "mail" sends the emails, and may be a different account
-   (the one named in mail_access.json). Each knows which account it is, read from Google after signing in.
-   A mail sign-in that isn't the named account is thrown away and nothing is sent. Nothing is stored. */
-const toks = { cal: null, mail: null };
+/* Two separate Google OAuth clients and tokens:
+   Calendar -> existing Calendar client_secret*.json; Google Chat -> EXACT chat_client_secret.json.
+   Google Chat is NOT Gmail, email, Google Hangouts, or a Chat bot webhook.
+   This app calls the Google Chat REST API with a human user's OAuth token: spaces.setup then messages.create.
+   Legacy settings.json keys mailAccount, mailBody, mailDomains, mailSubject are intentionally
+   retained so existing dependencies and saved Chat template text keep working. The old
+   mail_access.json may still restrict the sender's Google account; it is NOT an OAuth key.
+   Access tokens stay in memory and the Chat client ID is independent from Calendar. */
+const toks = { cal: null, chat: null };
 const sameMail = (a, b) => String(a || "").trim().toLowerCase() === String(b || "").trim().toLowerCase();
 async function whoIs(v) { try { const r = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", { headers: { Authorization: "Bearer " + v } }); return r.ok ? (await r.json()).email || "" : ""; } catch { return ""; } }
-const rememberedKey = (who) => `attendance_cleanup_google_${who}_${S.clientId || ""}`;
+const oauthClientId = (who) => who === "chat" ? S.chatClientId : S.clientId;
+const rememberedKey = (who) => `attendance_cleanup_google_${who}_${oauthClientId(who) || ""}`;
 function rememberedEmail(who) { try { return localStorage.getItem(rememberedKey(who)) || ""; } catch { return ""; } }
 function rememberEmail(who, email) { try { if (email) localStorage.setItem(rememberedKey(who), email); } catch {} }
 function forgetEmail(who) { try { localStorage.removeItem(rememberedKey(who)); } catch {} }
 async function token(need, who = "cal", silent = false) {
-  if (PREVIEW) { toks[who] ||= { v: "preview", exp: Infinity, scopes: new Set(), email: who === "mail" ? S.mailAccount || L("미리보기 계정", "preview account") : L("미리보기 계정", "preview account") }; need.forEach((x) => toks[who].scopes.add(x)); return "preview"; }
-  if (!S.clientId) throw new Error("noClient");
+  if (PREVIEW) { toks[who] ||= { v: "preview", exp: Infinity, scopes: new Set(), email: who === "chat" ? S.mailAccount || L("미리보기 계정", "preview account") : L("미리보기 계정", "preview account") }; need.forEach((x) => toks[who].scopes.add(x)); return "preview"; }
+  const clientId = oauthClientId(who);
+  if (!clientId) throw new Error(who === "chat" ? "noChatClient" : "noClient");
+  // An access token always belongs to the OAuth client that issued it.
+  if (toks[who] && toks[who].clientId !== clientId) toks[who] = null;
   const t = toks[who];
   if (t && need.every((x) => t.scopes.has(x)) && Date.now() < t.exp) return t.v;
   const scopes = new Set([...(t?.scopes || []), ...need, SC.email]);
@@ -2169,7 +2429,7 @@ async function token(need, who = "cal", silent = false) {
   if (location.protocol === "file:") {
     if (silent) throw new Error("silentUnavailable"); // file:// cannot return an OAuth redirect automatically
     const redirect = "http://localhost";
-    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${S.clientId}&redirect_uri=${encodeURIComponent(redirect)}&response_type=token&scope=${encodeURIComponent([...scopes].join(" "))}`;
+    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirect)}&response_type=token&scope=${encodeURIComponent([...scopes].join(" "))}`;
     
     const manualToken = await new Promise((resolve, reject) => {
         const ov = document.createElement("div");
@@ -2225,36 +2485,36 @@ async function token(need, who = "cal", silent = false) {
     const email = await whoIs(manualToken);
     if (!email) throw new Error("유효하지 않은 토큰입니다. 다시 시도해 주세요.");
     
-    if (who === "mail" && S.mailAccount && !sameMail(email, S.mailAccount)) { toks.mail = null; const e = new Error("wrongAccount"); e.got = email; throw e; }
+    if (who === "chat" && S.mailAccount && !sameMail(email, S.mailAccount)) { toks.chat = null; const e = new Error("wrongAccount"); e.got = email; throw e; }
     const doms = (S.mailDomains || []).map((d) => d.toLowerCase().replace(/^@/, ""));
-    if (doms.length && !doms.includes(domainOf(email)) && !(who === "mail" && S.mailAccount)) { toks[who] = null; const e = new Error("notCompany"); e.got = email || "?"; throw e; }
+    if (doms.length && !doms.includes(domainOf(email)) && !(who === "chat" && S.mailAccount)) { toks[who] = null; const e = new Error("notCompany"); e.got = email || "?"; throw e; }
     if (t?.email && email && !sameMail(email, t.email)) { toks[who] = null; const e = new Error("accountChanged"); e.got = email; e.want = t.email; throw e; }
     
-    toks[who] = { v: manualToken, exp: Date.now() + 3500 * 1000, scopes: new Set([...scopes]), email };
+    toks[who] = { v: manualToken, exp: Date.now() + 3500 * 1000, scopes: new Set([...scopes]), email, clientId };
     rememberEmail(who, email); // Remember only the account hint, never the temporary access token.
-    if (who === "cal") drawCalInfo(); drawMailSetup();
+    if (who === "cal") drawCalInfo(); drawChatSetup();
     return manualToken;
   }
 
   await loadGis();
-  const hint = who === "mail" ? S.mailAccount || t?.email || rememberedEmail(who) : t?.email || rememberedEmail(who);
+  const hint = who === "chat" ? S.mailAccount || t?.email || rememberedEmail(who) : t?.email || rememberedEmail(who);
   const r = await new Promise((ok, no) => {
-    const c = google.accounts.oauth2.initTokenClient({ client_id: S.clientId, scope: [...scopes].join(" "), include_granted_scopes: false, ...(hint ? { login_hint: hint } : {}), ...(silent ? { prompt: "none" } : {}),
+    const c = google.accounts.oauth2.initTokenClient({ client_id: clientId, scope: [...scopes].join(" "), include_granted_scopes: false, ...(hint ? { login_hint: hint } : {}), ...(silent ? { prompt: "none" } : {}),
       callback: (x) => (x.error || !x.access_token ? no(new Error(x.error || "denied")) : ok(x)), error_callback: (e) => no(new Error(e?.type || "popup")) });
     c.requestAccessToken();
   });
   const email = await whoIs(r.access_token);
-  if (who === "mail" && S.mailAccount && !sameMail(email, S.mailAccount)) { toks.mail = null; const e = new Error("wrongAccount"); e.got = email; throw e; }
+  if (who === "chat" && S.mailAccount && !sameMail(email, S.mailAccount)) { toks.chat = null; const e = new Error("wrongAccount"); e.got = email; throw e; }
   // only company accounts (the domains in Settings): a personal or other company's account is refused, for both sign-ins
   const doms = (S.mailDomains || []).map((d) => d.toLowerCase().replace(/^@/, ""));
-  if (doms.length && !doms.includes(domainOf(email)) && !(who === "mail" && S.mailAccount)) { toks[who] = null; const e = new Error("notCompany"); e.got = email || "?"; throw e; }
+  if (doms.length && !doms.includes(domainOf(email)) && !(who === "chat" && S.mailAccount)) { toks[who] = null; const e = new Error("notCompany"); e.got = email || "?"; throw e; }
   if (t?.email && email && !sameMail(email, t.email)) { toks[who] = null; const e = new Error("accountChanged"); e.got = email; e.want = t.email; throw e; }   // the same sign-in must stay the same account
-  toks[who] = { v: r.access_token, exp: Date.now() + (r.expires_in - 60) * 1000, scopes: new Set((r.scope || [...scopes].join(" ")).split(" ")), email };
+  toks[who] = { v: r.access_token, exp: Date.now() + (r.expires_in - 60) * 1000, scopes: new Set((r.scope || [...scopes].join(" ")).split(" ")), email, clientId };
   rememberEmail(who, email); // Store only the account hint in this browser; access tokens stay in memory.
-  if (who === "cal") drawCalInfo(); drawMailSetup();
+  if (who === "cal") drawCalInfo(); drawChatSetup();
   return r.access_token;
 }
-/** The preview's stand-in for Google: the calendars answer from the data built in; posting and mail only pretend. */
+/** Admin demo provider: Google Calendar AND Google Chat are simulated; NEVER sends network messages. */
 const pvStore = {};                                                        // preview only: what "Google" holds in the [지각] calendar
 function previewApi(url, opt) {
   const u = new URL(url);
@@ -2324,25 +2584,25 @@ async function loadCalendars() {
   }
 }
 /** "캘린더 계정: cal@… [계정 바꾸기]" — or a sign-in button. The two sign-ins are separate (see token()). */
-const acctErr = { cal: "", mail: "" };
+const acctErr = { cal: "", chat: "" };
 function drawAccount(who) {
-  const box = $(who === "cal" ? "#calAcct" : "#mailAcct"); if (!box) return;
-  const t = toks[who], label = who === "cal" ? L("캘린더 계정", "Calendar account") : L("이메일 계정", "Email account");
+  const box = $(who === "cal" ? "#calAcct" : "#chatAcct"); if (!box) return;
+  const t = toks[who], label = who === "cal" ? L("캘린더 계정", "Calendar account") : L("Google Chat 계정", "Google Chat account");
   const go = async (fresh) => {
     if (fresh) toks[who] = null;
     btn.disabled = true; acctErr[who] = "";
     try {
-      await token(who === "cal" ? [SC.read] : [SC.mail], who);
+      await token(who === "cal" ? [SC.read] : [SC.chatSpace, SC.chatSend], who);
       if (who === "cal") await loadCalendars();
     } catch (e) { acctErr[who] = plainErr(e); }
-    finally { btn.disabled = false; drawAccount(who); drawMailSetup(); }
+    finally { btn.disabled = false; drawAccount(who); drawChatSetup(); }
   };
   const btn = el("button", { type: "button", className: t ? "linkbtn" : "bigbtn gbtn", innerHTML: t ? esc(L("다른 계정으로", "Switch account")) : `<svg viewBox="0 0 18 18" width="16" height="16" aria-hidden="true"><path d="M17.6 9.2c0-.6-.1-1.2-.2-1.8H9v3.4h4.8a4.1 4.1 0 0 1-1.8 2.7v2.2h2.9c1.7-1.6 2.7-3.9 2.7-6.5z" fill="#4285F4"/><path d="M9 18c2.4 0 4.5-.8 5.9-2.2l-2.9-2.2c-.8.5-1.8.9-3 .9-2.3 0-4.3-1.6-5-3.7H1v2.3A9 9 0 0 0 9 18z" fill="#34A853"/><path d="M4 10.8a5.4 5.4 0 0 1 0-3.5V5H1a9 9 0 0 0 0 8z" fill="#FBBC05"/><path d="M9 3.6c1.3 0 2.5.5 3.4 1.3L15 2.3A9 9 0 0 0 1 5l3 2.3c.7-2.1 2.7-3.7 5-3.7z" fill="#EA4335"/></svg><span>${esc(L("Google 로그인", "Sign in with Google"))}</span>` });
   btn.addEventListener("click", () => go(!!t));
   const out = t ? el("button", { type: "button", className: "linkbtn", textContent: L("로그아웃", "Sign out") }) : "";
-  if (out) out.addEventListener("click", () => { toks[who] = null; forgetEmail(who); if (who === "cal") { st.calLoaded = false; drawCalInfo(); run(); } drawAccount(who); drawMailSetup(); });
+  if (out) out.addEventListener("click", () => { toks[who] = null; forgetEmail(who); if (who === "cal") { st.calLoaded = false; drawCalInfo(); run(); } drawAccount(who); drawChatSetup(); });
   box.replaceChildren(el("span", { className: "acctlab", textContent: label }),
-    el("span", { className: "acctwho" + (t ? " on" : ""), textContent: t ? t.email || L("로그인됨", "signed in") : who === "mail" && S.mailAccount ? L(`${S.mailAccount} (아직 로그인 안 됨)`, `${S.mailAccount} (not signed in yet)`) : L("로그인 안 됨", "not signed in") }), btn, out,
+    el("span", { className: "acctwho" + (t ? " on" : ""), textContent: t ? t.email || L("로그인됨", "signed in") : who === "chat" && S.mailAccount ? L(`${S.mailAccount} (아직 로그인 안 됨)`, `${S.mailAccount} (not signed in yet)`) : L("로그인 안 됨", "not signed in") }), btn, out,
     acctErr[who] ? el("span", { className: "acctmsg warnline", textContent: acctErr[who] }) : "",
     );
 }
@@ -2359,7 +2619,7 @@ function drawCalInfo() {
     const stats = el("span", { className: "cal-stats tag ok", textContent: L(`휴가 ${nl} · 외근·회의 ${nw}`, `${nl} leave · ${nw} 외근/meetings`) });
     $("#calAcct .acctwho")?.append(stats);
   }
-  $("#gIn").innerHTML = `<svg viewBox="0 0 20 20" width="17" height="17" aria-hidden="true"><path d="M16 6.5A6.5 6.5 0 1 0 17 11M16 2.8v4.4h-4.4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><span>${L("다시 읽기", "Reload calendars")}</span>`; $("#gIn").setAttribute("aria-label", L("다시 읽기", "Reload calendars"));
+  $("#gIn").innerHTML = `<svg viewBox="0 0 20 20" width="17" height="17" aria-hidden="true"><path d="M16 6.5A6.5 6.5 0 1 0 17 11M16 2.8v4.4h-4.4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><span>${L("캘린더 다시 읽기", "Reread calendar")}</span>`; $("#gIn").setAttribute("aria-label", L("캘린더 다시 읽기", "Reread calendar"));
   $("#calData").disabled = false;
   $("#calInfo").replaceChildren(st.calMissing?.length ? el("div", { className: "note bad" }, el("b", { textContent: L("찾지 못한 캘린더: ", "Calendars not found: ") }), el("span", { textContent: st.calMissing.join(", ") + L(" — 설정에서 캘린더 이름을 확인해 주세요.", " — check the calendar names in Settings.") })) : "");
 }
@@ -2376,12 +2636,13 @@ function drawNeeds() {
 function run() {
   if (!drawNeeds() || !st.rows) { st.res = null; drawAll(); return; }
   ATT.setPlaces(S.mainPlaces, S.places);
-  st.order = {}; st.shownRows = {};
+  // Excel row order and preview membership are fixed for this source file; a Calendar reread must not reshuffle either.
+  st.order ||= {}; st.shownRows ||= {};
   st.res = ATT.analyze({ rows: st.rows, events: st.events, holidays: st.holidays, settings: { exempt: S.exempt, at1800: S.at1800, teams: S.teams, at1800Auto: true, lateAfter: S.lateAfter, endOfDay: S.endOfDay, daysOff: S.daysOff } });
   if (st.res.error) st.res = null;
   drawDates(); drawAll();
 }
-function drawAll() { drawReview(); drawAuto(); drawSheetSum(); drawGo(); drawMailSetup(); }
+function drawAll() { drawReview(); drawAuto(); drawSheetSum(); drawGo(); drawChatSetup(); }
 
 /* ---------- 3. the cards: one person-day at a time, for the chosen date */
 let EMPTY = null;
@@ -2395,7 +2656,7 @@ function drawReview() {
   const box = $("#review"), has = !!st.res;
   $("#stageFoot").hidden = !has;
   $("#stageDate").textContent = has ? dayLabel(st.date) : "";
-  if (!has) { EMPTY.firstChild.textContent = L("근태 폴더를 열거나 출입 기록 엑셀을 넣고, 캘린더를 읽으세요.", "Open the dependencies folder or badge records, then read the calendars."); box.replaceChildren(EMPTY); $("#tally").replaceChildren(); $("#wizPos").textContent = ""; $("#cardPrev").hidden = $("#cardNext").hidden = true; $("#wizBar").firstChild.style.width = "0"; return; }
+  if (!has) { EMPTY.firstChild.textContent = L("근태 폴더를 열거나 출입 기록 엑셀을 넣고, 캘린더를 읽으세요.", "Open the dependencies folder or badge records, then read the calendars."); box.dataset.currentCard = ""; box.replaceChildren(EMPTY); $("#tally").replaceChildren(); $("#wizPos").textContent = ""; $("#cardPrev").hidden = $("#cardNext").hidden = true; $("#wizBar").firstChild.style.width = "0"; return; }
   const all = cellsOn(st.date), asked = all.filter((c) => c.review.length), open = asked.filter(isOpen), shown = reviewCards();
   const autos = all.filter((c) => !c.review.length && (c.inSrc === "auto" || c.outSrc === "auto")), lates = ATT.daySummary(st.res, st.date, st.over).rows.filter((r) => r.late);
   $("#tally").replaceChildren(
@@ -2405,20 +2666,61 @@ function drawReview() {
   $("#wizBar").firstChild.style.width = `${Math.round((100 * (asked.length - open.length)) / Math.max(1, asked.length))}%`;
   if (!shown.length) {
     st.cur = null; $("#wizPos").textContent = ""; $("#cardPrev").hidden = $("#cardNext").hidden = true;
-    box.replaceChildren(el("div", { className: "alldone" }, el("b", { textContent: L(`${dayLabel(st.date)} 확인할 항목 없음`, `${dayLabel(st.date)}: nothing to review`) }),
+    box.dataset.currentCard = ""; box.replaceChildren(el("div", { className: "alldone" }, el("b", { textContent: L(`${dayLabel(st.date)} 확인할 항목 없음`, `${dayLabel(st.date)}: nothing to review`) }),
       el("span", { textContent: L("4단계에서 정리된 엑셀을 확인하세요.", "Review the cleaned Excel in step 4.") })));
     return;
   }
   let i = shown.findIndex((c) => K(c) === st.cur); if (i < 0) i = 0;
-  st.cur = K(shown[i]);
+  const visibleKey = K(shown[i]);
+  const sameCard = box.dataset.currentCard === visibleKey;
+  const priorScroll = sameCard ? box.querySelector(".rc-content")?.scrollTop || 0 : 0;
+  if (!sameCard) { box.scrollTop = 0; box.dataset.currentCard = visibleKey; }
+  st.cur = visibleKey;
   $("#wizPos").textContent = `${i + 1} / ${shown.length}`;
   $("#cardPrev").hidden = $("#cardNext").hidden = shown.length < 2;
   box.replaceChildren(card(shown[i], i));
+  if (sameCard) box.querySelector(".rc-content").scrollTop = priorScroll;
 }
 function flip(d) {
   const shown = reviewCards(); if (shown.length < 2) return;
   const i = Math.max(0, shown.findIndex((c) => K(c) === st.cur));
   st.cur = K(shown[(i + d + shown.length) % shown.length]); drawReview();
+}
+/* Card 3 manual draft history (separate from Card 4 spreadsheet history).
+   One group for multiple synchronous quick fills such as 휴가 on both fields.
+   Undo/redo never writes the Excel file or sends a Google Chat message. */
+const cardUndoStore = new Map();
+function cardUndoFor(c, fields, placeInput) {
+  const key = cardStoreKey(c);
+  const read = () => ({ in: fields.in.value, out: fields.out.value, place: placeInput?.value || "" });
+  const equal = (a,b) => !!a && !!b && a.in===b.in && a.out===b.out && a.place===b.place;
+  let h = cardUndoStore.get(key);
+  if (!h) { h = {past:[],future:[],current:read(),applying:false,queued:false};cardUndoStore.set(key,h); }
+  else if (!equal(h.current, read())) { h.past=[];h.future=[];h.current=read(); }
+  const record = () => {
+    if (h.applying || h.queued) return;
+    h.queued=true;
+    queueMicrotask(() => {
+      h.queued=false; if(h.applying)return;
+      const next=read();if(equal(next,h.current))return;
+      h.past.push(h.current);if(h.past.length>100)h.past.shift();
+      h.current=next;h.future=[];refresh();
+    });
+  };
+  const undo=el("button",{type:"button",textContent:"↶",title:"3단계 실행 취소 (Ctrl+Z)","aria-label":"3단계 실행 취소"});
+  const redo=el("button",{type:"button",textContent:"↷",title:"3단계 다시 실행 (Ctrl+Y)","aria-label":"3단계 다시 실행"});
+  const refresh=()=>{undo.disabled=!h.past.length;redo.disabled=!h.future.length;};
+  const step=(isRedo)=>{
+    const src=isRedo?h.future:h.past,dest=isRedo?h.past:h.future;
+    if(!src.length)return;
+    dest.push(h.current); const val=src.pop();h.applying=true;
+    // Restore place first, then badge inputs, avoiding unintended retranslation.
+    if(placeInput){ placeInput.value=val.place;placeInput.dispatchEvent(new Event("input")); }
+    fields.in.value=val.in;fields.out.value=val.out;
+    setCardDraft(c,fields);h.current=read();h.applying=false;refresh();
+  };
+  undo.addEventListener("click",()=>step(false));redo.addEventListener("click",()=>step(true));
+  refresh();return {controls:el("span",{className:"card-hist"},undo,redo),record,step};
 }
 /** How much of the working day (09:00–18:00) the badge times cover, to the quarter hour; the day to two decimals.
     → { hours, day, guess, side } — guess is the leave that would fill the gap (반반차 0.25, 반차 0.5), when it's close */
@@ -2432,9 +2734,21 @@ function dayShare(c) {
   return { hours: Math.round(work / 15) / 4, day, missing, guess, side: a > s0 + 30 ? "in" : "out" };
 }
 const fmtH = (h) => String(h).replace(/\.0+$/, "");
-/** The quick values for one side: a time, leave, and the places menu. */
-function quickFor(side, inp) {
+/** Card 3 quick-fill controls. Full-day 휴가 is one employee/day, NOT one side:
+    clicking the 휴가 button on either side explicitly fills both 출근 and 퇴근.
+    Every other quick value retains its original single-side behavior.
+    Dispatch input for each field so unsaved drafts include both values. */
+function quickFor(side, inp, fields) {
   const put = (v) => {
+    if (v === "휴가") {
+      for (const field of [fields.in, fields.out]) {
+        if (!field) continue;
+        field.value = "휴가";
+        field.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+      inp.focus();
+      return;
+    }
     const t = (inp.value.match(/^\s*(\d{1,2}:\d{2})/) || [])[1];
     inp.value = t && /^(반차|반반차)$/.test(v) ? `${t}(${v})` : v;        // 반차 next to a badge time adds the reason: 13:02 → 13:02(반차)
     inp.dispatchEvent(new Event("input")); inp.focus();
@@ -2452,28 +2766,40 @@ function placeSection(c, fields) {
   const PLACE_RE = /^(직출|직퇴|외근|출장)\((.*)\)$/;
   const other = el("input", { type: "text", className: "pother", placeholder: L("장소 입력 (선택)", "Enter place (optional)"), value: "" });
   const kindRows = {};
+  const updatePlace = (newPlace) => {
+    const previous = cur;
+    cur = newPlace.trim();
+    for (const side of ["in", "out"]) {
+      const inp = fields[side], hit = String(inp.value || "").trim().match(PLACE_RE);
+      // Update only values previously inserted with this selector; preserve any unrelated manual entry.
+      if (hit && (!hit[2] || hit[2] === "장소" || hit[2] === previous)) {
+        inp.value = `${hit[1]}(${cur || "장소"})`;
+        inp.dispatchEvent(new Event("input"));
+      }
+    }
+  };
   const draw = () => {
     for (const [side, row] of Object.entries(kindRows)) {
       row.replaceChildren(...(side === "in" ? ["직출", "외근", "출장"] : ["직퇴", "외근", "출장"]).map((kind) => {
-        const value = `${kind}(${cur || "장소"})`;
-        const x = el("button", { type: "button", className: "q", textContent: value });
-        x.addEventListener("click", () => { fields[side].value = value; fields[side].dispatchEvent(new Event("input")); fields[side].focus(); });
+        // Labels stay constant. A click inserts the currently selected location.
+        const x = el("button", { type: "button", className: "q", textContent: `${kind}(장소)` });
+        x.addEventListener("click", () => { fields[side].value = `${kind}(${cur || "장소"})`; fields[side].dispatchEvent(new Event("input")); fields[side].focus(); });
         return x;
       }));
     }
   };
-  other.addEventListener("input", () => { cur = other.value.trim(); draw(); });
+  other.addEventListener("input", () => updatePlace(other.value));
   for (const side of ["in", "out"]) kindRows[side] = el("div", { className: "quick kinds" });
   draw();
   const chipsBox = el("div", { className: "pchips" }, ...mainNames().map((name) => {
     const b = el("button", { type: "button", className: "chip", textContent: name });
-    b.addEventListener("click", () => { cur = name; other.value = name; draw(); });
+    b.addEventListener("click", () => { other.value = name; updatePlace(name); });
     return b;
   }));
   return { node: el("section", { className: "places" },
     el("h3", { textContent: L("장소", "Place") }),
     el("div", { className: "prow" }, chipsBox, other),
-    el("small", { className: "fine", textContent: L("장소를 입력하거나 버튼의 (장소)를 직접 바꿔 주세요.", "Type a place, or replace (장소) in the filled entry.") })
+    el("small", { className: "fine", textContent: L("장소를 고른 뒤 버튼을 누르거나, 먼저 버튼을 눌렀다면 장소를 골라 입력값을 바꿀 수 있습니다.", "Select a place before or after pressing the button; the entry updates automatically.") })
   ), kindRows };
 }
 /** This person's entries for the day, one short line each (not the whole calendar title with everyone in it). */
@@ -2490,7 +2816,8 @@ function entryLines(c) {
   return out;
 }
 function card(c, idx) {
-  const o = st.over[K(c)] || {}, fields = {}, draft = st.drafts[K(c)] || null, cardId = getCardStore(c).id, done = !!o.done;
+  const o = st.over[K(c)] || {}, fields = {}, draft = st.drafts[K(c)] || null, done = !!o.done;
+  getCardStore(c); // preserve its unique six-character internal ID; never display it
   const share = dayShare(c);
   const placeSlot = { in: el("div"), out: el("div") };
   const side = (s) => {
@@ -2505,15 +2832,15 @@ function card(c, idx) {
     return el("div", { className: "side" },
       el("div", { className: "sidehead" }, el("b", { textContent: s === "in" ? L("출근", "In") : L("퇴근", "Out") }),
         el("span", { className: "bval" + (raw ? "" : " none"), textContent: raw ? L(`출입 기록 ${raw}`, `badge ${raw}`) : L("출입 기록 없음", "no badge time") })),
-      inp, sg, quickFor(s, inp), el("div", { className: "quicks" }, placeSlot[s]));
+      inp, sg, quickFor(s, inp, fields), el("div", { className: "quicks" }, placeSlot[s]));
   };
   const places = placeSection(c, fields);
   placeSlot.in = places.kindRows.in; placeSlot.out = places.kindRows.out;
   const lines = entryLines(c);
-  const save = el("button", { type: "button", className: "nextbtn", innerHTML: `<span>${esc(L("저장", "Save"))}</span><kbd>Enter</kbd>` });
+  const save = el("button", { type: "button", className: "nextbtn savebtn", innerHTML: `<span>${esc(L("저장", "Save"))}</span><kbd>Enter</kbd>` });
   save.hidden = done;
   save.addEventListener("click", () => {
-    const data = { ...st.over[K(c)], in: normTime(fields.in.value), out: normTime(fields.out.value), done: true };
+    const data = { ...st.over[K(c)], in: normTime(fields.in.value), out: normTime(fields.out.value), ...st.sheetAuthority[K(c)], done: true };
     st.over[K(c)] = data; st.dirty = true; delete st.asked[K(c)];
     saveCardCommit(c, data);
     st.cur = K(c); // The completed card stays in place, grey and re-editable.
@@ -2528,9 +2855,10 @@ function card(c, idx) {
     drawAll(); drawDates();
     $("#review input")?.focus();
   });
-  const mailBox = el("div", { className: "mailslot" });
+  const chatBox = el("div", { className: "chatslot" });
   const wrap = el("article", { className: "rc" },
-    el("header", { className: "rchead" }, el("b", { textContent: c.name }), el("span", { textContent: [orgOf(c)?.team || c.dept, dayLabel(c.date)].filter(Boolean).join(" · ") }), el("small", { className: "card-id", textContent: `#${cardId}` }), done ? el("span", { className: "chip ok", textContent: L("저장됨 · 수정 가능", "Saved · editable") }) : ""),
+    el("header", { className: "rchead" }, el("b", { textContent: c.name }), el("span", { textContent: [orgOf(c)?.team || c.dept, dayLabel(c.date)].filter(Boolean).join(" · ") }), el("span", { className: "chip ok", style: done ? "" : "visibility:hidden", textContent: L("저장됨 · 수정 가능", "Saved · editable") })),
+    el("div", { className: "rc-content" },
     el("ul", { className: "issues" }, ...[...new Set(c.review.map(shortWhy))].map((t) => el("li", { textContent: t }))),
     (() => { const box = el("div", { className: "sides" }, side("in"), side("out")); if (box.querySelectorAll(".suggs.blank").length === 2) box.querySelectorAll(".suggs.blank").forEach((x) => x.remove()); return box; })(),
     places.node,
@@ -2539,11 +2867,23 @@ function card(c, idx) {
       lines.length ? el("ul", {}, ...lines.map((x) => el("li", {}, el("span", { className: "etag " + x.cls, textContent: x.tag }),
         el("span", { className: "ebody" }, el("span", { className: "etext", textContent: x.text }), x.title && x.title !== x.text ? el("span", { className: "eraw", innerHTML: esc(x.title).split(esc(c.name)).join(`<b>${esc(c.name)}</b>`) }) : "")))) : el("p", { className: "fine", textContent: L("캘린더에 이날 일정이 없습니다.", "Nothing in the calendars for this day.") }),
       share ? el("p", { className: "worked" }, el("span", { textContent: L("근무", "Worked") }), el("b", { textContent: L(`${fmtH(share.hours)}시간 · ${share.day.toFixed(2)}일`, `${fmtH(share.hours)} h · ${share.day.toFixed(2)} day`) }), el("small", { textContent: L(` (${S.lateAfter || "09:00"}–${S.endOfDay || "18:00"} 중)`, ` (of ${S.lateAfter || "09:00"}–${S.endOfDay || "18:00"})`) })) : ""),
-    el("footer", { className: "rcfoot" }, mailButton(c, mailBox), save, edit), mailBox);
+      chatBox),
+    el("footer", { className: "rcfoot" }, chatButton(c, chatBox), save, edit));
+  const undoControl=cardUndoFor(c,fields,places.node.querySelector("input.pother"));
+  wrap.querySelector(".rchead").appendChild(undoControl.controls);
+  if (done) undoControl.controls.querySelectorAll("button").forEach(b=>b.disabled=true);
+  if (!done) {
+    places.node.querySelector("input.pother")?.addEventListener("input",undoControl.record);
+    wrap.addEventListener("keydown",e=>{
+      if (!(e.ctrlKey||e.metaKey)||e.altKey)return;
+      const k=e.key.toLowerCase();
+      if(k==="z"||k==="y") {e.preventDefault();e.stopPropagation();undoControl.step(k==="y"||e.shiftKey);}
+    });
+  }
   wrap.classList.toggle("completed", done);
   if (done) for (const input of wrap.querySelectorAll(".sides input, .places input, .sides button, .places button")) input.disabled = true;
   for (const f of ["in", "out"]) {
-    fields[f].addEventListener("input", () => setCardDraft(c, fields));
+    fields[f].addEventListener("input", () => { setCardDraft(c, fields); if(!done)undoControl.record(); });
     fields[f].addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.isComposing && !done) { e.preventDefault(); save.click(); } });
     fields[f].addEventListener("blur", () => { if (!done) { fields[f].value = normTime(fields[f].value); setCardDraft(c, fields); } });
   }
@@ -2619,10 +2959,46 @@ function cleanedSheet(date, withSums) {
   }
   return { rows: out, marks, cellAt, src, B, lateCol, hidden };
 }
+/* Card 4 authoritative edits survive closing the enlarged Excel editor.
+   The small preview has its own undo/redo controls; enlarged editor already has
+   native xeUndo/xeRedo. Snapshots capture only edited attendance fields, not Card 3 drafts. */
+const sheetUndoStore = new Map();
+function sheetHistoryKey() {
+  const file=st.files[st.fi];return JSON.stringify([file?.fingerprint || file?.key || file?.name || "", st.date]);
+}
+function sheetSnapshot() {
+  const late={};for(const c of (st.res?.cells||[]))if(c.date===st.date){
+    const o=st.over[K(c)]||{};if(Object.prototype.hasOwnProperty.call(o,"late"))late[K(c)]=o.late;
+  }
+  return {authority:structuredClone(st.sheetAuthority),edits:structuredClone(st.sheetEdits),late};
+}
+function sheetHistory() {
+  const k=sheetHistoryKey();if(!sheetUndoStore.has(k))sheetUndoStore.set(k,{past:[],future:[]});return sheetUndoStore.get(k);
+}
+function showSheetHistory() {
+  const h=sheetHistory();if($("#sheetUndo"))$("#sheetUndo").disabled=!h.past.length;
+  if($("#sheetRedo"))$("#sheetRedo").disabled=!h.future.length;
+}
+function sheetRemember() {
+  if(!st.res)return;
+  const h=sheetHistory();h.past.push(sheetSnapshot());if(h.past.length>100)h.past.shift();
+  h.future=[];showSheetHistory();
+}
+function sheetHistoryStep(redo=false) {
+  if(!st.res)return;const h=sheetHistory(),src=redo?h.future:h.past,dest=redo?h.past:h.future;
+  if(!src.length)return;dest.push(sheetSnapshot());const snap=src.pop();
+  const keys=new Set([...Object.keys(snap.late),...(st.res?.cells||[]).filter(c=>c.date===st.date).map(c=>K(c))]);
+  for(const key of keys){if(!st.over[key])st.over[key]={};
+    if(Object.prototype.hasOwnProperty.call(snap.late,key))st.over[key].late=snap.late[key];else delete st.over[key].late;
+  }
+  st.sheetAuthority=snap.authority;st.sheetEdits=snap.edits;st.dirty=true;
+  drawAll();drawDates();showSheetHistory();
+}
 /* step 4: the form filler's data preview — column letters, row numbers, the first rows and "show the rest";
    the pencil and the corners open the same sheet full size, where it can be edited */
 function drawSheetSum() {
-  const box = $("#sheetBox"), has = !!st.res;
+  const box = $("#sheetBox"), maxButton = $("#sheetBig"), has = !!st.res;
+  if (has) showSheetHistory();
   for (const id of ["#sheetBar", "#sheetBox", "#sheetBig"]) $(id).hidden = !has;
   if (!has) { $("#sheetSum").replaceChildren(el("p", { className: "fine", textContent: L("데이터를 넣으면 고른 날짜의 정리된 표가 여기에 나옵니다.", "The cleaned sheet for the chosen date appears here once the data is in.") })); return; }
   const V = cleanedSheet(st.date), n = { auto: 0, mine: 0, warn: 0 };
@@ -2647,19 +3023,19 @@ function drawSheetSum() {
       const td = el("td", { className: (k ? "x-" + k : "") + (late ? " x-late" : "") + (side ? " x-edit" : ""), title: v ?? "", innerHTML: late ? `<span class="xchk${v ? " on" : ""}" role="checkbox" aria-checked="${!!v}" tabindex="0"></span>` : ri > 0 && c && ci === vc(V.B.col.dept) && !String(v ?? "").trim() && orgOf(c) ? `<span class="fromlist" title="${esc(L("출입 기록에는 부서가 비어 있어 설정의 ‘부서와 순서’에서 가져왔습니다", "Blank in the badge file; taken from Settings → 부서와 순서"))}">${esc(orgOf(c).team)}</span>` : esc(ri === 0 && ci === V.lateCol ? "지각" : v ?? "") });
       if (side) {
         td.contentEditable = "plaintext-only"; td.spellcheck = false;
-        const commit = () => { const nv = td.textContent.trim(); if (nv !== String(v ?? "")) { editSide(c, side, nv); drawSheetSum(); drawReview(); drawAuto(); drawGo(); drawDates(); } };
+        const commit = () => { const nv = td.textContent.trim(); if (nv !== String(v ?? "")) { sheetRemember(); const result = editSide(c, side, nv); (st.sheetAuthority[K(c)] ||= {})[side] = result; drawSheetSum(); drawReview(); drawAuto(); drawGo(); drawDates(); } };
         td.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); td.blur(); } else if (e.key === "Escape") { td.textContent = v ?? ""; td.blur(); } });
         td.addEventListener("blur", commit);
       }
       if (late) {
-        const flip = () => { st.over[ATT.cellKey(c)] = { ...st.over[ATT.cellKey(c)], late: !v }; st.dirty = true; drawSheetSum(); drawReview(); drawGo(); };
+        const flip = () => { sheetRemember(); st.over[ATT.cellKey(c)] = { ...st.over[ATT.cellKey(c)], late: !v }; (st.sheetAuthority[K(c)] ||= {}).late = !v; st.dirty = true; drawSheetSum(); drawReview(); drawGo(); };
         td.firstChild.addEventListener("click", flip); td.firstChild.addEventListener("keydown", (e) => { if (e.key === " " || e.key === "Enter") { e.preventDefault(); flip(); } });
       }
       return td;
     })); }));
   box.replaceChildren(el("table", { className: "data" }, thead, tbody));
   drawCalPreview();
-  box.append(el("p", { className: "fine plainnote", textContent: plain ? L(`색이 없는 ${plain}명은 출입 기록 그대로입니다. 전체는 크게 보기에서 확인하세요.`, `The other ${plain} people are as the badge file has them; see them all full size.`) : L("모든 줄에 색이 있습니다.", "Every row is coloured.") }));
+  box.append(el("div", { className: "sheet-preview-footer" }, el("p", { className: "fine plainnote", textContent: plain ? L(`색이 없는 ${plain}명은 출입 기록 그대로입니다. 전체는 크게 보기에서 확인하세요.`, `The other ${plain} people are as the badge file has them; see them all full size.`) : L("모든 줄에 색이 있습니다.", "Every row is coloured.") }), maxButton));
 }
 let sheetView = null;
 const state = { data: null, headerRow: 0, rowsMode: false };          // what the shared editor reads
@@ -2676,6 +3052,7 @@ function openSheet() {
   decorateSheet();
   const bar = $("#xlOverlay .we-status");
   if (bar && !$("#xeLegend")) bar.insertBefore(el("span", { id: "xeLegend", className: "legend" }), bar.firstChild);
+  $("#xeLegend").hidden = false;
   $("#xeLegend").replaceChildren(...[["auto", L("자동", "auto")], ["mine", L("직접 고침", "changed")], ["open", L("확인 필요", "to check")]].map(([k, t]) => el("span", { className: "lg" }, el("i", { className: "sw " + k }), el("span", { textContent: t }))));
 }
 function decorateSheet() {
@@ -2700,8 +3077,10 @@ window.xeLocked = xeLocked;
 window.xeLockedMsg = () => L("이 칸은 출입 기록 그대로 둡니다. 출근·퇴근을 고치고, 지각은 체크 칸으로 켜고 끕니다.", "This cell stays as the badge file has it. Edit 출근 / 퇴근; tick 지각 표시 for late.");
 function toggleLate(r) {
   const V = sheetView, c = V?.cellAt[r]; if (!c) return;
+  sheetRemember();
   const now = xe.grid[r][V.lateCol] === "지각";
-  st.over[K(c)] = { ...st.over[K(c)], late: !now }; st.dirty = true;
+  st.over[K(c)] = { ...st.over[K(c)], late: !now };
+  (st.sheetAuthority[K(c)] ||= {}).late = !now; st.dirty = true;
   xe.grid[r][V.lateCol] = now ? "" : "지각";
   (V.marks[r] ||= {})[V.lateCol] = "mine";
   decorateSheet(); afterSheetEdit();
@@ -2711,11 +3090,13 @@ window.xeKey = (e) => {
   return false;
 };
 window.xeChanged = (cells) => {
-  const V = sheetView; if (!V) return;
+  const V = sheetView; if (!V || !cells.length) return;
+  sheetRemember();
   for (const { r, c } of cells) {
     const v = xe.grid[r][c], cell = V.cellAt[r];
     if (cell && (c === V.B.col.in || c === V.B.col.out)) {
       const s = c === V.B.col.in ? "in" : "out", nv = editSide(cell, s, v);
+      (st.sheetAuthority[K(cell)] ||= {})[s] = nv;
       if (nv !== v) { xe.grid[r][c] = nv; xeRefreshCell(r, c, false); }        // 1400 → 14:00 right in the cell
       (V.marks[r] ||= {})[c] = "mine";
     } else if (!xeLocked(r, c)) { st.sheetEdits[`${V.src[r]}|${c > V.lateCol ? c - 1 : c}`] = v; (V.marks[r] ||= {})[c] = "mine"; st.dirty = true; }
@@ -2763,28 +3144,28 @@ function drawGo() {
 /** The rows of the [지각] entry: team on its first row, in the company's order. */
 function calRows(d) {
   const byKey = new Map(st.res.cells.map((c) => [ATT.cellKey(c), c]));
+  // Card 4's editable 비고/메모/사유 columns are also included in the Calendar output.
+  // Only explicit spreadsheet edits are added; ordinary badge-file notes stay unchanged.
+  const noteHeaders = st.rows?.[st.res.B.headRow] || [];
+  const noteCols = noteHeaders.map((h, i) => /비고|메모|사유/.test(String(h || "")) ? i : -1).filter(i => i >= 0);
+  const manualNote = (c) => c ? [...new Set(noteCols.flatMap((i) => {
+    const key = `${c.r}|${i}`;
+    if (!Object.prototype.hasOwnProperty.call(st.sheetEdits, key)) return [];
+    const text = String(st.sheetEdits[key] ?? "").trim();
+    return text ? [text] : [];
+  }))].join(" · ") : "";
   let last = null;
-  return d.rows.map((r) => ({ ...r, cell: byKey.get(r.key), dept: byKey.get(r.key)?.dept || "" })).sort(byDeptName).map((r) => { const t = teamOf(r), first = t !== last; last = t; return { ...r, team: t, first }; });
+  return d.rows.map((r) => ({ ...r, cell: byKey.get(r.key), dept: byKey.get(r.key)?.dept || "", manualNote: manualNote(byKey.get(r.key)) })).sort(byDeptName).map((r) => { const t = teamOf(r), first = t !== last; last = t; return { ...r, team: t, first }; });
 }
 /* step 4, after the Excel preview: the [지각] entry as Google Calendar will show it. 출근/퇴근 can be typed into and
    지각 ticked right here; it's the same data as the cards and the Excel, so every view follows. */
 function drawCalPreview() {
   const box = $("#calPv"); box.hidden = !st.res; if (!st.res) return;
-  const d = ATT.daySummary(st.res, st.date, st.over), rows = calRows(d), CW = calWidths(rows), today = st.date === st.files[st.fi]?.dates.at(-1);
-  const redraw = () => { drawSheetSum(); drawReview(); drawAuto(); drawGo(); drawDates(); };
-  const cell = (r, side) => {
-    const shown = () => splitNote(r[side])[0];
-    const td = el("td", { className: "x-edit", textContent: shown(), title: r[side] || "" });
-    td.addEventListener("focus", () => { td.textContent = r[side] || ""; });
-    td.contentEditable = "plaintext-only"; td.spellcheck = false;
-    td.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); td.blur(); } else if (e.key === "Escape") { td.textContent = r[side] || ""; td.blur(); } });
-    td.addEventListener("blur", () => { const v = td.textContent.trim(); if (v !== (r[side] || "")) { editSide(r.cell, side, v); redraw(); } else td.textContent = shown(); });
-    return td;
-  };
+  const d = ATT.daySummary(st.res, st.date, st.over), rows = calRows(d), CW = calWidths(rows);
+  const cell = (r, side) => el("td", { textContent: splitNote(r[side])[0], title: r[side] || "" });
   box.replaceChildren(
-    el("div", { className: "tablebar" }, el("span", { className: "tablebar-label", textContent: L(`캘린더에 올라갈 모습 · ${S.calOut || "[지각]"}`, `As it will appear in ${S.calOut || "[지각]"}`) }), el("span", { className: "fine", textContent: L("출근·퇴근을 눌러 고칠 수 있습니다", "Click 출근 / 퇴근 to edit") })),
     el("article", { className: "gcal gcalpv" },
-      el("div", { className: "gtop" }, el("i", { className: "gsq" }), el("div", {}, el("b", { textContent: d.title }), el("small", { textContent: `${dayLabel(st.date)} · ${L("종일", "all day")}${today ? L(" · 파일이 나온 날이라 아직 올리지 않음", " · export day, not posted yet") : ""}` }))),
+      el("div", { className: "gtop" }, el("i", { className: "gsq" }), el("div", {}, el("b", { textContent: d.title }), el("small", { textContent: `${dayLabel(st.date)} · ${L("종일", "all day")}` }))),
       el("table", { className: "gtable" }, el("tbody", {},
         el("tr", { className: "ghead" }, ...["이름", "출근", "퇴근"].map((t, i) => el("td", { style: `width:${CW[i]}px;min-width:${CW[i]}px` }, el("b", { textContent: t }))), el("td", {}, el("b", { textContent: "비고" }))),
         ...rows.flatMap((r) => [
@@ -2799,7 +3180,7 @@ function drawCalPreview() {
    longest entry plus the same 16px gap, measured in the font Google Calendar uses: the gaps between columns match,
    and the table fits a phone. 비고 is last, so a long reason there never pushes the other columns apart. */
 const splitNote = (v) => { const m = String(v || "").match(/^(.*?)\s*\((.+)\)\s*$/); return m ? [m[1], m[2]] : [String(v || ""), ""]; };
-const calCols = (r) => { const [i, ni] = splitNote(r.in), [o, no] = splitNote(r.out); return { name: r.name, in: i, out: o, note: [...new Set([ni, no].filter(Boolean))].join(" · "), late: r.late }; };
+const calCols = (r) => { const [i, ni] = splitNote(r.in), [o, no] = splitNote(r.out); return { name: r.name, in: i, out: o, note: [...new Set([ni, no, r.manualNote].filter(Boolean))].join(" · "), late: r.late }; };
 let measureCtx = null;
 function calWidths(rows) {
   measureCtx ||= document.createElement("canvas").getContext("2d");
@@ -2833,6 +3214,7 @@ function plainErr(e) {
   if (e?.message === "accountChanged") return L(`Google 로그인 계정이 ${e.want}에서 ${e.got}(으)로 바뀌었습니다. 처음 계정으로 다시 로그인해 주세요.`, `The Google account changed from ${e.want} to ${e.got}. Sign in with the first account again.`);
   if (e?.message === "fileOrigin") return L("파일로 연 페이지에서는 Google 로그인이 되지 않습니다(Google이 막습니다). 회사에서 정한 웹 주소로 열어 주세요.", "Google sign-in doesn't work on a page opened as a file (Google blocks it). Open the page from its web address.");
   if (e?.message === "noClient") return L("먼저 1번 설정 폴더(Attendance)를 열어 주세요. 폴더 안의 Google API 파일(client_secret…json)이 있어야 로그인할 수 있습니다.", "Please load the Config Folder (Attendance) first. Sign-in needs the Google API file (client_secret...json) in it.");
+  if (e?.message === "noChatClient") return L("chat_client_secret.json이 없습니다. 필요한 파일 폴더에 넣고 다시 연결해 주세요. 캘린더는 그대로입니다.", "Missing chat_client_secret.json. Add it to the dependencies folder and reconnect. Calendar remains available.");
   if (e?.message === "gis") return L("Google 로그인 화면을 불러오지 못했습니다. 인터넷 연결이나 회사 방화벽을 확인해 주세요.", "Couldn't load Google's sign-in. Check the internet connection or the company firewall.");
   if (/popup_failed_to_open/.test(e?.message || "")) return L("로그인 창이 막혔습니다. 주소창 오른쪽의 팝업 차단 아이콘에서 이 사이트를 허용해 주세요.", "The sign-in window was blocked. Allow pop-ups for this site (icon at the right of the address bar).");
   if (/popup|denied|access_denied/.test(e?.message || "")) return L("Google 로그인 창이 닫혔거나 허락하지 않았습니다.", "The Google sign-in window was closed or permission was refused.");
@@ -2851,7 +3233,7 @@ async function findPosted(date) {
   return items.filter((it) => it.start?.date === date && /^\s*[\[［]\s*지각/.test(it.summary || ""));
 }
 async function postDay(date, onTry) {
-  const d = ATT.daySummary(st.res, date, st.over), body = { summary: d.title, description: descHtml(d), start: { date }, end: { date: ATT.addDays(date, 1) } };
+  const d = ATT.daySummary(st.res, date, st.over), body = { summary: d.title, description: descHtml(d), colorId: "8", start: { date }, end: { date: ATT.addDays(date, 1) } };
   const base = `${CAL}/calendars/${encodeURIComponent(st.calIds.out)}/events`, MAX = 4;
   let last = null, asked = false, updated = false;
   for (let i = 1; i <= MAX; i++) {
@@ -2862,7 +3244,7 @@ async function postDay(date, onTry) {
       if (i > 1 || !ex) { const found = await findPosted(date); ex = found[0] || null; if (found.length) st.existing[date] = found; else delete st.existing[date]; }
       let r;
       if (ex) {
-        try { r = await api(`${base}/${ex.id}?sendUpdates=none`, { method: "PATCH", body: JSON.stringify({ summary: body.summary, description: body.description }) }, [SC.write]); updated = true; }
+        try { r = await api(`${base}/${ex.id}?sendUpdates=none`, { method: "PATCH", body: JSON.stringify({ summary: body.summary, description: body.description, colorId: body.colorId }) }, [SC.write]); updated = true; }
         catch (e) { if (e.status !== 404 && e.status !== 410) throw e; delete st.existing[date]; r = await api(`${base}?sendUpdates=none`, { method: "POST", body: JSON.stringify(body) }, [SC.write]); }
       } else r = await api(`${base}?sendUpdates=none`, { method: "POST", body: JSON.stringify(body) }, [SC.write]);
       const back = await api(`${base}/${r.id}`);
@@ -2898,10 +3280,12 @@ async function publish({ excelSaved = false } = {}) {
   return r;
 }
 
-/* ---------- 2. email (optional): the text is set here; each card sends it to that one person
-   Safety first: an address is used only when it belongs to exactly this person — matched by employee number when the
-   email list has one, otherwise by full name, and only when that name is unique in both the badge file and the list.
-   Every email goes to one person, after a 5-second countdown that a second click cancels. Nothing is sent in bulk. */
+/* ---------- 2. GOOGLE CHAT DIRECT MESSAGES (formerly the optional email feature)
+   One-to-one only, never bulk. Employee email addresses are identifiers for Google Chat
+   memberships (users/email@example.com), NOT email message destinations.
+   Each new send gets its own requestId; if Google's reply was lost, retrying the SAME text
+   reuses that requestId to avoid double delivery. Subsequent texts get new IDs and can be
+   sent back-to-back to the same existing conversation. No Gmail API, MIME or chatrecipient involved. */
 const sq = (v) => ATT.squash(String(v ?? "")).toLowerCase();
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 function contactsFor(c) {
@@ -2909,26 +3293,30 @@ function contactsFor(c) {
   if (c.id) { const byId = list.filter((x) => x.id && sq(x.id) === sq(c.id)); if (byId.length) return byId; }
   return list.filter((x) => sq(x.name) === sq(c.name) && !(x.id && c.id && sq(x.id) !== sq(c.id)));
 }
-/** → { email, from, problem } — problem is set whenever it would not be safe to send. */
+/** A unique, verified employee address is used ONLY as Google Chat member identity. */
 function addressFor(c) {
   const sameName = new Set(st.res.cells.filter((x) => sq(x.name) === sq(c.name)).map((x) => x.id || x.key));
   const hits = contactsFor(c), emails = [...new Set(hits.map((x) => x.email.toLowerCase()))];
-  if (emails.length > 1) return { problem: L(`메일 목록에 ${c.name}의 주소가 ${emails.length}개 있습니다 (${emails.join(", ")}). 목록 파일을 고쳐 주세요.`, `The email list has ${emails.length} addresses for ${c.name} (${emails.join(", ")}). Fix the list file.`) };
-  if (sameName.size > 1 && !hits.some((x) => x.id)) return { problem: L(`출입 기록에 ${c.name}이(가) ${sameName.size}명 있습니다. 메일 목록에 사번을 넣어야 누구인지 알 수 있습니다.`, `The badge file has ${sameName.size} people called ${c.name}. Add employee numbers to the email list so the right one is used.`) };
-  if (!emails.length) return { problem: L(`${c.name}의 이메일 주소가 메일 목록에 없습니다.`, `No email address for ${c.name} in the email list.`), none: true };
+  if (emails.length > 1) return { problem: L(`연락처에 ${c.name}의 주소가 ${emails.length}개 있습니다. 목록을 고쳐 주세요.`, `Multiple addresses for ${c.name}; correct the contacts.`) };
+  if (sameName.size > 1 && !hits.some((x) => x.id)) return { problem: L(`출입 기록에 ${c.name} 동명이인이 있습니다. 연락처에 사번을 넣어 주세요.`, `More than one employee is named ${c.name}; add employee IDs.`) };
+  if (!emails.length) return { problem: L(`${c.name}의 Google Chat 계정 이메일이 연락처에 없습니다.`, `No Google Chat user email for ${c.name}.`), none: true };
   const h = hits.find((x) => x.email.toLowerCase() === emails[0]);
   return { email: h.email, from: h.from || "file", contact: h };
 }
-const fromText = (f) => ({ file: L("직원 메일 목록 파일", "the employee email list"), dir: L("회사 주소록 (이름이 정확히 같은 한 사람)", "the company directory (one exact name match)"), manual: L("직접 입력 (이 창에서만)", "typed in (this window only)") }[f] || f);
-const openItems = (c) => st.res.cells.filter((x) => x.key === c.key && (x.id || "") === (c.id || "") && isOpen(x)).sort((a, b) => (a.date < b.date ? -1 : 1));
-// the email itself is written in the company's language (the text in step 2), whichever language the page shows
-const itemText = (c) => { const [, m, d] = c.date.split("-").map(Number), w = DOW[new Date(c.date + "T12:00").getDay()]; return `• ${m}월 ${d}일(${w}) ${c.inSrc === "" && c.outSrc === "" ? "출근·퇴근" : c.inSrc === "" ? "출근" : c.outSrc === "" ? "퇴근" : "출근·퇴근 사유"} 기록 없음`; };
-const withFoot = (body) => String(body ?? "").trimEnd(); // No forced email footer: HR controls the full message.
-/** The calendar names go into the text as words, so what HR sees in the editor is what people get. */
+const fromText = (f) => ({ file: L("직원 연락처 파일", "employee contact file"), dir: L("회사 주소록", "company directory"), manual: L("직접 입력 (현재 창만)", "typed here for this session") }[f] || f);
+const openItems = (c) => st.res.cells.filter((x) => x.key === c.key && (x.id || "") === (c.id || "") && isOpen(x)).sort((a, b) => a.date.localeCompare(b.date));
+// [목록] is intentionally a bullet-free noun phrase usable inside a sentence.
+// Example: "금요일 10월 30일 (출근)". Keep weekday/date and missing field together.
+const itemText = (c) => {
+  const [, month, day] = c.date.split("-").map(Number);
+  const weekday = DOW[new Date(c.date + "T12:00").getDay()];
+  const field = c.inSrc === "" && c.outSrc === "" ? "출근·퇴근" : c.inSrc === "" ? "출근" : c.outSrc === "" ? "퇴근" : "출근·퇴근 사유";
+  return `${weekday}요일 ${month}월 ${day}일 (${field})`;
+};
 const namesIn = (t) => String(t).replace(/\[\s*휴가 캘린더\s*\]/g, S.calLeave || "휴가").replace(/\[\s*외근 캘린더\s*\]/g, S.calWork || "외근");
-const fill = (t, name, items, title = "") => t.replace(/\[\s*이름\s*\]/g, name).replace(/\s*\[\s*직급\s*\]/g, title ? " " + title : "").replace(/\[\s*목록\s*\]/g, items.map(itemText).join("\n")).replace(/\[\s*휴가 캘린더\s*\]/g, S.calLeave || "휴가").replace(/\[\s*외근 캘린더\s*\]/g, S.calWork || "외근");
+const fill = (t, name, items, title = "") => String(t || "").replace(/\[\s*이름\s*\]/g, name).replace(/\s*\[\s*직급\s*\]/g, title ? " " + title : "").replace(/\[\s*목록\s*\]/g, items.map(itemText).join(", ")).replace(/\[\s*휴가 캘린더\s*\]/g, S.calLeave || "휴가").replace(/\[\s*외근 캘린더\s*\]/g, S.calWork || "외근");
 const domainOf = (e) => (String(e).split("@")[1] || "").toLowerCase();
-const mailReady = () => !!(S.mailSubject.trim() && S.mailBody.trim());
+const chatReady = () => !!String(S.mailBody || "").trim(); // legacy settings key: Chat MESSAGE body
 async function directoryLookup(c) {
   let page = "", found = [];
   do {
@@ -2940,135 +3328,153 @@ async function directoryLookup(c) {
   found = [...new Set(found)];
   return found.length === 1 ? found[0] : found.length > 1 ? { many: found } : null;
 }
-/** The card's email button, always shown: names the recipient; one click sends one email to this person. */
-function mailButton(c, box) {
-  const a = addressFor(c), sent = st.sent[c.key] || [];
-  const doms = (S.mailDomains || []).map((d) => d.toLowerCase().replace(/^@/, ""));
-  const ready = a.email && mailReady() && (!doms.length || doms.includes(domainOf(a.email)));
-  const wrapB = el("span", { className: "mailbtns" });
-  const label = () => (!mailReady() ? L(`${c.name}님에게 메일 보내기 (2단계 문구 먼저)`, `Email ${c.name} (write the text in step 2 first)`) : !a.email ? L(`${c.name}님에게 메일 보내기 (주소 넣기)`, `Email ${c.name} (add the address)`) : sent.length ? L(`${c.name}님에게 메일 한 번 더 보내기`, `Email ${c.name} once more`) : L(`${c.name}님에게 메일 보내기`, `Email ${c.name}`));
-  const b = el("button", { type: "button", className: "bigbtn mailgo", innerHTML: svg("M3 5.5h14v9H3zM3.5 6l6.5 5 6.5-5", 15) + `<span>${esc(L("이메일", "Email"))}</span>`, title: label() });
-  wrapB.append(el("small", { className: "mailto", textContent: a.email ? "→ " + a.email : label() }));
-  const look = el("button", { type: "button", className: "linkbtn", textContent: L("보낼 내용", "Text") });
-  look.addEventListener("click", () => mailPanel(c, box));
-  const say = (t) => (b.lastChild.textContent = t);
-  // one click sends exactly one email: no countdown, no batching, no automatic retry (a retry could send it twice).
-  // The button is locked from the click until Google answers, so a double click can't send a second copy.
-  let busy = false;
-  b.addEventListener("click", async () => {
-    if (busy) return;
-    if (!mailReady()) { $("#s2").open = true; $("#s2").scrollIntoView({ behavior: "smooth", block: "start" }); return; }
-    if (!ready) { mailPanel(c, box); return; }
-    busy = true; b.disabled = true; say(L("보내는 중…", "Sending…"));
-    const items = openItems(c), r = await sendMailTo(c, a.email, fill(S.mailSubject, c.name, items, a.contact?.title), fill(S.mailBody, c.name, items, a.contact?.title), items);
-    busy = false;
-    if (!r.ok) { b.disabled = false; say(L("보내지 못함 · 다시 보내기", "Not sent · send again")); box.replaceChildren(el("p", { className: "warnline", textContent: L("보내지 못했습니다: ", "Not sent: ") + r.error })); }
+// Browser-side Google Chat API: no backend secret and NO Gmail messages are sent.
+// OAuth identity uses chat_client_secret.json; employees are resolved by their company email.
+const CHAT_API = "https://chat.googleapis.com/v1";
+const chatSpaces = new Map(); // key: signed-in Google account + employee; cache only this browser session
+const chatSending = new Set(); // no duplicate concurrent sends to the same employee
+const chatRequestId = () => typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+/** Creates or reuses a DM between the AUTHENTICATED HUMAN and exactly one verified employee. */
+async function chatSpaceFor(recipient, accessToken) {
+  const account = (toks.chat?.email || "").toLowerCase();
+  const key = `${account}|${recipient.toLowerCase()}`;
+  if (chatSpaces.has(key)) return chatSpaces.get(key);
+  if (PREVIEW) { const fakeSpace = `spaces/demo-${recipient.toLowerCase().replace(/[^a-z0-9]/g, "-")}`; chatSpaces.set(key, fakeSpace); return fakeSpace; }
+  const response = await fetch(`${CHAT_API}/spaces:setup`, {
+    method: "POST", headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ space: { spaceType: "DIRECT_MESSAGE" }, memberships: [{ member: { name: `users/${recipient}`, type: "HUMAN" } }] })
   });
-  wrapB.prepend(b); wrapB.append(look);
-  return wrapB;
+  if (!response.ok) throw await chatResponseError(response);
+  const space = (await response.json()).name;
+  if (!/^spaces\/[A-Za-z0-9_-]+$/.test(space || "")) throw new Error("Google Chat returned an invalid DM space ID");
+  chatSpaces.set(key, space); return space;
 }
-/** Sends one plain-text email to one address; the address is checked again right before it goes. */
-async function sendMailTo(c, email, subject, body, items) {
-  const again = addressFor(c); if (again.email !== email) return { ok: false, error: L("주소가 바뀌었습니다", "the address changed") };
-  const mime = [`To: ${email}`, `Subject: ${encWord(subject)}`, "MIME-Version: 1.0", "Content-Type: text/plain; charset=UTF-8", "Auto-Submitted: auto-generated", "Content-Transfer-Encoding: base64", "", wrap76(b64(utf8(withFoot(body).replace(/\r?\n/g, "\r\n"))))].join("\r\n");
+/** A single text message, no automatic retry. Caller retains a stable idempotency requestId on manual retry. */
+async function sendChatTo(c, recipient, message, items, requestId) {
+  if (!String(message || "").trim()) return {ok:false,error:L("메시지를 입력하세요.","Enter a message.")};
+  const again = addressFor(c);
+  if (again.email !== recipient) return {ok:false,error:L("직원 주소가 바뀌었습니다. 보내지 않았습니다.","Employee address changed; nothing sent.")};
+  const guard = `${toks.chat?.email || S.mailAccount}|${recipient.toLowerCase()}`;
+  if (chatSending.has(guard)) return {ok:false,error:L("이 직원에게 이미 메시지를 보내는 중입니다.","Already sending a message to this employee.")};
+  chatSending.add(guard);
   try {
-    const t = await token([SC.mail], "mail");
-    const r = PREVIEW ? { ok: true } : await fetch("https://gmail.googleapis.com/gmail/v1/users/me/messages/send", { method: "POST", headers: { Authorization: "Bearer " + t, "Content-Type": "application/json" }, body: JSON.stringify({ raw: b64u(mime) }) });
-    if (!r.ok) throw await apiError(r);           // the email sender's plain-words error, with the service's own words after it
-    (st.sent[c.key] ||= []).push({ name: c.name, to: email, at: new Date().toLocaleTimeString(L("ko-KR", "en-US"), { hour: "2-digit", minute: "2-digit" }), dates: items.map((x) => x.date) });
+    const accessToken = await token([SC.chatSpace, SC.chatSend], "chat");
+    const space = await chatSpaceFor(recipient, accessToken);
+    const response = PREVIEW ? { ok: true, json: async () => ({name:`${space}/messages/demo-${chatRequestId()}`}) }
+      : await fetch(`${CHAT_API}/${space}/messages?${new URLSearchParams({requestId})}`, {
+        method:"POST", headers: { Authorization:`Bearer ${accessToken}`, "Content-Type":"application/json" },
+        body: JSON.stringify({ text: String(message).trim() })
+      });
+    if (!response.ok) throw await chatResponseError(response);
+    const result = await response.json();
+    (st.sent[c.key] ||= []).push({ name:c.name, to:recipient, at:new Date().toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"}), dates:items.map((x)=>x.date), text:String(message).trim(), messageId:result.name || requestId, space });
     for (const x of items) st.asked[K(x)] = true;
-    toast(L(`${c.name}님에게 보냈습니다.`, `Sent to ${c.name}.`)); drawReview(); drawMailSetup();
-    return { ok: true };
-  } catch (e) { return { ok: false, error: e.message === "wrongAccount" ? L(`${e.got || "다른 계정"}(으)로 로그인했습니다. 메일은 ${S.mailAccount}에서만 보냅니다. 보내지 않았습니다.`, `You signed in as ${e.got || "another account"}. Email is only sent from ${S.mailAccount}. Nothing was sent.`)
-    : e.message === "notCompany" ? plainErr(e) : e.message === "accountChanged" ? L(`로그인 계정이 ${e.want}에서 ${e.got}(으)로 바뀌어 보내지 않았습니다.`, `The account changed from ${e.want} to ${e.got}, so nothing was sent.`) : /popup|denied|access_denied/.test(e.message) ? L("Google 로그인 창이 닫혔거나 허락하지 않았습니다.", "The Google sign-in window was closed or permission was refused.") : e.message }; }
+    toast(L(`${c.name}님에게 Google Chat 메시지를 보냈습니다.`, `Google Chat message sent to ${c.name}.`));
+    drawChatLog(); return {ok:true, messageId:result.name, space};
+  } catch(e) {
+    if (e?.status === 401) toks.chat = null;
+    const error = e.message === "wrongAccount" ? L(`Google Chat은 ${S.mailAccount} 계정으로만 보낼 수 있습니다.`, `Google Chat must be sent from ${S.mailAccount}.`)
+      : e.message === "notCompany" || e.message === "accountChanged" ? plainErr(e)
+      : /popup|denied|access_denied/.test(e.message || "") ? L("Google Chat 로그인을 허용하지 않았습니다.","Google Chat sign-in was cancelled or denied.") : String(e.message || e);
+    return {ok:false,error};
+  } finally { chatSending.delete(guard); }
 }
-/** The send panel for one person: the address when it's missing or unusual, and the text for this one email. */
-function mailPanel(c, box) {
-  const items = openItems(c), a = addressFor(c), sent = st.sent[c.key] || [];
-  const subjIn = el("input", { type: "text", value: fill(S.mailSubject, c.name, items, a.contact?.title), className: "mailsubj" }), bodyIn = el("textarea", { rows: 8, value: fill(S.mailBody, c.name, items, a.contact?.title), className: "mailbody" });
-  const panel = el("div", { className: "confirm mailbox" });
-  const cancel = el("button", { type: "button", textContent: L("닫기", "Close") }); cancel.addEventListener("click", () => box.replaceChildren());
-  const reopen = () => { drawReview(); const nb = $("#review .mailslot"); if (nb) mailPanel(c, nb); };
+/** Card 3 Chat button opens a messenger-like composer; sending never removes the composer. */
+function chatButton(c, box) {
+  const a = addressFor(c);
+  const wrap = el("span", { className:"chatbtns" }); // Card 3 messenger controls
+  const button = el("button", { type:"button", className:"bigbtn chatgo", textContent:L("Google Chat 보내기", "Open Google Chat") });
+  const address = el("small", { className:"chatrecipient", textContent:a.email ? `→ ${a.email}` : L("연락처 확인 필요", "Check employee contact") });
+  button.addEventListener("click", () => chatPanel(c, box));
+  wrap.append(button, address); return wrap;
+}
+function chatPanel(c, box) {
+  const a = addressFor(c), items = openItems(c);
+  const panel = el("div", { className:"confirm chatbox chat-conversation" });
+  const cancel = el("button", { type:"button", textContent:L("닫기", "Close") });
+  cancel.addEventListener("click", () => box.replaceChildren());
+  const reopen = () => { drawReview(); const newBox = $("#review .chatslot"); if (newBox) chatPanel(c,newBox); };
   if (a.problem) {
-    const inp = el("input", { type: "email", placeholder: L("이메일 주소", "email address"), autocomplete: "off" });
-    const keep = el("button", { type: "button", textContent: L("이 주소 쓰기 (이 창에서만)", "Use this address (this window only)") });
-    const look = el("button", { type: "button", textContent: L("회사 주소록에서 찾기", "Look up in the company directory") });
-    keep.addEventListener("click", () => { const e = inp.value.trim(); if (!EMAIL_RE.test(e)) { toast(L("이메일 주소 형식이 아닙니다.", "That isn't an email address.")); return; } S.contacts = [...(S.contacts || []).filter((x) => !(sq(x.name) === sq(c.name) && x.from === "manual")), { name: c.name, email: e, id: c.id || "", dept: c.dept || "", from: "manual" }]; reopen(); });
-    look.addEventListener("click", async () => {
-      look.disabled = true;
-      try { const r = await directoryLookup(c); if (typeof r === "string") { S.contacts = [...(S.contacts || []), { name: c.name, email: r, id: c.id || "", dept: c.dept || "", from: "dir" }]; reopen(); } else toast(r?.many ? L(`주소록에 ${c.name}이(가) ${r.many.length}명 있어 고를 수 없습니다. 직접 넣어 주세요.`, `The directory has ${r.many.length} people called ${c.name}; type the address yourself.`) : L("주소록에서 찾지 못했습니다.", "Not found in the directory.")); }
-      catch (e) { toast(L("주소록을 읽지 못했습니다: ", "The directory couldn't be read: ") + e.message); } finally { look.disabled = false; }
-    });
-    panel.append(el("p", { className: "warnline", textContent: a.problem }), ...(a.none ? [el("div", { className: "row" }, inp, keep, look)] : []), el("div", { className: "row" }, cancel));
+    const input = el("input", { type:"email", placeholder:L("Google Chat 사용자 이메일", "Google Chat user email"), autocomplete:"off" });
+    const keep = el("button", { type:"button", textContent:L("이 주소 사용 (이번 세션)","Use this address (this session)") });
+    const look = el("button", { type:"button", textContent:L("회사 주소록에서 찾기", "Find in company directory") });
+    keep.addEventListener("click", () => { const email=input.value.trim(); if(!EMAIL_RE.test(email)) { toast(L("이메일 주소 형식이 올바르지 않습니다.", "Invalid email address."));return; }
+      S.contacts = [...(S.contacts || []).filter((x) => !(sq(x.name)===sq(c.name) && x.from==="manual")), {name:c.name,email,id:c.id||"",dept:c.dept||"",from:"manual"}];reopen(); });
+    look.addEventListener("click", async () => {look.disabled=true;try{const result=await directoryLookup(c);if(typeof result==="string"){S.contacts.push({name:c.name,email:result,id:c.id||"",dept:c.dept||"",from:"dir"});reopen();}else toast(L("연락처를 찾지 못했거나 이름이 중복됩니다.","Not found or ambiguous."));}catch(e){toast(e.message);}finally{look.disabled=false;}});
+    panel.append(el("p",{className:"warnline",textContent:a.problem}),...(a.none ? [el("div",{className:"row"},input,keep,look)] : []),cancel);
     box.replaceChildren(panel); return;
   }
-  const doms = (S.mailDomains || []).map((d) => d.toLowerCase().replace(/^@/, "")), outside = doms.length && !doms.includes(domainOf(a.email));
-  const okOut = el("input", { type: "checkbox" });
-  const send = el("button", { type: "button", className: "primary", textContent: sent.length ? L("한 번 더 보내기", "Send again") : L("보내기", "Send") });
-  panel.append(
-    el("b", { textContent: L(`${c.name}님에게 메일 한 통`, `One email to ${c.name}`) }),
-    el("dl", { className: "mailto" },
-      el("dt", { textContent: L("보내는 계정", "From") }), el("dd", { textContent: toks.mail?.email || S.mailAccount || L("보낼 때 로그인하는 계정", "the account you sign in with") }),
-      el("dt", { textContent: L("받는 사람", "To") }), el("dd", {}, el("b", { textContent: `${c.name} <${a.email}>` })),
-      el("dt", { textContent: L("주소 출처", "Address from") }), el("dd", { textContent: fromText(a.from) + (a.contact?.id ? L(` · 사번 ${a.contact.id}`, ` · employee no. ${a.contact.id}`) : "") }),
-      el("dt", { textContent: L("물어볼 칸", "Asking about") }), el("dd", { textContent: items.map((x) => itemText(x).slice(2)).join(", ") })),
-    sent.length ? el("p", { className: "warnline", textContent: L(`이미 보냄: ${sent.map((x) => `${x.at} → ${x.to}`).join(", ")}`, `Already sent: ${sent.map((x) => `${x.at} → ${x.to}`).join(", ")}`) }) : "",
-    outside ? el("label", { className: "askbox warnline" }, okOut, el("span", { textContent: L(` 회사 주소(${doms.map((d) => "@" + d).join(", ")})가 아닙니다. 이 주소가 ${c.name}님의 것이 맞습니다.`, ` Not a company address (${doms.map((d) => "@" + d).join(", ")}). I confirm this address is ${c.name}'s.`) })) : "",
-    el("label", { className: "sfield" }, el("span", { className: "lab", textContent: L("제목", "Subject") }), subjIn),
-    el("label", { className: "sfield" }, el("span", { className: "lab", textContent: L("내용 (이 메일만 고쳐집니다)", "Text (changes this email only)") }), bodyIn),
-    el("div", { className: "row" }, send, cancel));
-  send.addEventListener("click", async () => {
-    if (outside && !okOut.checked) { toast(L("회사 밖 주소입니다. 맞는지 확인란에 표시해 주세요.", "Outside address: tick the box to confirm it's right.")); return; }
-    send.disabled = cancel.disabled = true; send.textContent = L("보내는 중…", "Sending…");
-    const r = await sendMailTo(c, a.email, subjIn.value.trim(), bodyIn.value, items);
-    if (!r.ok) { send.disabled = cancel.disabled = false; send.textContent = L("다시 시도", "Try again"); panel.append(el("p", { className: "warnline", textContent: L("보내지 못했습니다: ", "Not sent: ") + r.error })); }
+  const domains=(S.mailDomains||[]).map(x=>String(x).toLowerCase().replace(/^@/,""));
+  const outside=domains.length && !domains.includes(domainOf(a.email));
+  const outsideCheck=el("input",{type:"checkbox"});
+  const bubbleList=el("div",{className:"chat-history",role:"log","aria-label":L("이번 세션 Google Chat 기록", "Google Chat messages sent this session")});
+  const paintHistory=()=>{
+    bubbleList.replaceChildren(...(st.sent[c.key]||[]).map(x=>el("div",{className:"chat-bubble"},el("div",{textContent:x.text||""}),el("small",{textContent:x.at}))));
+    bubbleList.scrollTop=bubbleList.scrollHeight;
+  };
+  paintHistory();
+  const composer=el("textarea",{className:"chatbody chat-compose",rows:4,placeholder:L("메시지를 입력하세요. 여러 번 연속 전송할 수 있습니다.","Type a message. Send additional messages anytime."),value:fill(S.mailBody,c.name,items,a.contact?.title)});
+  const send=el("button",{type:"button",className:"primary",textContent:L("보내기", "Send")});
+  const status=el("p",{className:"fine chat-status"});
+  let pending=null; // preserve requestId for retries of the same text only
+  send.addEventListener("click",async()=>{
+    if(send.disabled)return;
+    if(outside && !outsideCheck.checked){status.textContent=L("외부 주소를 확인해 주세요.","Confirm the external address.");return;}
+    const message=composer.value.trim();if(!message){status.textContent=L("메시지가 비어 있습니다.","Message is empty.");return;}
+    if(!pending || pending.message!==message) pending={message,requestId:chatRequestId()};
+    send.disabled=true; cancel.disabled=true; composer.readOnly=true; send.textContent=L("보내는 중…","Sending…");
+    const result=await sendChatTo(c,a.email,message,items,pending.requestId);
+    send.disabled=false;cancel.disabled=false;composer.readOnly=false;send.textContent=L("보내기","Send");
+    if(result.ok){pending=null;status.textContent=L("전송됨 · 다음 메시지를 입력할 수 있습니다.","Sent. You can send another message.");composer.value="";paintHistory();composer.focus();}
+    else {status.textContent=L("전송을 확인하지 못했습니다: ","Send not confirmed: ")+result.error+L(" (같은 내용 다시 보내기는 중복 방지 ID를 재사용합니다.)", " (retry of unchanged text reuses its duplicate-prevention ID.)");}
   });
+  panel.append(el("b",{textContent:L(`${c.name}님과 Google Chat`, `Google Chat with ${c.name}`)}),
+    el("small",{className:"fine",textContent:a.email}),
+    bubbleList,
+    outside ? el("label",{className:"askbox warnline"},outsideCheck,el("span",{textContent:L("회사 외부 사용자입니다. 이 주소가 맞는지 확인했습니다.","This user is outside the company; I verified the address.")})) : "",
+    el("label",{className:"sfield"},el("span",{className:"lab",textContent:L("Google Chat 메시지", "Google Chat message")}),composer),
+    status,el("div",{className:"row"},send,cancel));
   box.replaceChildren(panel);
 }
-/** Step 2: the email list, the company domains, and the text with [이름] and [목록]. */
-function drawMailSetup() {
-  const n = (S.contacts || []).filter((x) => x.from === "file").length;
-  const sentRows = Object.values(st.sent).flat();
-  $("#mailState").textContent = mailReady() ? L(`준비됨 · 메일 목록 ${n}명${sentRows.length ? ` · 보냄 ${sentRows.length}` : ""}`, `ready · ${n} in the list${sentRows.length ? ` · ${sentRows.length} sent` : ""}`) : L("문구 없음", "no text yet");
-  const host = $("#mailSetup"); if (host.dataset.built === LANG) { drawMailLog(); return; }
-  host.dataset.built = LANG;
-  if (S.calLeave && S.calWork) { S.mailSubject = namesIn(S.mailSubject); S.mailBody = namesIn(S.mailBody); }   // once the settings say what the calendars are called
-  const subj = el("input", { type: "text", value: S.mailSubject }), body = el("textarea", { rows: 14, value: S.mailBody });
-  let last = body;
-  const pv = el("pre", { className: "mailpv" });
-  const sample = [{ date: st.date || "2026-10-30", inSrc: "", outSrc: "badge" }];
-  const draw = () => { S.mailSubject = subj.value; S.mailBody = body.value; pv.textContent = (subj.value.trim() || body.value.trim()) ? `${L("제목", "Subject")}: ${fill(subj.value, "홍길동", sample, "차장")}\n\n${withFoot(fill(body.value, "홍길동", sample, "차장"))}` : ""; $("#mailState").textContent = mailReady() ? L("준비됨", "ready") : L("문구 없음", "no text yet"); };
-  for (const x of [subj, body]) { x.addEventListener("input", () => { draw(); autoSave(); }); x.addEventListener("focus", () => (last = x)); x.addEventListener("change", () => drawReview()); }
-  const tok = (t, label) => { const b = el("button", { type: "button", className: "tokchip", textContent: `[${t}]`, title: label }); b.addEventListener("mousedown", (e) => e.preventDefault()); b.addEventListener("click", () => { const x = last, a = x.selectionStart ?? x.value.length, z = x.selectionEnd ?? a; x.value = x.value.slice(0, a) + `[${t}]` + x.value.slice(z); x.setSelectionRange(a + t.length + 2, a + t.length + 2); x.focus(); draw(); autoSave(); }); return b; };
-  draw();
-  host.replaceChildren(
-    el("p", { className: "fine", id: "listInfo" }),
-    el("div", { className: "acct", id: "mailAcct" }),
-    el("p", { className: "fine", id: "fromInfo" }),
-    el("div", { className: "sfield" }, el("span", { className: "lab", textContent: L("제목", "Subject") }), subj),
-    el("div", { className: "sfield" }, el("span", { className: "lab", textContent: L("내용", "Text") }),
-      el("div", { className: "row" }, el("span", { className: "fine", textContent: L("넣기:", "Insert:") }), tok("이름", L("받는 사람 이름", "the person's name")), tok("직급", L("직급 (메일 목록의 Job Title)", "job title (from the email list)")), tok("목록", L("비어 있는 날짜와 칸", "their empty dates and cells"))), body),
-    el("div", { className: "sfield" }, el("span", { className: "lab", textContent: L("미리보기 (예: 홍길동 차장)", "Preview (e.g. 홍길동 차장)") }), pv,
-      ),
-    el("p", { className: "savestate" }));
-  drawMailLog(); drawSaveState();
+/** Step 2 configures the Google Chat message template; old mailBody setting is retained for migration. */
+function drawChatSetup() {
+  const n=(S.contacts||[]).filter(x=>x.from==="file").length;
+  const sent=Object.values(st.sent).flat();
+  $("#chatState").textContent=chatReady()?L(`준비됨 · 연락처 ${n}명 · 전송 ${sent.length}`,`ready · ${n} contacts · ${sent.length} sent`):L("문구 없음","no template");
+  const host=$("#chatSetup");if(host.dataset.built===LANG){drawChatLog();return;}host.dataset.built=LANG;
+  if(S.calLeave&&S.calWork)S.mailBody=namesIn(S.mailBody);
+  const body=el("textarea",{rows:9,value:S.mailBody});
+  const preview=el("pre",{className:"chatpv"});
+  const example=[{date:"2026-10-30",inSrc:"",outSrc:"badge"}];
+  const draw=()=>{S.mailBody=body.value;preview.textContent=body.value.trim()?fill(body.value,"홍길동",example,"차장"):L("메시지를 입력하면 미리보기가 표시됩니다.","Message preview appears here.");};
+  body.addEventListener("input",()=>{draw();autoSave();});body.addEventListener("change",()=>drawReview());
+  const chip=(name,label)=>{const b=el("button",{type:"button",className:"tokchip",textContent:`[${name}]`,title:label});b.addEventListener("click",()=>{const a=body.selectionStart??body.value.length,z=body.selectionEnd??a;body.value=body.value.slice(0,a)+`[${name}]`+body.value.slice(z);body.setSelectionRange(a+name.length+2,a+name.length+2);body.focus();draw();autoSave();});return b;};
+  draw();host.replaceChildren(
+    el("p",{className:"fine",id:"listInfo"}),
+    el("div",{className:"acct",id:"chatAcct"}),
+    el("p",{className:"fine",id:"fromInfo"}),
+    el("div",{className:"sfield"},el("span",{className:"lab",textContent:L("메시지 템플릿", "Message template")}),
+      el("div",{className:"row"},el("span",{className:"fine",textContent:L("넣기:","Insert:")}),chip("이름",L("직원 이름","Employee name")),chip("직급",L("직급","Job title")),chip("목록",L("누락 일자와 항목","Missing dates and fields"))),body),
+    el("div",{className:"sfield"},el("span",{className:"lab",textContent:L("메시지 미리보기", "Message preview")}),preview),
+    el("p",{className:"savestate"}));
+  drawChatLog();drawSaveState();
 }
-function drawMailLog() {
-  const n = (S.contacts || []).filter((x) => x.from === "file").length, doms = (S.mailDomains || []).map((d) => "@" + d.replace(/^@/, ""));
-  drawAccount("mail");
-  const from = $("#fromInfo");
-  if (from) {
-    const now = toks.mail?.email, named = S.mailAccount, cal = toks.cal?.email;
-    from.textContent = L("이메일 계정: ", "Email account: ") + (now ? now + L(" (로그인됨)", " (signed in)") : named ? named + L(" · 첫 메일을 보낼 때 이 계정으로 로그인합니다", " · you sign in as this account at the first email") : L("첫 메일을 보낼 때 고릅니다 · mail_access.json에 account를 적으면 그 계정만 씁니다", "chosen at the first email · put an account in mail_access.json to allow only that one"))
-      + (cal && (now || named) ? (sameMail(now || named, cal) ? L(" · 캘린더와 같은 계정", " · same account as the calendar") : L(` · 캘린더(${cal})와 다른 계정`, ` · a different account from the calendar (${cal})`)) : "");
+function drawChatLog() {
+  const n=(S.contacts||[]).filter(x=>x.from==="file").length;
+  const domains=(S.mailDomains||[]).map(d=>"@"+d.replace(/^@/,""));
+  drawAccount("chat");
+  const from=$("#fromInfo");if(from){const current=toks.chat?.email, allowed=S.mailAccount,calendar=toks.cal?.email;
+    from.textContent=L("Google Chat 발신 계정: ","Google Chat sender: ")+(current?`${current} (로그인됨)`:allowed?`${allowed} · 첫 메시지에서 로그인`:"첫 메시지 전송 시 계정 선택")
+      +(calendar&&(current||allowed)?(sameMail(current||allowed,calendar)?L(" · 캘린더와 동일 계정"," · same as Calendar"):L(" · 캘린더와 다른 계정"," · separate from Calendar")):"");
+    if(!PREVIEW&&!S.chatClientId)from.textContent+=L(" · chat_client_secret.json 없음"," · chat_client_secret.json missing");
   }
-  const na = (S.noAddr || []).length;
-  const li = $("#listInfo"); if (li) li.textContent = (n || na ? L(`직원 메일 목록: 주소 있음 ${n}명${na ? ` · 주소 없음 ${na}명` : ""}`, `Employee email list: ${n} with an address${na ? ` · ${na} without` : ""}`) : L("직원 메일 목록이 없습니다 — 근태 폴더에 두세요.", "No employee email list — put it in the 근태 folder.")) + (doms.length ? L(` · 회사 주소 ${doms.join(", ")}`, ` · company addresses ${doms.join(", ")}`) : "");
-  const rows = Object.values(st.sent).flat();
-  $("#mailLog").replaceChildren(rows.length ? el("table", { className: "res" }, el("thead", {}, el("tr", {}, ...[L("이름", "Name"), L("받는 주소", "Sent to"), L("보낸 시각", "Sent at"), L("물어본 날", "Dates asked")].map((t) => el("th", { textContent: t })))),
-    el("tbody", {}, ...rows.map((x) => el("tr", {}, el("td", { textContent: x.name }), el("td", { textContent: x.to }), el("td", { textContent: x.at }), el("td", { textContent: x.dates.map(dayLabel).join(", ") }))))) : "");
+  const missing=(S.noAddr||[]).length, list=$("#listInfo");
+  if(list)list.textContent=L(`직원 연락처: ${n}명${missing?` · 주소 없음 ${missing}명`:""}`,`Employee contacts: ${n}${missing?` · ${missing} missing addresses`:""}`)+(domains.length?` · ${domains.join(", ")}`:"");
+  const messages=Object.values(st.sent).flat();
+  $("#chatLog").replaceChildren(messages.length?el("table",{className:"res"},el("thead",{},el("tr",{},...[
+    L("이름","Name"),L("Chat 수신자","Chat recipient"),L("보낸 시각","Sent at"),L("메시지","Message")].map(t=>el("th",{textContent:t})))),
+    el("tbody",{},...messages.map(x=>el("tr",{},el("td",{textContent:x.name}),el("td",{textContent:x.to}),el("td",{textContent:x.at}),el("td",{textContent:x.text||""}))))) : "");
 }
-const b64u = (s) => b64(utf8(s)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");   // b64, utf8, wrap76, encWord: the email sender's
 /** The employee email list (any sheet or csv with names and emails): columns found by their titles (이름, 이메일, 사번, 부서), or by the @ in the cells. */
 async function loadContacts(file) {
   try {
@@ -3085,10 +3491,9 @@ async function loadContacts(file) {
       if (ni < 0) ni = (rows[h + 1] || []).findIndex((v, i) => i !== ei && /^[가-힣]{2,4}$/.test(ATT.squash(v)));
       if (!(ni >= 0) || !(ei >= 0)) continue;
       for (const r of body) {
-        const n = String(r?.[ni] ?? "").trim().replace(/\s+/g, ""), e = String(r?.[ei] ?? "").trim().replace(/^mailto:/i, "");
+        const n = String(r?.[ni] ?? "").trim().replace(/\s+/g, ""), e = String(r?.[ei] ?? "").trim().replace(/^chatrecipient:/i, "");
         const title = ti >= 0 ? String(r?.[ti] ?? "").trim() : "";
-        if (n && EMAIL_RE.test(e)) got.push({ name: n, email: e, title, id: ii >= 0 ? String(r?.[ii] ?? "").trim() : "", dept: di >= 0 ? String(r?.[di] ?? "").trim() : "", from: "file" });
-        else if (n && !e) noAddr.push(n);
+        if (n && (!e || EMAIL_RE.test(e))) { got.push({ name: n, email: e, title, id: ii >= 0 ? String(r?.[ii] ?? "").trim() : "", dept: di >= 0 ? String(r?.[di] ?? "").trim() : "", from: "file" }); if (!e) noAddr.push(n); }
       }
     }
     S.contacts = [...(S.contacts || []).filter((x) => x.from !== "file"), ...got]; S.noAddr = [...new Set(noAddr)];
@@ -3098,10 +3503,24 @@ async function loadContacts(file) {
 
 /* ---------- editable employee contact list (CSV) */
 const csvCell = (v) => { const x = String(v ?? ""); return /[",\r\n]/.test(x) ? '"' + x.replace(/"/g, '""') + '"' : x; };
-function contactsCsv() { return [["Name", "Job Title", "Email", "Employee ID", "Department"], ...(S.contacts || []).filter(x => x.from === "file" && (x.name || x.email)).map(x => [x.name, x.title || "", x.email || "", x.id || "", x.dept || ""])].map(r => r.map(csvCell).join(",")).join("\r\n") + "\r\n"; }
-function parseContactsCsv(text) { const rows=[]; let row=[], cell="", quoted=false; for(let i=0;i<text.length;i++){const c=text[i]; if(quoted){if(c==='"'&&text[i+1]==='"'){cell+='"';i++;}else if(c==='"')quoted=false;else cell+=c;}else if(c==='"')quoted=true;else if(c===','){row.push(cell);cell="";}else if(c==='\n'){row.push(cell.replace(/\r$/,""));rows.push(row);row=[];cell="";}else cell+=c;} if(cell||row.length){row.push(cell);rows.push(row);} if(!rows.length)return []; const h=rows[0].map(x=>x.trim().toLowerCase()); const ix=(re, fallback)=>{const i=h.findIndex(x=>re.test(x));return i<0?fallback:i;}; const ni=ix(/^(name|이름|성명)$/,0), ti=ix(/job|직급|직책|position/,1), ei=ix(/email|메일/,2), ii=ix(/employee|사번|직원번호/,3), di=ix(/department|dept|부서|팀/,4); return rows.slice(1).filter(r=>r.some(x=>x.trim())).map(r=>({name:(r[ni]||"").trim().replace(/\s+/g,""),title:(r[ti]||"").trim(),email:(r[ei]||"").trim(),id:(r[ii]||"").trim(),dept:(r[di]||"").trim(),from:"file"})).filter(x=>x.name); }
+function contactsCsv(entries = null) { return [["Name", "Job Title", "Email"], ...(entries || S.contacts || []).filter(x => x.from === "file" && x.name).map(x => [x.name, x.title || "", x.email || ""])].map(r => r.map(csvCell).join(",")).join("\r\n") + "\r\n"; }
+function parseContactsCsv(text) {
+  const rows=[]; let row=[], cell="", quoted=false;
+  for(let i=0;i<text.length;i++) {
+    const c=text[i];
+    if(quoted) { if(c==='"'&&text[i+1]==='"'){cell+='"';i++;}else if(c==='"')quoted=false;else cell+=c; }
+    else if(c==='"')quoted=true;else if(c===','){row.push(cell);cell="";}
+    else if(c==='\n'){row.push(cell.replace(/\r$/,""));rows.push(row);row=[];cell="";}else cell+=c;
+  }
+  if(cell||row.length){row.push(cell);rows.push(row);}
+  if(!rows.length)return [];
+  const h=rows[0].map(x=>x.trim().toLowerCase());
+  const ix=(re, fallback)=>{const i=h.findIndex(x=>re.test(x));return i<0?fallback:i;};
+  const ni=ix(/^(name|이름|성명)$/,0), ti=ix(/job|직급|직책|position/,1), ei=ix(/email|메일/,2);
+  return rows.slice(1).filter(r=>r.some(x=>x.trim())).map(r=>({name:(r[ni]||"").trim().replace(/\s+/g,""),title:(r[ti]||"").trim(),email:(r[ei]||"").trim(),from:"file"})).filter(x=>x.name);
+}
 let contactSaveTimer = null;
-async function saveContactsCsv() {
+async function saveContactsCsv(entries = null) {
   const status = $("#contactSaveStatus");
   try {
     if (!st.cfgDir) throw new Error("folder");
@@ -3109,63 +3528,22 @@ async function saveContactsCsv() {
         (await st.cfgDir.requestPermission({mode:"readwrite"})) !== "granted") throw new Error("permission");
     if (!st.contactsHandle) st.contactsHandle = await st.cfgDir.getFileHandle("employee_contacts.csv", {create:true});
     const w = await st.contactsHandle.createWritable();
-    await w.write(contactsCsv()); await w.close();
+    await w.write(contactsCsv(entries)); await w.close();
     if (status) status.textContent = L("직원 연락처 CSV를 폴더에 저장했습니다.", "Saved employee contacts to the folder.");
     return true;
   } catch {
-    if (status) status.textContent = L("자동 저장 실패 — 폴더 연결 후 '연락처 저장'을 누르세요.", "Not saved — reconnect the folder, then click Save contacts.");
+    if (status) status.textContent = L("저장 실패 — 설정 폴더 연결과 쓰기 권한을 확인한 뒤 편집기에서 다시 X를 누르세요.", "Save failed — check the settings-folder write permission, then try X again.");
     return false;
   }
 }
 function contactEditor() {
-  const headers = ["이름", "직급", "이메일", "사번", "부서"], keys = ["name", "title", "email", "id", "dept"];
-  const people = (S.contacts || []).filter((x) => x.from === "file");
-  const data = people.map((c) => keys.map((k) => c[k] || ""));
-  while (data.length < Math.max(12, people.length + 3)) data.push(["", "", "", "", ""]);
-  const grid = el("div", { className: "contactsheet", role: "region", "aria-label": "직원 연락처 시트" });
-  const status = el("small", { id: "contactSaveStatus", className: "fine", textContent: L("셀을 고친 뒤 연락처 저장을 누를 수 있습니다.", "Edit cells and save contacts to the folder.") });
-  const table = el("table");
-  const tbody = el("tbody");
-  const update = () => {
-    const fromSheet = data.map((r) => ({ name: r[0].trim().replace(/\s+/g,""), title: r[1].trim(), email: r[2].trim(), id: r[3].trim(), dept: r[4].trim(), from: "file" })).filter((x) => x.name);
-    S.contacts = [...(S.contacts || []).filter((x) => x.from !== "file"), ...fromSheet];
-    S.noAddr = fromSheet.filter((x) => !x.email).map((x) => x.name);
-    status.textContent = L("변경됨 — 폴더에 저장 중…", "Changes pending…");
-    delete $("#mailSetup").dataset.built; drawMailSetup();
-    clearTimeout(contactSaveTimer);
-    contactSaveTimer = setTimeout(() => saveContactsCsv(), 700);
-  };
-  const makeRow = (i) => {
-    const tr = el("tr", {}, el("th", { textContent: i + 2 }));
-    keys.forEach((k, j) => {
-      const inp = el("input", { type: "text", value: data[i][j], autocomplete:"off", spellcheck:false, "aria-label": `${i+2}행 ${headers[j]}` });
-      inp.dataset.row = String(i); inp.dataset.col = String(j);
-      inp.addEventListener("input", () => { data[i][j] = inp.value; update(); });
-      inp.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); tbody.rows[i+2]?.cells[j+1]?.querySelector("input")?.focus(); } });
-      inp.addEventListener("paste", (e) => {
-        const t = e.clipboardData?.getData("text/plain") || "";
-        if (!/[\t\n]/.test(t)) return;
-        e.preventDefault();
-        const pasted = t.replace(/\r\n/g,"\n").replace(/\r/g,"\n").replace(/\n$/,"").split("\n").map((line) => line.split("\t"));
-        while (data.length < i + pasted.length) { data.push(["", "", "", "", ""]); tbody.append(makeRow(data.length-1)); }
-        pasted.forEach((cells, ri) => cells.forEach((val, ci) => { if (j+ci >= keys.length) return; data[i+ri][j+ci] = val; const box=tbody.rows[i+ri+1]?.cells[j+ci+1]?.querySelector("input"); if (box) box.value = val; }));
-        update();
-      });
-      tr.append(el("td", { className: k }, inp));
-    });
-    return tr;
-  };
-  // First spreadsheet row is a fixed header; numbered data cells support tab, enter and TSV paste.
-  tbody.append(el("tr", {}, el("th", { textContent: 1 }), ...headers.map((h) => el("td", { textContent: h }))));
-  for (let i=0;i<data.length;i++) tbody.append(makeRow(i));
-  table.append(el("thead", {}, el("tr", {}, el("th", { textContent: "" }), ...["A","B","C","D","E"].map((a) => el("th", { textContent: a })))), tbody);
-  grid.append(table);
-  const add = el("button", { type: "button", className: "bigbtn", textContent: L("행 추가", "Add row") });
-  add.addEventListener("click", () => { const i=data.length; data.push(["","","","",""]); tbody.append(makeRow(i)); tbody.lastChild.querySelector("input")?.focus(); });
-  const save = el("button", { type: "button", className: "bigbtn", textContent: L("연락처 저장", "Save contacts") });
-  save.addEventListener("click", async () => { clearTimeout(contactSaveTimer); save.disabled = true; try { await saveContactsCsv(); } finally { save.disabled = false; } });
-  return el("div", { className:"sfield" }, grid, el("div", { className:"row" }, add, save), status,
-    el("small", { className:"fine", textContent: L("Excel에서 여러 셀을 복사한 뒤 붙여넣거나, Tab/Enter로 셀을 이동할 수 있습니다. 이 목록은 employee_contacts.csv에 저장됩니다.", "Paste multiple Excel cells, or move through cells with Tab/Enter. Stored in employee_contacts.csv.") }));
+  const count = (S.contacts || []).filter(x => x.from === "file").length;
+  const open = el("button", { type:"button", className:"bigbtn", textContent:L("연락처 Excel 편집기 열기", "Open contact spreadsheet") });
+  open.addEventListener("click", openContactsEditor);
+  return el("div", { className:"sfield" },
+    el("small", { id:"contactCount", className:"fine", textContent: L(`연락처 ${count}명 · Name / Job Title / Email`, `${count} contacts · Name / Job Title / Email`) }),
+    el("div", { className:"contact-editor-actions" }, open),
+    el("small", { id:"contactSaveStatus", className:"fine", textContent: L("편집기에서 X를 누르면 저장을 완료한 다음 창을 닫습니다.", "X saves the CSV before closing the editor.") }));
 }
 /* ---------- the settings file (settings.json) in the 근태 folder: read on opening, written back on saving */
 function settingsJson() { return JSON.stringify(Object.fromEntries(SETTING_KEYS.map((k) => [k, S[k]])), null, 2); }
@@ -3201,7 +3579,7 @@ function drawSaveState(k = st.saveKind) {
 function applySettings(j) {
   let n = 0; for (const k of SETTING_KEYS) if (k in j && (typeof j[k] === typeof DEFAULTS[k] || Array.isArray(DEFAULTS[k]) && Array.isArray(j[k]))) { S[k] = j[k]; n++; }
   for (const k of ["mailSubject", "mailBody"]) S[k] = String(S[k]).replace(/\{(이름|목록)\}/g, "[$1]");
-  delete $("#mailSetup").dataset.built;
+  delete $("#chatSetup").dataset.built;
   return n;
 }
 
@@ -3240,13 +3618,13 @@ function openSettings() {
       chips("places", L("그 밖의 장소", "Other places"), L("일정 제목에서 장소를 찾을 때 씁니다. 이 장소가 들어가면 카드에서 확인합니다.", "Used to find the place in an entry's title. A cell with one of these is shown to you to confirm."), L("장소를 적고 Enter", "Type a place, press Enter")),
       chips("daysOff", L("회사 휴무일 (공휴일 말고)", "Company days off (besides public holidays)"), L("근무일이 아닌 날입니다. 출입 기록이 없어도 묻지 않고, ‘3일, 1/14~1/16’처럼 기간으로 적은 휴가를 하루씩 나눌 때도 빼고 셉니다.", "Not a working day: nobody is asked about it, and it's skipped when a leave range (‘3일, 1/14~1/16’) is split into days."), "2026-12-31")),
     el("section", { className: "sgroup" }, el("h3", { textContent: L("직원 연락처", "Employee contacts") }),
-      el("p", { className: "fine", textContent: L("엑셀처럼 셀을 직접 수정합니다. 개별 셀, 행 추가, Excel 붙여넣기를 지원하며 근태 폴더의 employee_contacts.csv에 저장합니다.", "Edit as a spreadsheet with add-row and Excel paste; saves to employee_contacts.csv in the dependencies folder.") }),
+      el("p", { className: "fine", textContent: L("4번 카드의 Excel 편집기와 같은 기능으로 편집합니다. Name · Job Title · Email 세 열만 사용하며, X를 누르면 저장 후 닫힙니다.", "Uses Card 4's spreadsheet editor with only Name, Job Title and Email; X saves before closing.") }),
       contactEditor()),
     el("section", { className: "sgroup" }, el("h3", { textContent: "Google" }),
       el("div", { className: "two" }, text("calLeave", L("휴가 캘린더", "Leave calendar")), text("calWork", L("외근·직근·출장 캘린더", "외근 / 직근 / 출장 calendar"))),
       el("div", { className: "two" }, text("calOut", L("결과를 올릴 캘린더", "Calendar to post to"), L("처음에는 연습용 캘린더로 시험해 볼 수 있습니다.", "You can try it with a practice calendar first.")), text("calHoliday", L("공휴일 캘린더", "Public holiday calendar"))),
       chips("mailDomains", L("회사 메일 도메인", "Company email domains"), L("이 도메인이 아닌 주소로 보낼 때는 한 번 더 확인합니다.", "Sending to any other domain needs an extra confirmation."), "example.co.kr"),
-      text("mailAccount", L("이메일 계정", "Email account"), L("mail_access.json에 주소가 있으면 그 주소가 우선 사용됩니다.", "An address in mail_access.json takes priority when that file is present."))));
+      text("mailAccount", L("Google Chat 계정", "Google Chat account"), L("mail_access.json에 주소가 있으면 그 주소가 우선 사용됩니다.", "An address in mail_access.json takes priority when that file is present."))));
   const done = el("button", { type: "button", className: "primary", textContent: L("닫기", "Close") });
   $("#setFoot").replaceChildren(el("p", { className: "savestate" }), done);
   done.addEventListener("click", closeSettings);
@@ -3299,7 +3677,7 @@ function closeSettings() {
   document.activeElement?.blur?.();                                        // a half-typed chip goes in on blur
   $("#setOv").hidden = true;
   if (st.setDirty) saveSettingsFile();
-  if (st.setChanged) { st.setChanged = false; delete $("#mailSetup").dataset.built; if (st.res || st.rows) run(); else drawAll(); }
+  if (st.setChanged) { st.setChanged = false; delete $("#chatSetup").dataset.built; if (st.res || st.rows) run(); else drawAll(); }
 }
 /* ---------- security: a picture of where everything is */
 function securityHtml() {
@@ -3308,7 +3686,7 @@ function securityHtml() {
   const file = (x, y, label, tone = "#5f6368") => `<g transform="translate(${x} ${y})"><path d="M0 0h8l4 4v12H0z" fill="#fff" stroke="${tone}" stroke-width="1.2" stroke-linejoin="round"/><path d="M8 0v4h4" fill="none" stroke="${tone}" stroke-width="1.2" stroke-linejoin="round"/><text x="20" y="12.5" font-size="10.5" fill="#333">${label}</text></g>`;
   const tick = (x, y, label) => `<g transform="translate(${x} ${y})"><circle cx="7" cy="7" r="7" fill="#e4f4ec"/><path d="M3.8 7.2l2.2 2.2 4.2-4.4" fill="none" stroke="#1d7a4b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><text x="22" y="11.5" font-size="10.5" fill="#333">${label}</text></g>`;
   const svc = (y, label, sub) => `<g transform="translate(676 ${y - 20})"><rect width="164" height="40" rx="8" fill="#fff" stroke="#d9dce0"/><text x="12" y="17" font-size="12.5" font-weight="600" fill="#1f1f1f">${label}</text><text x="12" y="31" font-size="10.5" fill="#6b6b6b">${sub}</text></g>`;
-  const arrow = (y, dir, color, label) => { const [a, b] = dir === "in" ? [654, 556] : [556, 654]; return `<path d="M${a} ${y}H${b}" stroke="${color}" stroke-width="1.8" marker-end="url(#ar-${color.slice(1)})"/><text x="605" y="${y - 7}" font-size="9.5" fill="${color}" text-anchor="middle">${label}</text>`; };
+  const arrow = (y, dir, color, label) => { const [a, b] = dir === "in" ? [649, 583] : [583, 649]; return `<path d="M${a} ${y}H${b}" stroke="${color}" stroke-width="1.8" marker-end="url(#ar-${color.slice(1)})"/><text x="616" y="${y - 7}" font-size="9.5" fill="${color}" text-anchor="middle">${label}</text>`; };
   const mk = (c) => `<marker id="ar-${c.slice(1)}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="${c}"/></marker>`;
   const rows = [118, 172, 226, 280];
   const pic = `<div class="secwrap"><svg class="secpic" viewBox="0 0 860 392" role="img" aria-label="${t("이 컴퓨터와 Google 사이에 무엇이 오가는지", "What moves between this computer and Google")}">
@@ -3324,7 +3702,7 @@ function securityHtml() {
   <g clip-path="url(#folderClip)">${file(56, 90, t("settings.json", "settings.json"))}
   ${file(56, 118, t("client_secret…json (캘린더 API)", "client_secret…json (calendar API)"))}
   ${file(56, 146, t("mail_access.json", "mail_access.json"))}
-  ${file(56, 174, t("직원 메일 목록", "employee email list"))}
+  ${file(56, 174, t("직원 연락처", "employee contacts"))}
   ${file(56, 210, t("별도로 선택한 ADT 엑셀 폴더", "Separate ADT Excel folder"), "#1f7a47")}
   ${file(56, 238, t("결과 엑셀 (저장할 때)", "Cleaned Excel (when saved)"), "#1f7a47")}</g>
   <text x="56" y="292" font-size="11" fill="#1d7a4b">${t("원본 파일과 설정은 로컬에 저장", "Source data stays local")}</text>
@@ -3342,7 +3720,7 @@ function securityHtml() {
   <text x="680" y="74" font-size="14" font-weight="700" fill="#1f1f1f">Google</text>
   ${svc(rows[0], t("휴가·외근 캘린더", "Leave, 외근 calendars"), t("읽기만", "read only"))}
   ${svc(rows[1], t("[지각] 캘린더", "[지각] calendar"), t("올리기를 누를 때", "when you post"))}
-  ${svc(rows[2], t("Gmail", "Gmail"), t("선택 · 카드마다 한 통", "optional · one per card"))}
+  ${svc(rows[2], t("Google Chat", "Google Chat"), t("선택 · 직원마다 여러 메시지", "optional · repeated DMs"))}
   ${svc(rows[3], t("회사 주소록", "Company directory"), t("선택 · 이름 하나 찾기", "optional · one name"))}
   ${arrow(rows[0], "in", "#1d7a4b", t("읽기만", "read only"))}
   ${arrow(rows[1], "out", "#cf3a2d", t("한 날짜", "one date"))}
@@ -3351,7 +3729,7 @@ function securityHtml() {
 </svg></div>`;
   return pic + L(`<h3>어디에 무엇이 있나</h3>
 <ul>
-<li><b>회사 파일</b>: 설정·Google 연결 파일·메일 계정·직원 연락처는 ‘필요한 파일’ 폴더에서 읽습니다. 출입 기록 원본은 별도로 고른 ADT 엑셀 폴더 또는 개별 파일에서 읽습니다.</li>
+<li><b>회사 파일</b>: 설정·Google 연결 파일·Chat 계정·직원 연락처는 ‘필요한 파일’ 폴더에서 읽습니다. 출입 기록 원본은 별도로 고른 ADT 엑셀 폴더 또는 개별 파일에서 읽습니다.</li>
 <li><b>폴더 기억하기</b>: 선택한 폴더의 이름만 쿠키에 표시 힌트로 저장합니다. 폴더를 다시 여는 권한은 브라우저의 IndexedDB에 저장된 폴더 핸들로 관리합니다. Windows 전체 경로는 페이지나 쿠키에서 읽을 수 없습니다.</li>
 <li><b>임시 카드 초안</b>: 카드의 미저장 입력과 저장 상태는 해당 탭의 sessionStorage에 임시로 남습니다. 파일 내용 지문과 세션 ID로 구분하며 12시간이 지나면 만료됩니다. 일부 브라우저는 종료한 탭을 복원할 수 있으므로 종료 즉시 지워진다고 보장할 수는 없습니다.</li>
 <li><b>정리된 엑셀</b>: 선택한 폴더 쓰기 권한이 있으면 ‘받기’ 때 원본 폴더에 저장합니다. 개별 파일만 선택했거나 브라우저가 폴더 쓰기를 지원하지 않으면 다운로드합니다. 설정은 ‘설정’ 화면에서 기존 settings.json에 직접 저장합니다.</li>
@@ -3359,18 +3737,18 @@ function securityHtml() {
 <h3>Google</h3>
 <ul>
 <li>로그인은 Google 창에서 직접 합니다. 이 페이지는 비밀번호를 보지 않습니다. client_secret…json에서는 클라이언트 ID만 읽고, secret은 쓰지 않습니다.</li>
-<li>권한은 필요할 때 하나씩 묻습니다: 캘린더 읽기 → (올릴 때) 캘린더 쓰기 → (메일 보낼 때) 메일 보내기 → (주소록에서 찾을 때) 주소록 읽기.</li>
+<li>권한은 필요할 때 하나씩 묻습니다: 캘린더 읽기 → (올릴 때) 캘린더 쓰기 → (Google Chat 전송 시) 대화 만들기·메시지 보내기 → (주소록에서 찾을 때) 주소록 읽기.</li>
 <li>임시 Google 액세스 토큰은 메모리에만 둡니다. 계정 이메일 힌트는 브라우저에 저장해 다음 실행의 자동 로그인을 시도하며, Google이 허용하지 않으면 수동 로그인을 사용합니다.</li>
-<li>캘린더 계정과 메일 계정은 따로 로그인합니다. mail_access.json에 account를 적으면 메일은 그 계정에서만 보내고, 다른 계정으로 로그인하면 보내지 않습니다.</li>
+<li>캘린더 계정과 Google Chat 계정은 따로 로그인합니다. mail_access.json에 account를 적으면 Chat은 그 계정에서만 보내고, 다른 계정으로 로그인하면 보내지 않습니다.</li>
 <li>연결하는 곳은 Google(accounts.google.com, googleapis.com)뿐입니다. 분석·광고 도구는 없습니다.</li>
 </ul>
-<h3>메일</h3>
+<h3>Google Chat</h3>
 <ul>
 <li>카드에서 사람별로 수신 주소와 제목·본문을 확인한 뒤 ‘보내기’를 눌러 발송합니다. 발송이 시작된 후에는 취소를 보장할 수 없습니다.</li>
 <li>주소는 사번이나, 겹치지 않는 이름이 정확히 맞을 때만 씁니다. 같은 이름이 둘이거나 주소가 둘이면 보내지 않습니다. 회사 도메인이 아닌 주소는 한 번 더 확인합니다.</li>
 </ul>`, `<h3>What is where</h3>
 <ul>
-<li><b>Company files</b>: settings, Google sign-in configuration, email access and contacts come from the dependencies folder. Badge exports come from the separately chosen ADT Excel folder or an individual file.</li>
+<li><b>Company files</b>: settings, Google sign-in configuration, legacy sender-policy and employee contacts come from the dependencies folder. Badge exports come from the separately chosen ADT Excel folder or an individual file.</li>
 <li><b>Remembered folder</b>: a cookie holds only the folder-name hint, while browser IndexedDB holds an approved directory handle. Browsers do not expose the full Windows filesystem path to a page or cookie.</li>
 <li><b>Card drafts</b> and saved edits are cached in tab-scoped sessionStorage, isolated by a session nonce and Excel-file fingerprint; they expire after 12 hours. Some browsers can restore tabs, so immediate erasure on close is not guaranteed.</li>
 <li><b>Cleaned Excel</b> writes to the selected source folder when supported; otherwise it downloads. Settings are directly saved back to the existing settings.json from Settings.</li>
@@ -3378,20 +3756,20 @@ function securityHtml() {
 <h3>Google</h3>
 <ul>
 <li>You sign in in Google's own window; this page never sees the password. Only the client ID is read from client_secret…json; the secret is never used.</li>
-<li>Permissions are asked one at a time, when needed: read calendars → (posting) write calendar events → (emailing) send mail → (directory lookup) read the directory.</li>
+<li>Permissions are asked one at a time, when needed: read calendars → (posting) write calendar events → (sending a Google Chat DM) send a Google Chat message → (directory lookup) read the directory.</li>
 <li>Access tokens stay in memory only. A remembered email hint can be used to attempt silent sign-in next time; Google may require manual sign-in.</li>
-<li>The calendar account and the email account sign in separately. With an account in mail_access.json, email is sent only from it; signing in as anyone else sends nothing.</li>
+<li>The calendar account and the Google Chat account sign in separately. With an account in mail_access.json, Chat is sent only from it; signing in as anyone else sends nothing.</li>
 <li>The only places it connects to are Google's (accounts.google.com, googleapis.com). No analytics or ads.</li>
 </ul>
-<h3>Email</h3>
+<h3>Google Chat</h3>
 <ul>
 <li>For each person, review the recipient, subject and body and press Send. Sending cannot reliably be canceled after it starts.</li>
 <li>An address is used only on an employee-number match or an exact, unique name match; two people with one name, or two addresses for one person, block sending. An address outside the company domains needs an extra confirmation.</li>
 </ul>`);
 }
 const HELP = () => L(`<ol>
-<li><b>불러오기</b>: ‘필요한 파일’ 버튼으로 설정·Google 연결·메일·직원 연락처가 있는 폴더를 선택합니다. ‘ADT 엑셀 폴더’ 또는 ‘엑셀 파일’ 버튼으로 출입 기록을 불러옵니다. 파일과 날짜를 선택하세요.</li>
-<li><b>메일 (선택)</b>: 비어 있는 칸을 직원에게 물어볼 메일 문구를 정합니다. [이름]과 [목록]이 사람마다 바뀝니다.</li>
+<li><b>불러오기</b>: ‘필요한 파일’ 버튼으로 설정·Google 연결·Google Chat·직원 연락처가 있는 폴더를 선택합니다. ‘ADT 엑셀 폴더’ 또는 ‘엑셀 파일’ 버튼으로 출입 기록을 불러옵니다. 파일과 날짜를 선택하세요.</li>
+<li><b>Google Chat (선택)</b>: 비어 있는 칸을 직원에게 물어볼 Chat 메시지를 정합니다. [이름]과 [목록]이 사람마다 바뀝니다.</li>
 <li><b>확인하기</b>: 확인할 사람을 한 명씩 카드로 봅니다. 임시 입력은 탭 안에 보관되므로 다른 카드나 날짜로 이동해도 돌아올 수 있습니다. ‘저장’(Enter) 뒤에는 카드가 회색으로 남고 ‘수정’을 눌러 다시 편집할 수 있습니다. 1400은 14:00으로 바뀝니다.</li>
 <li><b>엑셀 확인</b>: 고른 날짜의 정리된 엑셀을 크게 열어 고칠 수 있습니다. 초록은 자동, 파랑은 직접 고친 칸, 노랑은 아직 확인할 칸입니다. 지각은 체크 칸으로 켜고 끕니다. 이름·날짜는 고칠 수 없습니다.</li>
 <li><b>받기·올리기</b>: 그 날짜의 엑셀을 출입 기록 파일이 있던 폴더에 ‘YYYYMMDD_Attendance.xlsx’로 저장하거나 [지각] 캘린더에 올립니다. 정리된 엑셀은 파일 목록에 나오지 않고, ‘정리된 엑셀도 보기’를 누를 때만 보입니다. 이미 올린 날짜는 새로 만들지 않고 고칩니다.</li>
@@ -3406,7 +3784,7 @@ const HELP = () => L(`<ol>
 <li>지각: 09:01부터. 오전 반차·반반차, 오전 외근·직출은 빼고 셉니다.</li>
 </ul>`, `<ol>
 <li><b>Load</b>: select the dependencies folder for settings, Google connection and contacts; choose the separate ADT Excel folder or an individual badge Excel file. Then select a file and date.</li>
-<li><b>Email (optional)</b>: the text for asking people about their empty cells. [이름] and [목록] change per person.</li>
+<li><b>Google Chat (optional)</b>: compose one-to-one messages for employee missing records. Send additional messages in the same conversation.</li>
 <li><b>Check</b>: work through one person at a time. Drafts survive navigating cards or dates in the same tab. Save (Enter) keeps a completed card greyed out with an Edit button. Typing 1400 gives 14:00.</li>
 <li><b>Look over the Excel</b>: open the cleaned sheet for the date, full size, and edit it. Green = automatic, blue = changed by you, yellow = still to check. 지각 is a tick box. Names and dates can't be changed.</li>
 <li><b>Download / post</b>: that date's Excel, saved as ‘YYYYMMDD_Attendance.xlsx’ next to the badge export, or the [지각] calendar entry. Cleaned Excels stay out of the file list unless you press ‘Show cleaned Excels too’. A date already posted is updated, not duplicated.</li>
@@ -3426,6 +3804,7 @@ const HELP = () => L(`<ol>
 async function chooseBadgeFolder(existing = null, automatic = false) {
   if (chooseBadgeFolder.busy) return;
   chooseBadgeFolder.busy = true;
+  const epoch = st.badgeModeEpoch;
   try {
     let dir = existing, files = [];
     if (!dir && window.showDirectoryPicker) {
@@ -3452,12 +3831,17 @@ async function chooseBadgeFolder(existing = null, automatic = false) {
         }
       };
       await walk(dir);
-      await saveFolderHandle(dir, "badges");
     }
+    if (epoch !== st.badgeModeEpoch || st.badgeMode !== "folder") return; // user switched modes while choosing/scanning
+    await badgeHandleReset;
+    if (epoch !== st.badgeModeEpoch || st.badgeMode !== "folder") return;
+    if (dir) await saveFolderHandle(dir, "badges");
     // A different Excel folder begins a new loaded dataset; old draft IDs remain safely
     // namespaced in this tab's session and will be restored only if that exact file returns.
     st.badgeDir = dir;
-    Object.assign(st, { files: [], fi: -1, rows: null, res: null, date: null, over: {}, drafts: {}, sheetEdits: {}, sent: {}, asked: {}, cur: null });
+    st.badgeFolderLoaded = !dir && files.length > 0; // Firefox fallback: files loaded, no persistent folder handle.
+    st.badgeFolderDisplay = dir?.name || String(files[0]?.webkitRelativePath || "").split("/")[0] || "";
+    Object.assign(st, { files: [], fi: -1, rows: null, res: null, date: null, over: {}, drafts: {}, sheetEdits: {}, sheetAuthority: {}, sent: {}, asked: {}, cur: null });
     drawFiles();
     if (files.length) await addFiles(files, { quiet: true });
     else toast(L("폴더 안에서 원본 엑셀 파일을 찾지 못했습니다.", "No badge Excel exports in that folder."));
@@ -3465,7 +3849,7 @@ async function chooseBadgeFolder(existing = null, automatic = false) {
   } catch (e) { if (!automatic) toast(L("엑셀 폴더를 읽지 못했습니다: ", "Could not read the Excel folder: ") + (e.message || e)); }
   finally { chooseBadgeFolder.busy = false; }
 }
-/* ---------- opening the folder: settings, API file, email access, email list, badge exports (newest first) */
+/* ---------- dependencies: Calendar OAuth JSON, Google Chat OAuth JSON, legacy Chat sender policy, employee contacts */
 const logStep = (text, cls = "") => { const li = el("li", { className: cls }); li.innerHTML = text; $("#startLog").append(li); };
 async function entriesOf(dir) { const out = []; for await (const [name, e] of dir.entries()) out.push([name, e]); return out; }
 async function subdir(dir, path) {
@@ -3478,8 +3862,9 @@ async function subdir(dir, path) {
 }
 const KINDS = [
   ["settings", (n) => /\.json$/i.test(n) && /설정|settings/i.test(n), () => L("앱 설정", "App settings")],
-  ["google", (n) => /\.json$/i.test(n) && /client_secret|oauth|google/i.test(n) && !/메일|mail/i.test(n), () => L("Google 연결", "Google sign-in")],
-  ["mailer", (n) => /\.json$/i.test(n) && /메일|mail/i.test(n) && !/설정|settings/i.test(n), () => L("메일 보내기", "Email sending")],
+  ["google", (n) => /\.json$/i.test(n) && /client_secret|oauth|google/i.test(n) && !/메일|mail|chat/i.test(n), () => L("캘린더 Google 연결", "Calendar Google OAuth")],
+  ["chatGoogle", (n) => n.toLowerCase() === "chat_client_secret.json", () => L("Google Chat 인증", "Google Chat OAuth")],
+  ["mailer", (n) => /\.json$/i.test(n) && /^(chat_access|mail_access|메일[_ -]?계정|email_access)\.json$/i.test(n), () => L("Chat 발신 계정 정책", "Chat sender account policy")],
   ["contacts", (n) => /\.(xls|xlsx|csv)$/i.test(n) && /employee[ _-]?contacts|연락처|메일\s*목록|email[ _-]?list/i.test(n), () => L("직원 연락처", "Employee contacts")],
 ];
 async function start(existingRoot = null, automaticResume = false) {
@@ -3516,17 +3901,39 @@ async function start(existingRoot = null, automaticResume = false) {
       // Badge exports are chosen separately using the ADT Excel-folder button.
       } else {
       // no folder access in this browser: the files of the chosen folder (top level and 근태/)
+      st.cfgDir = null; st.contactsHandle = null;
       cfgFiles = files.filter((f) => f.webkitRelativePath.split("/").length <= 3); badgeFiles = [];
       const sf = cfgFiles.filter((f) => KINDS[0][1](f.name)).sort((a, b) => b.lastModified - a.lastModified)[0];
       if (sf) { try { applySettings(JSON.parse(await sf.text())); } catch {} }
     }
+    st.cfgFilesLoaded = !root && cfgFiles.some((f) => KINDS[0][1](f.name));
     const found = {}; for (const [k, test] of KINDS) found[k] = cfgFiles.filter((f) => test(f.name)).sort((a, b) => b.lastModified - a.lastModified)[0] || null;
-    if (found.google) { try { const j = JSON.parse(await found.google.text()), id = (j.web || j.installed || {}).client_id; if (id) S.clientId = id; else found.google = null; } catch { found.google = null; } }   // the client ID only; the secret is never used
+    const previousCalendarId = S.clientId, previousChatId = S.chatClientId;
+    S.clientId = ""; S.chatClientId = "";  // Never reuse credentials from another dependencies folder.
+    if (found.google) {
+      try {
+        const j = JSON.parse(await found.google.text());
+        S.clientId = String((j.web || j.installed || {}).client_id || "").trim();
+        if (!S.clientId) throw new Error("missing client_id");
+      } catch { found.google = null; toast(L("캘린더 Google 인증 JSON이 올바르지 않습니다.", "Calendar OAuth JSON is invalid.")); }
+    }
+    if (found.chatGoogle) {
+      try {
+        const j = JSON.parse(await found.chatGoogle.text());
+        S.chatClientId = String((j.web || j.installed || {}).client_id || "").trim();
+        if (!S.chatClientId) throw new Error("missing client_id");
+      } catch { found.chatGoogle = null; toast(L("chat_client_secret.json이 올바르지 않습니다.", "Invalid chat_client_secret.json.")); }
+    }
+    if (previousCalendarId !== S.clientId) { toks.cal = null; acctErr.cal = ""; }
+    if (previousChatId !== S.chatClientId) { toks.chat = null; acctErr.chat = ""; }
     let nContacts = 0; if (found.contacts) { nContacts = await loadContacts(found.contacts); if (root && /\.csv$/i.test(found.contacts.name)) { try { st.contactsHandle = await st.cfgDir.getFileHandle(found.contacts.name); } catch {} } }
-    if (found.mailer) { try { const j = JSON.parse(await found.mailer.text()); S.mailAccount = String(j.account || j.email || j.from || S.mailAccount || "").trim(); toks.mail = null; if (!/google|gmail/i.test(String(j.provider || j.type || "google"))) { found.mailer = null; toast(L("이 메일 계정 종류는 아직 지원하지 않습니다(지금은 Gmail·Google Workspace만).", "This kind of email account isn't supported yet (Gmail / Google Workspace only for now).")); } } catch { found.mailer = null; } }
-    for (const [k, , label] of KINDS) { const f = found[k], need = k === "settings" || k === "google"; logStep(`<span>${esc(label())}</span><small>${esc(f ? L(" · 찾았습니다", " · found") + (k === "contacts" ? L(` · ${nContacts}명`, ` · ${nContacts} people`) : k === "mailer" && S.mailAccount ? ` · ${S.mailAccount}` : "") : need ? L(" · 찾지 못함", " · not found") : L(" · 선택 사항", " · optional"))}</small>`, f ? "ok" : need ? "bad" : ""); }
+    if (found.mailer) { try { const j = JSON.parse(await found.mailer.text()); S.mailAccount = String(j.account || j.email || j.from || S.mailAccount || "").trim();
+        if (toks.chat?.email && S.mailAccount && !sameMail(toks.chat.email, S.mailAccount)) toks.chat = null;
+        if (!/google|gmail|chat|workspace/i.test(String(j.provider || j.type || "google"))) { found.mailer = null; toast(L("Google Chat 계정 정책이 지원되지 않습니다.", "This Google Chat sender policy is not supported.")); } } catch { found.mailer = null; } }
+    for (const [k, , label] of KINDS) { const f = found[k], need = k === "settings" || k === "google" || k === "chatGoogle"; logStep(`<span>${esc(label())}</span><small>${esc(f ? L(" · 찾았습니다", " · found") + (k === "contacts" ? L(` · ${nContacts}명`, ` · ${nContacts} people`) : k === "mailer" && S.mailAccount ? ` · ${S.mailAccount}` : "") : need ? L(" · 찾지 못함", " · not found") : L(" · 선택 사항", " · optional"))}</small>`, f ? "ok" : need ? "bad" : ""); }
     $("#configSub").textContent = L("필요한 파일을 확인했습니다", "Setup files found");
-    delete $("#mailSetup").dataset.built; drawMailSetup();
+    drawFiles(); // Indicator changes do not depend on Excel or Calendar being connected.
+    delete $("#chatSetup").dataset.built; drawChatSetup();
     st.tried = true;
     if (badgeFiles.length) await addFiles(badgeFiles, { quiet: true }); // legacy fallback only
     if (!S.clientId) { drawNeeds(); return; }
@@ -3538,10 +3945,18 @@ async function start(existingRoot = null, automaticResume = false) {
       catch { toks.cal = null; acctErr.cal = ""; drawAccount("cal"); }
     }
     if (toks.cal) await loadCalendars();
+    // Google Chat has its own OAuth client and account hint. Never reuse a Calendar token.
+    // On a hosted HTTPS origin, try a NO-PROMPT login only for an account which has
+    // previously authorized Chat. Failure is non-fatal: its normal Sign in/Send button
+    // remains available. Google may require a new consent after expiry or policy changes.
+    if (location.protocol !== "file:" && S.chatClientId && rememberedEmail("chat") && !toks.chat) {
+      try { await token([SC.chatSpace, SC.chatSend], "chat", true); }
+      catch { toks.chat = null; acctErr.chat = ""; drawAccount("chat"); drawChatSetup(); }
+    }
     if (st.fi < 0 || !toks.cal) { drawNeeds(); if (st.fi >= 0 && !toks.cal) toast(L("기록 파일을 불러왔습니다. Google 로그인만 한 번 확인해 주세요.", "Attendance records are loaded. Please confirm Google sign-in once.")); }
   } finally { start.busy = false; btn.disabled = false; }
 }
-/* the admin preview: starts empty, so the page can be seen without data; one button puts the built-in data in */
+/* Admin demo: loads fictional employees and never contacts Google Chat or modifies real files. */
 async function loadPreview() {
   applySettings(PREVIEW.settings);
   S.contacts = (PREVIEW.contacts || []).map((x) => ({ ...x, from: "file" }));
@@ -3551,15 +3966,15 @@ async function loadPreview() {
   for (const o of PREVIEW.older || []) files.push(new File([], o.name, { lastModified: o.t }));
   await addFiles(files, { quiet: true });
   st.tried = true; await loadCalendars();
-  delete $("#mailSetup").dataset.built; drawMailSetup();
+  delete $("#chatSetup").dataset.built; drawChatSetup();
 }
 function clearAll() {
-  toks.cal = toks.mail = null;
+  toks.cal = toks.chat = null;
   workSession.nonce = randomHex(16); workSession.created = Date.now(); workSession.cards = {};
   writeCardSession(); // a deliberate reset starts a fresh session and invalidates ALL previous card IDs
-  Object.assign(st, { fileMore: false, fileQ: "", files: [], fi: -1, date: null, rows: null, res: null, over: {}, drafts: {}, sheetEdits: {}, events: [], existing: {}, calLoaded: false, calRange: null, sent: {}, asked: {}, cur: null, tried: false, dirty: false, pubMsg: null });
+  Object.assign(st, { fileMore: false, fileQ: "", files: [], fi: -1, date: null, rows: null, res: null, order: {}, shownRows: {}, over: {}, drafts: {}, sheetEdits: {}, sheetAuthority: {}, events: [], existing: {}, calLoaded: false, calRange: null, sent: {}, asked: {}, cur: null, tried: false, dirty: false, pubMsg: null });
   S = structuredClone(DEFAULTS); $("#startLog").replaceChildren(); $("#needs").replaceChildren(); $("#calInfo").replaceChildren(); $("#pubInfo").replaceChildren();
-  delete $("#mailSetup").dataset.built; drawFiles(); drawDates(); drawCalInfo(); drawAll();
+  delete $("#chatSetup").dataset.built; drawFiles(); drawDates(); drawCalInfo(); drawAll();
 }
 
 /* ---------- language (not remembered: the page always opens in Korean) */
@@ -3585,7 +4000,7 @@ function drawBanner() {
   const put = el("button", { type: "button", className: "bigbtn", textContent: L("미리보기 데이터 넣기", "Put the preview data in") }), clr = el("button", { type: "button", className: "bigbtn", textContent: L("비우기", "Empty") });
   put.addEventListener("click", loadPreview); clr.addEventListener("click", clearAll);
   const cal = el("button", { type: "button", className: "bigbtn", textContent: L("캘린더 데이터 보기", "See the calendar data") }); cal.addEventListener("click", showPreviewCalendar);
-  b.replaceChildren(el("b", { textContent: L("관리자 미리보기", "Admin preview") }), el("span", { textContent: L("실제 회사 데이터가 들어 있습니다. 캘린더에 올리거나 메일을 보내지 않고, 된 것처럼만 보여 줍니다. 회사 밖으로 보내지 마세요.", "Real company data is built in. Nothing is posted or emailed — it only shows what would happen. Keep this file inside the company.") }), el("span", { className: "row" }, put, cal, clr));
+  b.replaceChildren(el("b", { textContent: L("관리자 미리보기", "Admin preview") }), el("span", { textContent: L("가상 직원 데이터가 들어 있습니다. 캘린더에 올리거나 Chat 메시지를 보내지 않고, 된 것처럼만 보여 줍니다. 회사 밖으로 보내지 마세요.", "Synthetic employee data is built in. Nothing is posted or messaged — it only shows what would happen. Keep this file inside the company.") }), el("span", { className: "row" }, put, cal, clr));
 }
 
 /** The calendar entries the page read (휴가, 외근·회의) and the [지각] entries, listed by date, so HR can see exactly
@@ -3596,9 +4011,9 @@ function showCalendarData() {
     return xs.length ? el("table", { className: "res" }, el("tbody", {}, ...xs.map((x) => el("tr", {}, el("td", { className: "nowrap", textContent: when(x.start, x.end, x.allDay) }), el("td", { textContent: x.summary }))))) : el("p", { className: "fine", textContent: L("일정이 없습니다.", "No entries.") }); };
   const posted = (PREVIEW ? Object.values(pvStore) : Object.values(st.existing || {}).flat()).filter((p) => p?.start).sort((a, b) => (a.start?.date < b.start?.date ? -1 : 1));
   const tabs = [[L(`휴가 (${S.calLeave})`, `Leave (${S.calLeave})`), list("leave")], [L(`외근·회의 (${S.calWork})`, `외근 / meetings (${S.calWork})`), list("work")],
-    [L(`${S.calOut || "[지각]"} ${posted.length}`, `${S.calOut || "[지각]"} ${posted.length}`), posted.length ? el("div", { className: "pvposted" }, ...posted.map((p) => el("article", { className: "gcal" }, el("b", { textContent: p.summary }), el("small", { textContent: dayLabel(p.start.date) }), el("div", { className: "gdesc", innerHTML: p.description || "" })))) : el("p", { className: "fine", textContent: L("이 기간에 올라간 것이 없습니다.", "Nothing posted for these dates.") })]];
+    [L(`${S.calOut || "[지각]"} ${posted.length}`, `${S.calOut || "[지각]"} ${posted.length}`), posted.length ? el("div", { className: "pvposted" }, ...posted.map((p) => el("article", { className: "gcal" }, el("b", { textContent: p.summary }), el("small", { textContent: dayLabel(p.start.date) }), el("div", { className: "gdesc" }, safeCalendarDescription(p.description))))) : el("p", { className: "fine", textContent: L("이 기간에 올라간 것이 없습니다.", "Nothing posted for these dates.") })]];
   const body = el("div", { className: "pvtabs" });
-  const seg = el("div", { className: "seg" }, ...tabs.map(([label], i) => { const b = el("button", { type: "button", textContent: label }); b.setAttribute("aria-pressed", i === 0); b.addEventListener("click", () => { seg.querySelectorAll("button").forEach((x, j) => x.setAttribute("aria-pressed", j === i)); body.replaceChildren(tabs[i][1]); }); return b; }));
+  const seg = el("div", { className: "seg calendar-data-tabs" }, ...tabs.map(([label], i) => { const b = el("button", { type: "button", textContent: label }); b.setAttribute("aria-pressed", i === 0); b.addEventListener("click", () => { seg.querySelectorAll("button").forEach((x, j) => x.setAttribute("aria-pressed", j === i)); body.replaceChildren(tabs[i][1]); }); return b; }));
   body.replaceChildren(tabs[0][1]);
   const span = st.files[st.fi]?.dates; const range = span?.length ? `${span[0].slice(5).replace("-", "/")}–${span.at(-1).slice(5).replace("-", "/")}` : "";
   $("#helpT").textContent = L("캘린더 데이터", "Calendar data");
@@ -3614,14 +4029,17 @@ document.addEventListener("DOMContentLoaded", () => {
   // Korean-only UI; English strings and the selector remain in source comments.
   $("#calData").addEventListener("click", showCalendarData);
 
+  setBadgeMode(st.badgeMode, { reset: false, persist: false });
+  $("#badgeModeFolder").addEventListener("click", () => setBadgeMode("folder"));
+  $("#badgeModeFile").addEventListener("click", () => setBadgeMode("file"));
   const drop = $("#drop");
   drop.addEventListener("dragover", (e) => { e.preventDefault(); drop.classList.add("over"); });
   drop.addEventListener("dragleave", () => drop.classList.remove("over"));
-  drop.addEventListener("drop", (e) => { e.preventDefault(); drop.classList.remove("over"); if (e.dataTransfer.files.length) addFiles([...e.dataTransfer.files], { dropped: true }); });
+  drop.addEventListener("drop", (e) => { e.preventDefault(); drop.classList.remove("over"); if (e.dataTransfer.files.length) { setBadgeMode("file"); addFiles([...e.dataTransfer.files], { dropped: true }); } });
   drop.addEventListener("click", () => {
     const f = document.createElement("input");
     f.type = "file"; f.multiple = true; f.accept = ".xls,.xlsx,.csv";
-    f.addEventListener("change", () => { if (f.files.length) addFiles([...f.files], { dropped: true }); });
+    f.addEventListener("change", () => { if (f.files.length) { setBadgeMode("file"); addFiles([...f.files], { dropped: true }); } });
     f.click();
   });
   drop.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); drop.click(); } });
@@ -3635,8 +4053,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!window.showDirectoryPicker) return;
     const h = await getFolderHandle("root");
     if (h) try { if ((await h.queryPermission({mode:"readwrite"})) === "granted") await start(h, true); } catch {}
-    const badges = await getFolderHandle("badges");
-    if (badges) try { if ((await badges.queryPermission({mode:"read"})) === "granted") await chooseBadgeFolder(badges, true); } catch {}
+    if (st.badgeMode === "folder") {
+      const epoch = st.badgeModeEpoch;
+      const badges = await getFolderHandle("badges");
+      if (badges && epoch === st.badgeModeEpoch && st.badgeMode === "folder") try { if ((await badges.queryPermission({mode:"read"})) === "granted") await chooseBadgeFolder(badges, true); } catch {}
+    }
   })();
   window.addEventListener("pagehide", () => writeCardSession());
   window.addEventListener("beforeunload", (e) => { writeCardSession(); if (st.dirty || st.setDirty) { e.preventDefault(); e.returnValue = ""; } });
@@ -3647,8 +4068,21 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   $("#pubBtn").addEventListener("click", () => publish());
   $("#sheetBtn").addEventListener("click", openSheet);
+  $("#sheetUndo").addEventListener("click",()=>sheetHistoryStep(false));
+  $("#sheetRedo").addEventListener("click",()=>sheetHistoryStep(true));
   $("#cardPrev").addEventListener("click", () => flip(-1));
   $("#cardNext").addEventListener("click", () => flip(1));
+  // The panel has a fixed header/footer, so a wheel over them should still scroll the card.
+  // Native scrolling inside the middle content (including inputs) is left untouched.
+  $("#s3").addEventListener("wheel", (e) => {
+    if (e.target.closest(".flip, .rc-content, input, textarea, select")) return;
+    const middle = $("#review .rc-content");
+    if (!middle || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+    const dy = e.deltaY * (e.deltaMode === 1 ? 18 : e.deltaMode === 2 ? middle.clientHeight : 1);
+    const available = middle.scrollHeight - middle.clientHeight;
+    if (available <= 1 || (dy < 0 && middle.scrollTop <= 0) || (dy > 0 && middle.scrollTop >= available - 1)) return;
+    e.preventDefault(); middle.scrollTop += dy;
+  }, { passive: false });
   const big = (on) => { $("#s3").classList.toggle("full", on); document.body.classList.toggle("stagefull", on); $("#stageBig").setAttribute("aria-pressed", on); };
   $("#stageBig").addEventListener("click", () => big(!$("#s3").classList.contains("full")));
   $("#setBtn").addEventListener("click", () => openSettings());
@@ -3674,13 +4108,14 @@ window.geuntae = { st, get S() { return S; }, run, applyLang, cleanedSheet, open
    Rows and columns are never added or removed, so row numbers, the title row, the chosen rows and the
    column matches all stay as they are. On 완료 the edits are written straight into the data the PDFs
    are made from (both the normal view and the "show hidden" view), so there is only one copy of the data. */
-const xe = { rows: null, nums: [], hidRows: new Set(), hidCols: new Set(), width: 0, grid: [], orig: [], cur: { r: 0, c: 0 }, anchor: { r: 0, c: 0 }, editing: null, history: [], future: [], copied: null, drag: null };
+const xe = { mode: "sheet", rows: null, nums: [], hidRows: new Set(), hidCols: new Set(), width: 0, grid: [], orig: [], cur: { r: 0, c: 0 }, anchor: { r: 0, c: 0 }, editing: null, history: [], future: [], copied: null, drag: null };
 function xeSource() {
   const base = state.data.sheets[state.data.sheet] || [];
   return { base, rows: base.full || base };
 }
 function openExcelEditor() {
   if (!state.data?.sheet) return;
+  xe.mode = "sheet"; $("#xeAddRows").hidden = true; $("#xeDone").textContent = "×"; $("#xeDone").title = L("고친 내용을 적용하고 닫기", "Apply edits and close");
   const { base, rows } = xeSource();
   xe.rows = rows; xe.nums = rows.rowNums || rows.map((_, i) => i + 1);
   xe.hidRows = new Set(base.full ? xe.nums.map((n, i) => (base.full.hiddenRowNums.has(n) ? i : -1)).filter((i) => i >= 0) : []);
@@ -3694,14 +4129,45 @@ function openExcelEditor() {
   $("#xlOverlay").hidden = false; document.body.style.overflow = "hidden";
   xeSelect(0, 0); xeBox().focus();
 }
+/* Contacts share Card 4's complete spreadsheet controls (selection, keyboard, copy/paste, undo).
+   Only the data source and save destination change; the same xe* functions are used below. */
+function xeAppendContactRows(extra = 20) {
+  if (xe.mode !== "contacts") return;
+  extra = Math.max(0, Math.min(extra, 2000 - xe.grid.length));
+  if (!extra) { xeSay(L("연락처 행 최대치에 도달했습니다.", "Contact row limit reached.")); return; }
+  const old = { ...xe.cur };
+  for (let i = 0; i < extra; i++) {
+    xe.grid.push(["", "", ""]); xe.orig.push(["", "", ""]); xe.nums.push(xe.nums.length + 1);
+  }
+  xeDraw(); xeSelect(old.r, old.c);
+}
+function openContactsEditor() {
+  if (!$("#xlOverlay").hidden) return;
+  xe.mode = "contacts";
+  const people = (S.contacts || []).filter(c => c.from === "file");
+  xe.grid = [["Name", "Job Title", "Email"], ...people.map(c => [String(c.name || ""), String(c.title || ""), String(c.email || "")])];
+  while (xe.grid.length < Math.max(40, people.length + 16)) xe.grid.push(["", "", ""]);
+  xe.width = 3; xe.nums = xe.grid.map((_, i) => i + 1);
+  xe.hidRows = new Set(); xe.hidCols = new Set(); xe.rows = null;
+  xe.orig = xe.grid.map(r => r.slice());
+  xe.cur = { r: 1, c: 0 }; xe.anchor = { r: 1, c: 0 };
+  xe.editing = null; xe.history = []; xe.future = []; xe.copied = null;
+  $("#xeTitle").textContent = "employee_contacts.csv";
+  $("#xeAddRows").hidden = false; $("#xeDone").textContent = "×"; $("#xeDone").title = L("연락처 CSV 저장 후 닫기", "Save contacts CSV, then close");
+  $("#xeLegend")?.setAttribute("hidden", "");
+  xeDraw();
+  $("#xlOverlay").hidden = false; document.body.style.overflow = "hidden";
+  xeSelect(1, 0); xeBox().focus();
+}
 /** The title row as an index into the editor's rows (or -1). */
 function xeTitleIndex() {
+  if (xe.mode === "contacts") return 0;
   if (state.headerRow < 0) return -1;
   return xe.nums.indexOf(excelRow(state.headerRow));
 }
 function xeDraw() {
   const t = xeTitleIndex();
-  const made = state.rowsMode ? new Set(rowsToMake().map(dataRowNo)) : null;
+  const made = xe.mode !== "contacts" && state.rowsMode ? new Set(rowsToMake().map(dataRowNo)) : null;
   const head = el("tr", {}, el("th", { className: "xe-corner", title: L("모두 선택 (Ctrl+A)", "Select all (Ctrl+A)").toString() }), ...Array.from({ length: xe.width }, (_, c) => el("th", { textContent: colName(c), className: xe.hidCols.has(c) ? "xhid" : "", dataset: { c } })));
   const body = xe.grid.map((row, r) => el("tr", { className: (r === t ? "title" : t >= 0 && r < t ? "above" : made && r > t && !made.has(xe.nums[r]) ? "above" : "") + (xe.hidRows.has(r) ? " xhid" : "") },
     el("th", { textContent: xe.nums[r], dataset: { r } }),
@@ -3748,6 +4214,7 @@ function xePaint() {
 /** Move the active cell to (r, c). With extend, the block from the anchor to it is selected (Shift). */
 function xeSelect(r, c, extend = false) {
   if (!xe.grid.length) return;
+  if (xe.mode === "contacts" && r >= xe.grid.length && xe.grid.length < 2000) xeAppendContactRows(Math.max(20, r - xe.grid.length + 1));
   r = Math.max(0, Math.min(xe.grid.length - 1, r)); c = Math.max(0, Math.min(xe.width - 1, c));
   xe.cur = { r, c };
   if (!extend) xe.anchor = { r, c };
@@ -3773,11 +4240,11 @@ function xeSelectBlock(r0, c0, r1, c1) {
 function xeSetMany(list) {
   const cells = [];
   for (const { r, c, v } of list) {
-    if (r >= xe.grid.length || c >= xe.width || xe.grid[r][c] === v || window.xeLocked?.(r, c)) continue;
+    if (r < 0 || c < 0 || r >= xe.grid.length || c >= xe.width || xe.grid[r][c] === v || (xe.mode === "contacts" && r === 0) || (xe.mode !== "contacts" && window.xeLocked?.(r, c))) continue;
     cells.push({ r, c, before: xe.grid[r][c], after: v });
     xe.grid[r][c] = v; xeRefreshCell(r, c, false);
   }
-  if (cells.length) { xe.history.push(cells); xe.future = []; window.xeChanged?.(cells.map((x) => ({ r: x.r, c: x.c }))); }
+  if (cells.length) { xe.history.push(cells); xe.future = []; if (xe.mode !== "contacts") window.xeChanged?.(cells.map((x) => ({ r: x.r, c: x.c }))); }
   xeInfo();
   return cells.length;
 }
@@ -3799,7 +4266,8 @@ function xePlaceBox() {
 }
 function xeStartEdit(keepText) {
   if (xe.editing) return;
-  if (window.xeLocked?.(xe.cur.r, xe.cur.c)) { xeBox().value = ""; xeSay(window.xeLockedMsg?.() || ""); return; }
+  if (xe.mode === "contacts" && xe.cur.r === 0) { xeBox().value = ""; xeSay(L("열 이름은 고칠 수 없습니다.", "Column names cannot be edited.")); return; }
+  if (xe.mode !== "contacts" && window.xeLocked?.(xe.cur.r, xe.cur.c)) { xeBox().value = ""; xeSay(window.xeLockedMsg?.() || ""); return; }
   const box = xeBox(), { r, c } = xe.cur;
   if (keepText) box.value = xe.grid[r][c];
   xe.editing = { r, c };
@@ -3826,13 +4294,13 @@ function xeCells() {
 function xeUndo() {
   xeEndEdit(true); const h = xe.history.pop(); if (!h) return; xe.future.push(h);
   for (const x of h) { xe.grid[x.r][x.c] = x.before; xeRefreshCell(x.r, x.c, false); }
-  window.xeChanged?.(h);
+  if (xe.mode !== "contacts") window.xeChanged?.(h);
   xeSelectChanged(h);
 }
 function xeRedo() {
   xeEndEdit(true); const h = xe.future.pop(); if (!h) return; xe.history.push(h);
   for (const x of h) { xe.grid[x.r][x.c] = x.after; xeRefreshCell(x.r, x.c, false); }
-  window.xeChanged?.(h);
+  if (xe.mode !== "contacts") window.xeChanged?.(h);
   xeSelectChanged(h);
 }
 function xeSelectChanged(h) {
@@ -3885,6 +4353,7 @@ function xePasteText(text) {
   const H = tile ? selH : h, W = tile ? selW : w, list = [];
   for (let r = 0; r < H; r++) for (let c = 0; c < W; c++)
     list.push({ r: g.r0 + r, c: g.c0 + c, v: data[r % h][c % w] ?? "" });
+  if (xe.mode === "contacts" && g.r0 + H > xe.grid.length) xeAppendContactRows(g.r0 + H - xe.grid.length + 10);
   const lostR = g.r0 + H - xe.grid.length, lostC = g.c0 + W - xe.width;
   xeSetMany(list.filter((x) => x.r < xe.grid.length && x.c < xe.width));
   xe.copied = null;
@@ -3917,7 +4386,7 @@ function xeEdge(r, c, dr, dc) {
   return [r, c];
 }
 function xeKeys(e) {
-  if (window.xeKey?.(e)) return;
+  if (xe.mode !== "contacts" && window.xeKey?.(e)) return;
   if ((e.isComposing || e.keyCode === 229) && !(e.ctrlKey || e.metaKey)) return;   // a Korean letter is being composed
   const { r, c } = xe.cur, ctrl = e.ctrlKey || e.metaKey, shift = e.shiftKey;
   if (xe.editing) {
@@ -3961,10 +4430,42 @@ function xeKeys(e) {
   if (e.key === "F2") { e.preventDefault(); xeStartEdit(true); }
 }
 /** Write the edits into the data the PDFs are made from, then redraw everything that shows it. */
-function closeExcelEditor() {
-  if ($("#xlOverlay").hidden) return;
+let contactsSaveBusy = false;
+async function closeExcelEditor() {
+  if ($("#xlOverlay").hidden || contactsSaveBusy) return;
   if (window.XE_INLINE) { xeEndEdit(true); return; }
   xeEndEdit(true);
+  if (xe.mode === "contacts") {
+    const data = xe.grid.slice(1);
+    for (let i = 0; i < data.length; i++) {
+      const [name, title, email] = data[i].map(x => String(x || "").trim());
+      if (!name && (title || email)) {
+        xeSelect(i + 1, 0); xeSay(L(`${i + 2}행: 이름을 적거나 행 내용을 비워 주세요.`, `Row ${i + 2}: enter a name or clear the row.`)); return;
+      }
+      if (email && !EMAIL_RE.test(email)) {
+        xeSelect(i + 1, 2); xeSay(L(`${i + 2}행: 이메일 주소를 확인해 주세요.`, `Row ${i + 2}: check the email address.`)); return;
+      }
+    }
+    const fromSheet = data.map(([name, title, email]) => ({ name: name.trim().replace(/\s+/g,""), title: title.trim(), email: email.trim(), from: "file" })).filter(c => c.name);
+    contactsSaveBusy = true;
+    const exitButton = $("#xeDone"); exitButton.disabled = true;
+    xeSay(L("연락처 저장 중…", "Saving contacts…"));
+    let saved = false;
+    try { saved = await saveContactsCsv(fromSheet); }
+    finally { contactsSaveBusy = false; exitButton.disabled = false; }
+    if (!saved) {
+      xeSay(L("저장하지 못했습니다. 설정 폴더의 쓰기 권한을 확인하고 X를 다시 누르세요. 입력 내용은 그대로 보존됩니다.", "Could not save. Check folder permission and press X again; edits are preserved."));
+      return; // NEVER close or discard the spreadsheet when the CSV write fails.
+    }
+    S.contacts = [...(S.contacts || []).filter(c => c.from !== "file"), ...fromSheet];
+    S.noAddr = fromSheet.filter(c => !c.email).map(c => c.name);
+    delete $("#chatSetup").dataset.built; drawChatSetup();
+    $("#xlOverlay").hidden = true; document.body.style.overflow = "";
+    $("#xeGrid").replaceChildren(); $("#xeSel").hidden = $("#xeCopyRect").hidden = true;
+    xe.copied = null; xeSay(""); xe.mode = "sheet";
+    toast(L("연락처 CSV를 저장했습니다.", "Saved contacts CSV."));
+    return;
+  }
   const { base, rows } = xeSource();
   let changed = 0;
   xe.grid.forEach((row, r) => row.forEach((v, c) => {
@@ -4040,6 +4541,7 @@ function xeWire() {
   $("#xeUndo").addEventListener("click", xeUndo);
   $("#xeRedo").addEventListener("click", xeRedo);
   $("#xeDone").addEventListener("click", closeExcelEditor);
+  $("#xeAddRows").addEventListener("click", () => { xeEndEdit(true); xeAppendContactRows(20); });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("#xlOverlay").hidden && !xe.editing && !xe.copied && !e.isComposing && document.activeElement !== fx) closeExcelEditor(); });
 }
 
